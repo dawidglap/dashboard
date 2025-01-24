@@ -84,7 +84,7 @@ const DashboardContent = ({ user }) => {
     <div className="p-6 flex-1">
       {/* Header Section */}
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-bold text-black dark:text-white">
+        <h1 className="text-3xl font-bold text-black dark:text-white">
           Willkommen zurück{user?.name ? `, ${user.name}` : ""}!
         </h1>
         <div className="text-right">
@@ -116,9 +116,11 @@ const DashboardContent = ({ user }) => {
           >
             {item.disabled ? (
               <div className="card-body text-center">
-                <h2 className="card-title text-3xl font-bold">{item.title}</h2>
+                <h2 className="card-title text-lg font-semibold">
+                  {item.title}
+                </h2>
                 {item.tooltip && (
-                  <p className="text-lg italic">{item.tooltip}</p>
+                  <p className="text-sm italic">{item.tooltip}</p>
                 )}
               </div>
             ) : item.isButton ? (
@@ -126,16 +128,18 @@ const DashboardContent = ({ user }) => {
                 href={item.link}
                 className="card-body flex items-center justify-center"
               >
-                <span className="text-5xl font-bold text-gray-800">
+                <span className="text-2xl font-bold text-gray-800">
                   {item.icon}
                 </span>
-                <span className="ml-4 text-3xl font-bold">{item.title}</span>
+                <span className="ml-4 text-lg font-semibold">{item.title}</span>
               </Link>
             ) : (
               <Link href={item.link} className="card-body">
-                <h2 className="card-title text-3xl font-bold">{item.title}</h2>
+                <h2 className="card-title text-lg font-semibold">
+                  {item.title}
+                </h2>
                 {item.count && (
-                  <p className="text-5xl font-extrabold">{item.count}</p>
+                  <p className="text-xl font-bold">{item.count}</p>
                 )}
               </Link>
             )}
