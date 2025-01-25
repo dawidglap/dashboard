@@ -14,25 +14,22 @@ export const authOptions = {
         const client = await clientPromise;
         const db = client.db("dashboard");
 
+        // Check user credentials
         const user = await db
           .collection("users")
           .findOne({ email: credentials.email });
 
-        if (!user) {
-          throw new Error("No user found with this email");
+        if (!user || user.password !== credentials.password) {
+          throw new Error("Invalid credentials");
         }
 
-        if (user.password !== credentials.password) {
-          throw new Error("Password is incorrect");
-        }
-
-        return { email: user.email, role: user.role };
+        return { email: user.email, role: user.role }; // Simplified return object
       },
     }),
   ],
   callbacks: {
     async session({ session, token }) {
-      session.user.role = token.role;
+      session.user.role = token.role; // Pass role to session
       return session;
     },
     async jwt({ token, user }) {
@@ -42,26 +39,10 @@ export const authOptions = {
       return token;
     },
   },
-  session: {
-    strategy: "jwt", // Use JWT to handle sessions
-    maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
-  },
   pages: {
-    signIn: "/login", // Redirect to the new /login page
+    signIn: "/login", // Redirect users to /login for sign-in
   },
   secret: process.env.NEXTAUTH_SECRET,
-  cookies: {
-    sessionToken: {
-      name: `next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        sameSite: "lax",
-        path: "/",
-        secure: process.env.NODE_ENV === "production", // Use secure cookies in production
-        maxAge: 30 * 24 * 60 * 60, // 30 days
-      },
-    },
-  },
 };
 
 const handler = NextAuth(authOptions);
