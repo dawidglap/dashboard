@@ -5,9 +5,11 @@ import { useState } from "react";
 
 const SignIn = () => {
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false); // Add loading state
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true when submitting
     const email = e.target.email.value;
     const password = e.target.password.value;
 
@@ -22,6 +24,7 @@ const SignIn = () => {
       setError(
         "Ungültige E-Mail oder Passwort. Bitte versuchen Sie es erneut."
       );
+      setLoading(false); // Set loading to false if there's an error
     }
   };
 
@@ -76,20 +79,38 @@ const SignIn = () => {
             />
           </div>
 
-          {/* Remember Me */}
-          {/* <div className="flex items-center justify-between">
-            <label className="flex items-center text-sm text-gray-600">
-              <input
-                type="checkbox"
-                className="checkbox checkbox-primary mr-2"
-              />
-              Angemeldet bleiben
-            </label>
-          </div> */}
-
           {/* Sign In Button */}
-          <button type="submit" className="btn btn-primary w-full rounded-lg">
-            Anmelden
+          <button
+            type="submit"
+            className={`btn btn-primary w-full rounded-lg flex justify-center items-center ${
+              loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={loading} // Disable button when loading
+          >
+            {loading ? (
+              <svg
+                className="animate-spin h-5 w-5 mr-2 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8V12H4z"
+                ></path>
+              </svg>
+            ) : (
+              "Anmelden"
+            )}
           </button>
         </form>
 
