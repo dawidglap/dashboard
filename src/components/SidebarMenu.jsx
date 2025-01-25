@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { signOut } from "next-auth/react"; // Import signOut
 
 // Import icons from React Icons
 import {
@@ -63,12 +64,17 @@ const SidebarMenu = ({ user }) => {
     },
     {
       title: "Logout",
-      href: "/logout",
+      href: "#", // Use "#" since we're handling logout with onClick
       icon: <FaSignOutAlt />,
       color: "text-red-500",
       activeBg: "bg-red-100",
+      isLogout: true, // Mark this as the logout item
     },
   ];
+
+  const handleLogout = () => {
+    signOut({ callbackUrl: "/login" }); // Redirect to /login after sign out
+  };
 
   return (
     <div className="w-64 h-screen bg-base-200 shadow-md flex flex-col justify-between">
@@ -88,21 +94,33 @@ const SidebarMenu = ({ user }) => {
                 isActive(item.href) ? item.activeBg : "hover:bg-gray-100"
               }`}
             >
-              <Link
-                href={item.href}
-                className="flex items-center space-x-4 p-2 w-full"
-              >
-                <div className={`${item.color} h-6 w-6`}>{item.icon}</div>
-                <span
-                  className={`${
-                    isActive(item.href)
-                      ? "font-bold text-black"
-                      : "text-gray-700"
-                  }`}
+              {item.isLogout ? (
+                <button
+                  onClick={handleLogout} // Call handleLogout for logout
+                  className="flex items-center space-x-4 p-2 w-full"
                 >
-                  {item.title}
-                </span>
-              </Link>
+                  <div className={`${item.color} h-6 w-6`}>{item.icon}</div>
+                  <span className="font-semibold text-red-500">
+                    {item.title}
+                  </span>
+                </button>
+              ) : (
+                <Link
+                  href={item.href}
+                  className="flex items-center space-x-4 p-2 w-full"
+                >
+                  <div className={`${item.color} h-6 w-6`}>{item.icon}</div>
+                  <span
+                    className={`${
+                      isActive(item.href)
+                        ? "font-bold text-black"
+                        : "text-gray-700"
+                    }`}
+                  >
+                    {item.title}
+                  </span>
+                </Link>
+              )}
             </li>
           ))}
         </ul>
