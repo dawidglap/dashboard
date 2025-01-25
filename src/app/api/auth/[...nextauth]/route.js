@@ -46,7 +46,7 @@ export const authOptions = {
     },
   },
   pages: {
-    signIn: "/auth/signin", // Custom sign-in page (optional)
+    signIn: "/login", // Custom sign-in page (optional)
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
