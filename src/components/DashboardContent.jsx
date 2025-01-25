@@ -2,6 +2,14 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import {
+  FaBuilding,
+  FaDollarSign,
+  FaPhone,
+  FaTasks,
+  FaUser,
+  FaLifeRing,
+} from "react-icons/fa";
 
 const DashboardContent = ({ user }) => {
   const [time, setTime] = useState(new Date());
@@ -22,10 +30,10 @@ const DashboardContent = ({ user }) => {
         const response = await fetch("/api/bookings");
         const data = await response.json();
         const demoCalls = data?.data?.bookings || [];
-        setDemoCallsCount(demoCalls.length); // Set the count
+        setDemoCallsCount(demoCalls.length);
       } catch (error) {
         console.error("Error fetching demo calls:", error);
-        setDemoCallsCount(0); // Default to 0 on error
+        setDemoCallsCount(0);
       }
     };
 
@@ -37,63 +45,48 @@ const DashboardContent = ({ user }) => {
       title: "Firmen",
       count: 10,
       link: "/dashboard/firmen",
-      width: "col-span-3",
+      icon: <FaBuilding className="text-blue-500 text-4xl" />,
       color: "bg-gradient-to-r from-blue-50 to-blue-100",
-      text: "text-gray-800",
     },
     {
       title: "Earnings",
       count: "CHF 12,500",
       link: "/dashboard/earnings",
-      width: "col-span-3",
+      icon: <FaDollarSign className="text-green-500 text-4xl" />,
       color: "bg-gradient-to-r from-green-50 to-green-100",
-      text: "text-gray-800",
     },
     {
       title: "Demo Calls",
       count: demoCallsCount,
       link: "/dashboard/demo-calls",
-      width: "col-span-4 relative",
+      icon: <FaPhone className="text-indigo-500 text-4xl" />,
       color: "bg-gradient-to-r from-indigo-50 to-indigo-100",
-      text: "text-gray-800",
     },
     {
       title: "Team",
       count: 5,
       link: "/dashboard/team",
-      width: "col-span-2",
+      avatarGroup: true, // Mark this for avatar group
       color: "bg-gradient-to-r from-purple-50 to-purple-100",
-      text: "text-gray-800",
     },
     {
       title: "Aufgaben",
       count: 8,
       link: "/dashboard/aufgaben",
-      width: "col-span-4",
+      icon: <FaTasks className="text-yellow-500 text-4xl" />,
       color: "bg-gradient-to-r from-yellow-50 to-yellow-100",
-      text: "text-gray-800",
     },
     {
       title: "Profile",
       link: "/dashboard/profile",
-      width: "col-span-3",
+      icon: <FaUser className="text-pink-500 text-4xl" />,
       color: "bg-gradient-to-r from-pink-50 to-pink-100",
-      text: "text-gray-800",
     },
     {
       title: "Support",
       link: "/dashboard/support",
-      width: "col-span-5",
+      icon: <FaLifeRing className="text-gray-500 text-4xl" />,
       color: "bg-gradient-to-r from-gray-50 to-gray-100",
-      text: "text-gray-800",
-    },
-    {
-      title: "Webomo Academy",
-      tooltip: "Coming Soon",
-      disabled: true,
-      width: "col-span-12",
-      color: "bg-gray-100",
-      text: "text-gray-400",
     },
   ];
 
@@ -119,44 +112,66 @@ const DashboardContent = ({ user }) => {
         </div>
       </div>
 
-      {/* Bento Grid */}
+      {/* Grid */}
       <div className="grid grid-cols-12 gap-6">
         {gridData.map((item, index) => (
           <div
             key={index}
-            className={`card shadow-lg rounded-2xl p-6 ${item.color} ${
-              item.text
-            } ${
-              item.disabled
-                ? "text-gray-400 cursor-not-allowed"
-                : "text-gray-800"
-            } ${item.width} hover:shadow-2xl transition-transform duration-300`}
-            title={item.tooltip || ""}
+            className={`card p-4 rounded-lg shadow-lg ${
+              item.color
+            } hover:shadow-2xl transition duration-300 col-span-12 sm:col-span-6 lg:${
+              item.width || "col-span-4"
+            }`}
           >
-            {item.disabled ? (
-              <div className="card-body text-center">
-                <h2 className="card-title text-lg font-semibold">
+            <Link href={item.link} className="flex items-center space-x-4">
+              {item.avatarGroup ? (
+                <div className="avatar-group -space-x-4 h-12">
+                  <div className="avatar ">
+                    <img
+                      src="https://i.ibb.co/njXQwm0/Progetto-senza-titolo-33.png"
+                      alt="Avatar 1"
+                      className="w-12 h-12 rounded-full" // Set image to 50px x 50px
+                    />
+                  </div>
+                  <div className="avatar">
+                    <img
+                      src="https://i.ibb.co/njXQwm0/Progetto-senza-titolo-33.png"
+                      alt="Avatar 2"
+                      className="w-12 h-12 rounded-full" // Set image to 50px x 50px
+                    />
+                  </div>
+                  <div className="avatar">
+                    <img
+                      src="https://i.ibb.co/njXQwm0/Progetto-senza-titolo-33.png"
+                      alt="Avatar 2"
+                      className="w-12 h-12 rounded-full" // Set image to 50px x 50px
+                    />
+                  </div>
+                  <div className="avatar">
+                    <img
+                      src="https://i.ibb.co/njXQwm0/Progetto-senza-titolo-33.png"
+                      alt="Avatar 2"
+                      className="w-12 h-12 rounded-full" // Set image to 50px x 50px
+                    />
+                  </div>
+                  {/* <div className="avatar">
+                    <div className="w-12 h-12 bg-gray-200 flex items-center justify-center rounded-full text-sm font-bold">
+                      +{item.count - 2}
+                    </div>
+                  </div> */}
+                </div>
+              ) : (
+                item.icon
+              )}
+              <div>
+                <h2 className="text-lg font-bold text-gray-800">
                   {item.title}
                 </h2>
-                {item.tooltip && (
-                  <p className="text-sm italic">{item.tooltip}</p>
+                {item.count && (
+                  <p className="text-2xl font-extrabold">{item.count}</p>
                 )}
               </div>
-            ) : (
-              <Link href={item.link} className="card-body text-center">
-                <h2 className="card-title text-lg font-semibold relative">
-                  {item.title}
-                  {item.count !== null && index === 2 && (
-                    <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-1 transform translate-x-3 -translate-y-3 shadow-md">
-                      {item.count}
-                    </span>
-                  )}
-                </h2>
-                {item.count && index !== 2 && (
-                  <p className="text-xl font-bold mt-2">{item.count}</p>
-                )}
-              </Link>
-            )}
+            </Link>
           </div>
         ))}
       </div>
