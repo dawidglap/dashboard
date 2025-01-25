@@ -14,7 +14,6 @@ export const authOptions = {
         const client = await clientPromise;
         const db = client.db("dashboard");
 
-        // Find the user with the provided email
         const user = await db
           .collection("users")
           .findOne({ email: credentials.email });
@@ -23,12 +22,10 @@ export const authOptions = {
           throw new Error("No user found with this email");
         }
 
-        // Check password (For simplicity, plain-text comparison; bcrypt will be added later)
         if (user.password !== credentials.password) {
           throw new Error("Password is incorrect");
         }
 
-        // Return user object (available in session)
         return { email: user.email, role: user.role };
       },
     }),
@@ -45,10 +42,26 @@ export const authOptions = {
       return token;
     },
   },
+  session: {
+    strategy: "jwt", // Use JWT to handle sessions
+    maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
+  },
   pages: {
-    signIn: "/login", // Custom sign-in page (optional)
+    signIn: "/login", // Redirect to the new /login page
   },
   secret: process.env.NEXTAUTH_SECRET,
+  cookies: {
+    sessionToken: {
+      name: `next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+      },
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);
