@@ -7,6 +7,8 @@ const Firmen = () => {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [companyToDelete, setCompanyToDelete] = useState(null); // State for deletion confirmation
+  const [toastMessage, setToastMessage] = useState(""); // For displaying toast messages
   const [editing, setEditing] = useState(null); // Track the company being edited
   const [formData, setFormData] = useState({}); // Track the form inputs for editing
   const [newCompany, setNewCompany] = useState({
@@ -59,7 +61,7 @@ const Firmen = () => {
 
   const handleSave = async (id) => {
     if (formData.plan === "BUSINESS" && !formData.plan_price) {
-      alert("Bitte geben Sie den Planpreis für BUSINESS an.");
+      setToastMessage("Bitte geben Sie den Planpreis für BUSINESS an.");
       return;
     }
 
@@ -90,18 +92,20 @@ const Firmen = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Möchten Sie diese Firma wirklich löschen?")) return;
+  const handleDelete = async () => {
+    if (!companyToDelete) return; // No company selected for deletion
 
     try {
-      const res = await fetch(`/api/companies/${id}`, {
+      const res = await fetch(`/api/companies/${companyToDelete._id}`, {
         method: "DELETE",
       });
 
       if (!res.ok) throw new Error("Fehler beim Löschen der Firma.");
 
-      // Update the UI
-      setCompanies((prev) => prev.filter((company) => company._id !== id));
+      setCompanies((prev) =>
+        prev.filter((company) => company._id !== companyToDelete._id)
+      );
+      setCompanyToDelete(null); // Close the modal after deletion
     } catch (error) {
       alert("Fehler beim Löschen: " + error.message);
     }
@@ -127,7 +131,7 @@ const Firmen = () => {
 
   const handleNewCompanySubmit = async () => {
     if (newCompany.plan === "BUSINESS" && !newCompany.plan_price) {
-      alert("Bitte geben Sie den Planpreis für BUSINESS an.");
+      setToastMessage("Bitte geben Sie den Planpreis für BUSINESS an.");
       return;
     }
 
@@ -195,6 +199,43 @@ const Firmen = () => {
           <span>Neue Firma</span>
         </button>
       </div>
+      {companyToDelete && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg text-red-500">
+              Firma löschen: {companyToDelete.company_name || "Unbenannt"}
+            </h3>
+            <p className="py-4">
+              Sind Sie sicher, dass Sie diese Firma löschen möchten? Diese
+              Aktion kann nicht rückgängig gemacht werden.
+            </p>
+            <div className="modal-action">
+              <button onClick={handleDelete} className="btn btn-error">
+                Löschen
+              </button>
+              <button
+                onClick={() => setCompanyToDelete(null)}
+                className="btn btn-neutral"
+              >
+                Abbrechen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {toastMessage && (
+        <div className="toast">
+          <div className="alert alert-error">
+            <span>{toastMessage}</span>
+            <button
+              className="btn btn-sm btn-ghost"
+              onClick={() => setToastMessage("")}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="overflow-x-auto rounded-lg shadow-md bg-white">
         <table className="table table-zebra w-full rounded-lg">
@@ -258,7 +299,6 @@ const Firmen = () => {
                   )}
                 </td>
 
-                {/* Plan-Price */}
                 {/* Plan-Price */}
                 <td className="py-4 px-6">
                   {editing === company._id && formData.plan === "BUSINESS" ? (
@@ -344,7 +384,7 @@ const Firmen = () => {
                         <FaEdit />
                       </button>
                       <button
-                        onClick={() => handleDelete(company._id)}
+                        onClick={() => setCompanyToDelete(company)}
                         className="btn btn-error btn-xs"
                       >
                         <FaTrash />
