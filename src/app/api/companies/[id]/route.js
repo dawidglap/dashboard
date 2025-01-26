@@ -10,7 +10,6 @@ export async function GET(req, { params }) {
 
     const { id } = params; // Extract `_id` from the request URL
 
-    // Fetch the company by `_id`
     const company = await db.collection("companies").findOne({
       _id: new ObjectId(id),
     });
@@ -78,7 +77,6 @@ export async function DELETE(req, { params }) {
 
     const { id } = params; // Extract `_id` from the request URL
 
-    // Delete the company with the provided `_id`
     const result = await db
       .collection("companies")
       .deleteOne({ _id: new ObjectId(id) });

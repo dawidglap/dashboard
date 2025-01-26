@@ -28,22 +28,38 @@ export async function POST(req) {
     const client = await clientPromise;
     const db = client.db("dashboard");
 
-    const { company_id, company_name, plan, company_owner, expiration_date } =
-      await req.json();
+    const {
+      company_id,
+      company_name,
+      plan,
+      company_owner,
+      expiration_date,
+      plan_price,
+    } = await req.json();
 
-    // Use the provided expiration_date or default to null (no fallback to "today + 1 year")
+    // Determine the default price if not provided manually
+    let calculatedPlanPrice = plan_price;
+    if (!plan_price) {
+      if (plan === "BASIC") {
+        calculatedPlanPrice = 799 * 12 * 1.081; // Includes 8.1% tax
+      } else if (plan === "PRO") {
+        calculatedPlanPrice = 899 * 12 * 1.081; // Includes 8.1% tax
+      }
+    }
+
     const determinedExpirationDate = expiration_date
       ? new Date(expiration_date)
       : null;
 
     // Insert the new company record
     const result = await db.collection("companies").insertOne({
-      company_id: company_id || null, // Nullable
-      company_name: company_name || "", // Empty if not provided
-      plan: plan || "", // Empty if not provided
-      company_owner: company_owner || "", // Empty if not provided
-      expiration_date: determinedExpirationDate, // Directly use the provided expiration_date
-      created_at: new Date(), // Always use the current date
+      company_id: company_id || null,
+      company_name: company_name || "",
+      plan: plan || "",
+      company_owner: company_owner || "",
+      expiration_date: determinedExpirationDate,
+      plan_price: calculatedPlanPrice || null, // Include the plan_price
+      created_at: new Date(),
     });
 
     return NextResponse.json({

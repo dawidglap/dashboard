@@ -45,6 +45,10 @@ const Firmen = () => {
       company_name: company.company_name || "",
       plan: company.plan,
       company_owner: company.company_owner || "",
+      plan_price: company.plan_price || "", // Add plan_price here
+      expiration_date: company.expiration_date
+        ? company.expiration_date.slice(0, 10)
+        : "", // Format expiration_date for input
     });
   };
 
@@ -54,25 +58,32 @@ const Firmen = () => {
   };
 
   const handleSave = async (id) => {
+    if (formData.plan === "BUSINESS" && !formData.plan_price) {
+      alert("Bitte geben Sie den Planpreis für BUSINESS an.");
+      return;
+    }
+
     try {
       const res = await fetch(`/api/companies/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          plan_price: formData.plan_price || null, // Ensure plan_price is included
+        }),
       });
 
       if (!res.ok) throw new Error("Fehler beim Aktualisieren der Firma.");
 
-      // Update the UI
       setCompanies((prev) =>
         prev.map((company) =>
           company._id === id ? { ...company, ...formData } : company
         )
       );
 
-      setEditing(null); // Exit edit mode
+      setEditing(null);
       setFormData({});
     } catch (error) {
       alert("Fehler beim Aktualisieren: " + error.message);
@@ -98,6 +109,7 @@ const Firmen = () => {
 
   const handleNewCompanyChange = (e) => {
     const { name, value } = e.target;
+
     if (editing) {
       // Editing an existing company
       setFormData((prev) => ({
@@ -114,9 +126,14 @@ const Firmen = () => {
   };
 
   const handleNewCompanySubmit = async () => {
+    if (newCompany.plan === "BUSINESS" && !newCompany.plan_price) {
+      alert("Bitte geben Sie den Planpreis für BUSINESS an.");
+      return;
+    }
+
     const companyData = {
       ...newCompany,
-      expiration_date: newCompany.expiration_date, // Use the manually set expiration_date
+      expiration_date: newCompany.expiration_date,
       created_at: new Date().toISOString(),
     };
 
@@ -137,9 +154,10 @@ const Firmen = () => {
         company_name: "",
         plan: "BASIC",
         company_owner: "",
+        plan_price: "",
         expiration_date: "",
       });
-      setShowModal(false); // Close the modal
+      setShowModal(false); // Close the modal after successful submission
     } catch (error) {
       alert("Fehler beim Hinzufügen: " + error.message);
     }
@@ -185,6 +203,7 @@ const Firmen = () => {
               <th className="py-4 px-6">Firmen-Name</th>
               <th className="py-4 px-6">ID</th>
               <th className="py-4 px-6">Plan</th>
+              <th className="py-4 px-6">Plan-Preis</th>
               <th className="py-4 px-6">Inhaber</th>
               <th className="py-4 px-6">Ablaufdatum</th>
               <th className="py-4 px-6">Aktionen</th>
@@ -202,7 +221,7 @@ const Firmen = () => {
                     <input
                       type="text"
                       name="company_name"
-                      value={formData.company_name}
+                      value={formData.company_name || ""}
                       onChange={handleNewCompanyChange}
                       className="input input-bordered input-sm w-full"
                     />
@@ -213,9 +232,12 @@ const Firmen = () => {
 
                 {/* Firmen-ID */}
                 <td className="py-4 px-6">
-                  {company._id
-                    ? `${company._id.slice(0, 3)}...${company._id.slice(-3)}`
-                    : "N/A"}
+                  <div
+                    className="tooltip tooltip-bottom"
+                    data-tip={company._id}
+                  >
+                    {company._id.slice(0, 3)}...{company._id.slice(-3)}
+                  </div>
                 </td>
 
                 {/* Plan */}
@@ -233,6 +255,28 @@ const Firmen = () => {
                     </select>
                   ) : (
                     company.plan
+                  )}
+                </td>
+
+                {/* Plan-Price */}
+                {/* Plan-Price */}
+                <td className="py-4 px-6">
+                  {editing === company._id && formData.plan === "BUSINESS" ? (
+                    <input
+                      type="number"
+                      name="plan_price"
+                      value={formData.plan_price || ""}
+                      onChange={handleNewCompanyChange}
+                      className="input input-bordered input-sm w-full"
+                    />
+                  ) : company.plan === "BASIC" ? (
+                    "CHF 9,323.88" // Price for BASIC
+                  ) : company.plan === "PRO" ? (
+                    "CHF 10,426.92" // Price for PRO
+                  ) : company.plan === "BUSINESS" && company.plan_price ? (
+                    `CHF ${Number(company.plan_price).toFixed(2)}`
+                  ) : (
+                    "Kein Preis angegeben"
                   )}
                 </td>
 
@@ -332,6 +376,7 @@ const Firmen = () => {
                   className="input input-bordered"
                 />
               </div>
+
               <div className="form-control mb-4">
                 <label className="label">
                   <span className="label-text">Plan</span>
@@ -347,6 +392,22 @@ const Firmen = () => {
                   <option value="BUSINESS">BUSINESS</option>
                 </select>
               </div>
+
+              {newCompany.plan === "BUSINESS" && (
+                <div className="form-control mb-4">
+                  <label className="label">
+                    <span className="label-text">Plan-Preis</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="plan_price"
+                    value={newCompany.plan_price || ""}
+                    onChange={handleNewCompanyChange}
+                    className="input input-bordered"
+                  />
+                </div>
+              )}
+
               <div className="form-control mb-4">
                 <label className="label">
                   <span className="label-text">Inhaber</span>
@@ -359,6 +420,7 @@ const Firmen = () => {
                   className="input input-bordered"
                 />
               </div>
+
               <div className="form-control mb-4">
                 <label className="label">
                   <span className="label-text">Ablaufdatum</span>
@@ -372,6 +434,7 @@ const Firmen = () => {
                 />
               </div>
             </form>
+
             <div className="modal-action">
               <button
                 onClick={handleNewCompanySubmit}
