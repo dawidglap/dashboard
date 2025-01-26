@@ -23,31 +23,27 @@ export async function GET() {
   }
 }
 
-// Handle POST requests: Add a new company
 export async function POST(req) {
   try {
     const client = await clientPromise;
     const db = client.db("dashboard");
 
-    const { company_id, amount } = await req.json();
+    const { company_id, company_name, plan, company_owner, expiration_date } =
+      await req.json();
 
-    // Determine the plan based on the amount
-    let plan = "";
-    if (amount === 799) {
-      plan = "BASIC";
-    } else if (amount === 899) {
-      plan = "PRO";
-    } else if (amount > 1000) {
-      plan = "BUSINESS";
-    }
+    // Use the provided expiration_date or default to null (no fallback to "today + 1 year")
+    const determinedExpirationDate = expiration_date
+      ? new Date(expiration_date)
+      : null;
 
-    // Insert a new company record into the database
+    // Insert the new company record
     const result = await db.collection("companies").insertOne({
-      company_id,
-      company_name: "", // Empty for now
-      plan,
-      company_owner: "", // Empty for now
-      created_at: new Date(),
+      company_id: company_id || null, // Nullable
+      company_name: company_name || "", // Empty if not provided
+      plan: plan || "", // Empty if not provided
+      company_owner: company_owner || "", // Empty if not provided
+      expiration_date: determinedExpirationDate, // Directly use the provided expiration_date
+      created_at: new Date(), // Always use the current date
     });
 
     return NextResponse.json({

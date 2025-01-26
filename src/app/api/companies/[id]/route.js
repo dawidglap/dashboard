@@ -38,10 +38,14 @@ export async function PUT(req, { params }) {
     const client = await clientPromise;
     const db = client.db("dashboard");
 
-    const { id } = params; // Extract `_id` from the request URL
-    const updates = await req.json(); // Parse the request body for updates
+    const { id } = params;
+    const updates = await req.json();
 
-    // Update the company with the provided data
+    // Ensure expiration_date is stored correctly (if provided)
+    if (updates.expiration_date) {
+      updates.expiration_date = new Date(updates.expiration_date);
+    }
+
     const result = await db
       .collection("companies")
       .updateOne({ _id: new ObjectId(id) }, { $set: updates });

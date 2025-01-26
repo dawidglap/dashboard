@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
+import { FaEdit, FaTrash, FaSave, FaTimes, FaPlus } from "react-icons/fa";
 
 const Firmen = () => {
   const [companies, setCompanies] = useState([]);
@@ -9,6 +9,12 @@ const Firmen = () => {
   const [error, setError] = useState(null);
   const [editing, setEditing] = useState(null); // Track the company being edited
   const [formData, setFormData] = useState({}); // Track the form inputs for editing
+  const [newCompany, setNewCompany] = useState({
+    company_name: "",
+    plan: "BASIC",
+    company_owner: "",
+  }); // Data for the new company
+  const [showModal, setShowModal] = useState(false); // Modal state
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -90,9 +96,53 @@ const Firmen = () => {
     }
   };
 
-  const handleChange = (e) => {
+  const handleNewCompanyChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (editing) {
+      // Editing an existing company
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    } else {
+      // Adding a new company
+      setNewCompany((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+
+  const handleNewCompanySubmit = async () => {
+    const companyData = {
+      ...newCompany,
+      expiration_date: newCompany.expiration_date, // Use the manually set expiration_date
+      created_at: new Date().toISOString(),
+    };
+
+    try {
+      const res = await fetch("/api/companies", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(companyData),
+      });
+
+      if (!res.ok) throw new Error("Fehler beim Hinzufügen der neuen Firma.");
+
+      const data = await res.json();
+      setCompanies((prev) => [...prev, { ...companyData, _id: data.data }]);
+      setNewCompany({
+        company_name: "",
+        plan: "BASIC",
+        company_owner: "",
+        expiration_date: "",
+      });
+      setShowModal(false); // Close the modal
+    } catch (error) {
+      alert("Fehler beim Hinzufügen: " + error.message);
+    }
   };
 
   if (loading)
@@ -117,13 +167,23 @@ const Firmen = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-4xl font-bold mb-8 text-gray-800">Firmen</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-4xl font-bold text-gray-800">Firmen</h1>
+        <button
+          onClick={() => setShowModal(true)}
+          className="btn btn-warning btn-sm flex items-center space-x-2"
+        >
+          <FaPlus />
+          <span>Neue Firma</span>
+        </button>
+      </div>
+
       <div className="overflow-x-auto rounded-lg shadow-md bg-white">
         <table className="table table-zebra w-full rounded-lg">
           <thead>
             <tr className="bg-gray-200">
-              <th className="py-4 px-6">Firmen-ID</th>
               <th className="py-4 px-6">Firmen-Name</th>
+              <th className="py-4 px-6">ID</th>
               <th className="py-4 px-6">Plan</th>
               <th className="py-4 px-6">Inhaber</th>
               <th className="py-4 px-6">Ablaufdatum</th>
@@ -136,26 +196,35 @@ const Firmen = () => {
                 key={company._id}
                 className={`${index % 2 === 0 ? "bg-gray-50" : ""}`}
               >
-                <td className="py-4 px-6">{company._id}</td>
+                {/* Firmen-Name */}
                 <td className="py-4 px-6">
                   {editing === company._id ? (
                     <input
                       type="text"
                       name="company_name"
                       value={formData.company_name}
-                      onChange={handleChange}
+                      onChange={handleNewCompanyChange}
                       className="input input-bordered input-sm w-full"
                     />
                   ) : (
                     company.company_name || "N/A"
                   )}
                 </td>
+
+                {/* Firmen-ID */}
+                <td className="py-4 px-6">
+                  {company._id
+                    ? `${company._id.slice(0, 3)}...${company._id.slice(-3)}`
+                    : "N/A"}
+                </td>
+
+                {/* Plan */}
                 <td className="py-4 px-6">
                   {editing === company._id ? (
                     <select
                       name="plan"
                       value={formData.plan}
-                      onChange={handleChange}
+                      onChange={handleNewCompanyChange}
                       className="select select-bordered select-sm w-full"
                     >
                       <option value="BASIC">BASIC</option>
@@ -166,22 +235,46 @@ const Firmen = () => {
                     company.plan
                   )}
                 </td>
+
+                {/* Inhaber */}
                 <td className="py-4 px-6">
                   {editing === company._id ? (
                     <input
                       type="text"
                       name="company_owner"
                       value={formData.company_owner}
-                      onChange={handleChange}
+                      onChange={handleNewCompanyChange}
                       className="input input-bordered input-sm w-full"
                     />
                   ) : (
                     company.company_owner || "N/A"
                   )}
                 </td>
+
+                {/* Ablaufdatum */}
                 <td className="py-4 px-6">
-                  {calculateExpirationDate(company.created_at)}
+                  {editing === company._id ? (
+                    <input
+                      type="date"
+                      name="expiration_date"
+                      value={
+                        formData.expiration_date
+                          ? formData.expiration_date.slice(0, 10) // Format to YYYY-MM-DD
+                          : ""
+                      }
+                      onChange={handleNewCompanyChange}
+                      className="input input-bordered input-sm w-full"
+                    />
+                  ) : company.expiration_date ? (
+                    new Date(company.expiration_date).toLocaleDateString(
+                      "de-DE"
+                    )
+                  ) : (
+                    "Kein Datum"
+                  )}
                 </td>
+
+                {/* Aktionen */}
                 <td className="py-4 px-6 space-x-2">
                   {editing === company._id ? (
                     <>
@@ -202,7 +295,7 @@ const Firmen = () => {
                     <>
                       <button
                         onClick={() => handleEdit(company)}
-                        className="btn btn-secondary btn-xs"
+                        className="btn btn-neutral btn-xs"
                       >
                         <FaEdit />
                       </button>
@@ -220,6 +313,82 @@ const Firmen = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Modal for new company */}
+      {showModal && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg mb-4">Neue Firma hinzufügen</h3>
+            <form>
+              <div className="form-control mb-4">
+                <label className="label">
+                  <span className="label-text">Firmen-Name</span>
+                </label>
+                <input
+                  type="text"
+                  name="company_name"
+                  value={newCompany.company_name}
+                  onChange={handleNewCompanyChange}
+                  className="input input-bordered"
+                />
+              </div>
+              <div className="form-control mb-4">
+                <label className="label">
+                  <span className="label-text">Plan</span>
+                </label>
+                <select
+                  name="plan"
+                  value={newCompany.plan}
+                  onChange={handleNewCompanyChange}
+                  className="select select-bordered"
+                >
+                  <option value="BASIC">BASIC</option>
+                  <option value="PRO">PRO</option>
+                  <option value="BUSINESS">BUSINESS</option>
+                </select>
+              </div>
+              <div className="form-control mb-4">
+                <label className="label">
+                  <span className="label-text">Inhaber</span>
+                </label>
+                <input
+                  type="text"
+                  name="company_owner"
+                  value={newCompany.company_owner}
+                  onChange={handleNewCompanyChange}
+                  className="input input-bordered"
+                />
+              </div>
+              <div className="form-control mb-4">
+                <label className="label">
+                  <span className="label-text">Ablaufdatum</span>
+                </label>
+                <input
+                  type="date"
+                  name="expiration_date"
+                  value={newCompany.expiration_date}
+                  onChange={handleNewCompanyChange}
+                  className="input input-bordered"
+                />
+              </div>
+            </form>
+            <div className="modal-action">
+              <button
+                onClick={handleNewCompanySubmit}
+                className="btn btn-success"
+              >
+                Speichern
+              </button>
+              <button
+                onClick={() => setShowModal(false)}
+                className="btn btn-error"
+              >
+                Abbrechen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
