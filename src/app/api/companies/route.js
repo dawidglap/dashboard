@@ -1,10 +1,33 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 
+// Handle GET requests: Fetch all companies
+export async function GET() {
+  try {
+    const client = await clientPromise;
+    const db = client.db("dashboard");
+
+    // Fetch all companies from the database
+    const companies = await db.collection("companies").find({}).toArray();
+
+    return NextResponse.json({
+      success: true,
+      data: companies,
+    });
+  } catch (error) {
+    console.error("Error fetching companies:", error.message);
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+// Handle POST requests: Add a new company
 export async function POST(req) {
   try {
     const client = await clientPromise;
-    const db = client.db("dashboard"); // Ensure this matches your database name
+    const db = client.db("dashboard");
 
     const { company_id, amount } = await req.json();
 

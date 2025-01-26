@@ -26,8 +26,49 @@ const DemoCalls = () => {
 
   if (loading)
     return (
-      <div className="text-center py-10">
-        <p className="text-lg text-gray-600">Lädt...</p>
+      <div className="p-6">
+        <h1 className="text-4xl font-bold mb-8 text-gray-800">
+          Bevorstehende Demo-Calls
+        </h1>
+        <div className="overflow-x-auto rounded-lg shadow-md bg-white">
+          <table className="table table-zebra w-full rounded-lg">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="py-4 px-6">Titel</th>
+                <th className="py-4 px-6">Startzeit</th>
+                <th className="py-4 px-6">Endzeit</th>
+                <th className="py-4 px-6">Teilnehmer</th>
+                <th className="py-4 px-6">E-Mail</th>
+                <th className="py-4 px-6">Video-Call-Link</th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* Skeleton rows for loading state */}
+              {[...Array(5)].map((_, index) => (
+                <tr key={index} className="bg-gray-50 animate-pulse">
+                  <td className="py-4 px-6">
+                    <div className="h-4 bg-gray-300 rounded"></div>
+                  </td>
+                  <td className="py-4 px-6">
+                    <div className="h-4 bg-gray-300 rounded"></div>
+                  </td>
+                  <td className="py-4 px-6">
+                    <div className="h-4 bg-gray-300 rounded"></div>
+                  </td>
+                  <td className="py-4 px-6">
+                    <div className="h-4 bg-gray-300 rounded"></div>
+                  </td>
+                  <td className="py-4 px-6">
+                    <div className="h-4 bg-gray-300 rounded"></div>
+                  </td>
+                  <td className="py-4 px-6">
+                    <div className="h-4 bg-gray-300 rounded"></div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
 

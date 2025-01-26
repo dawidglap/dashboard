@@ -14,6 +14,7 @@ import {
 const DashboardContent = ({ user }) => {
   const [time, setTime] = useState(new Date());
   const [demoCallsCount, setDemoCallsCount] = useState(null);
+  const [companyCount, setCompanyCount] = useState(null); // State for company count
 
   // Update time every second
   useEffect(() => {
@@ -40,50 +41,83 @@ const DashboardContent = ({ user }) => {
     fetchDemoCalls();
   }, []);
 
+  // Fetch the number of companies
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const response = await fetch("/api/companies");
+        const data = await response.json();
+        const companies = data?.data || [];
+        setCompanyCount(companies.length);
+      } catch (error) {
+        console.error("Error fetching companies:", error);
+        setCompanyCount(0);
+      }
+    };
+
+    fetchCompanies();
+  }, []);
+
   const gridData = [
     {
       title: "Firmen",
-      count: 10,
+      count:
+        companyCount !== null ? (
+          companyCount
+        ) : (
+          <div className="skeleton h-6 w-10 bg-gray-300"></div>
+        ),
       link: "/dashboard/firmen",
       icon: <FaBuilding className="text-blue-500 text-4xl" />,
       color: "bg-gradient-to-r from-blue-50 to-blue-100",
     },
     {
       title: "Earnings",
-      count: "CHF 12,500",
+      count: "CHF 12,500", // Replace this with dynamic data if available
       link: "/dashboard/earnings",
       icon: <FaDollarSign className="text-green-500 text-4xl" />,
       color: "bg-gradient-to-r from-green-50 to-green-100",
     },
     {
       title: "Demo Calls",
-      count: demoCallsCount,
+      count:
+        demoCallsCount !== null ? (
+          demoCallsCount
+        ) : (
+          <div className="skeleton h-6 w-10 bg-gray-300"></div>
+        ),
       link: "/dashboard/demo-calls",
       icon: <FaPhone className="text-indigo-500 text-4xl" />,
       color: "bg-gradient-to-r from-indigo-50 to-indigo-100",
     },
     {
       title: "Team",
-      count: 5,
+      // Placeholder for future dynamic data
+      count: <div className="skeleton h-6 w-10 bg-gray-300"></div>,
       link: "/dashboard/team",
       avatarGroup: true, // Mark this for avatar group
       color: "bg-gradient-to-r from-purple-50 to-purple-100",
     },
     {
       title: "Aufgaben",
-      count: 8,
+      // Placeholder for future dynamic data
+      count: <div className="skeleton h-6 w-10 bg-gray-300"></div>,
       link: "/dashboard/aufgaben",
       icon: <FaTasks className="text-yellow-500 text-4xl" />,
       color: "bg-gradient-to-r from-yellow-50 to-yellow-100",
     },
     {
       title: "Profile",
+      // Placeholder for future dynamic data
+      count: <div className="skeleton h-6 w-10 bg-gray-300"></div>,
       link: "/dashboard/profile",
       icon: <FaUser className="text-pink-500 text-4xl" />,
       color: "bg-gradient-to-r from-pink-50 to-pink-100",
     },
     {
       title: "Support",
+      // Placeholder for future dynamic data
+      count: <div className="skeleton h-6 w-10 bg-gray-300"></div>,
       link: "/dashboard/support",
       icon: <FaLifeRing className="text-gray-500 text-4xl" />,
       color: "bg-gradient-to-r from-gray-50 to-gray-100",
@@ -124,45 +158,7 @@ const DashboardContent = ({ user }) => {
             }`}
           >
             <Link href={item.link} className="flex items-center space-x-4">
-              {item.avatarGroup ? (
-                <div className="avatar-group -space-x-4 h-12">
-                  <div className="avatar ">
-                    <img
-                      src="https://i.ibb.co/njXQwm0/Progetto-senza-titolo-33.png"
-                      alt="Avatar 1"
-                      className="w-12 h-12 rounded-full" // Set image to 50px x 50px
-                    />
-                  </div>
-                  <div className="avatar">
-                    <img
-                      src="https://i.ibb.co/njXQwm0/Progetto-senza-titolo-33.png"
-                      alt="Avatar 2"
-                      className="w-12 h-12 rounded-full" // Set image to 50px x 50px
-                    />
-                  </div>
-                  <div className="avatar">
-                    <img
-                      src="https://i.ibb.co/njXQwm0/Progetto-senza-titolo-33.png"
-                      alt="Avatar 2"
-                      className="w-12 h-12 rounded-full" // Set image to 50px x 50px
-                    />
-                  </div>
-                  <div className="avatar">
-                    <img
-                      src="https://i.ibb.co/njXQwm0/Progetto-senza-titolo-33.png"
-                      alt="Avatar 2"
-                      className="w-12 h-12 rounded-full" // Set image to 50px x 50px
-                    />
-                  </div>
-                  {/* <div className="avatar">
-                    <div className="w-12 h-12 bg-gray-200 flex items-center justify-center rounded-full text-sm font-bold">
-                      +{item.count - 2}
-                    </div>
-                  </div> */}
-                </div>
-              ) : (
-                item.icon
-              )}
+              {item.icon}
               <div>
                 <h2 className="text-lg font-bold text-gray-800">
                   {item.title}
