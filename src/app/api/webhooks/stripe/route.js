@@ -2,65 +2,60 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import clientPromise from "@/lib/mongodb";
 
+// Configura Stripe con la tua chiave segreta
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(req) {
   const sig = req.headers.get("stripe-signature");
-  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET; // Add this to your .env
 
   let event;
 
   try {
-    const rawBody = await req.text(); // Stripe needs the raw body
-    event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
-  } catch (err) {
-    console.error("Webhook signature verification failed:", err.message);
-    return NextResponse.json(
-      { success: false, error: "Invalid signature" },
-      { status: 400 }
+    // Verifica l'autenticità del webhook
+    const rawBody = await req.text();
+    event = stripe.webhooks.constructEvent(
+      rawBody,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
     );
+  } catch (err) {
+    console.error("Errore di validazione Webhook:", err.message);
+    return NextResponse.json({ error: "Webhook Error" }, { status: 400 });
   }
 
-  // Handle the event
+  // Processa l'evento `payment_intent.succeeded`
   if (event.type === "payment_intent.succeeded") {
     const paymentIntent = event.data.object;
 
-    // Extract relevant data
-    const company_id = paymentIntent.id;
-    const amount = paymentIntent.amount / 100; // Convert from cents to CHF
-
-    // Determine the plan
-    let plan = "";
-    if (amount === 799) {
-      plan = "BASIC";
-    } else if (amount === 899) {
-      plan = "PRO";
-    } else if (amount > 1000) {
-      plan = "BUSINESS";
-    }
-
-    // Connect to MongoDB and add the company
     try {
       const client = await clientPromise;
       const db = client.db("dashboard");
 
+      // Determina il piano in base all'importo
+      let plan = "";
+      if (paymentIntent.amount_received === 79900) {
+        plan = "BASIC";
+      } else if (paymentIntent.amount_received === 89900) {
+        plan = "PRO";
+      } else if (paymentIntent.amount_received > 100000) {
+        plan = "BUSINESS";
+      }
+
+      // Crea un record nella collezione `companies`
       await db.collection("companies").insertOne({
-        company_id,
+        company_id: paymentIntent.id,
         company_name: "",
         plan,
         company_owner: "",
         created_at: new Date(),
       });
 
-      console.log(`Company with ID ${company_id} added to the database.`);
-    } catch (error) {
-      console.error("Error adding company to database:", error);
-      return NextResponse.json(
-        { success: false, error: error.message },
-        { status: 500 }
-      );
+      console.log("Nuova azienda creata:", paymentIntent.id);
+    } catch (err) {
+      console.error("Errore durante la creazione del record:", err.message);
+      return NextResponse.json({ error: "Database Error" }, { status: 500 });
     }
   }
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ received: true });
 }
