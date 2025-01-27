@@ -11,6 +11,8 @@ const Team = () => {
   const [toastMessage, setToastMessage] = useState(""); // For displaying toast messages
   const [editing, setEditing] = useState(null); // Track the user being edited
   const [formData, setFormData] = useState({}); // Track the form inputs for editing
+  const [isEditing, setIsEditing] = useState(false); // Editing mode
+  const [currentUser, setCurrentUser] = useState(null); // User being edited
   const [newUser, setNewUser] = useState({
     email: "",
     password: "",
@@ -39,14 +41,17 @@ const Team = () => {
   }, []);
 
   const handleEdit = (user) => {
-    setEditing(user._id);
-    setFormData({
-      email: user.email || "",
+    setIsEditing(true); // Enable editing mode
+    setCurrentUser(user); // Set the user being edited
+    setNewUser({
+      email: user.email,
+      password: "", // Leave password blank for editing
       name: user.name || "",
       surname: user.surname || "",
       birthday: user.birthday || "",
       role: user.role || "kunde",
     });
+    setShowModal(true); // Open the modal
   };
 
   const handleCancel = () => {
@@ -54,29 +59,29 @@ const Team = () => {
     setFormData({});
   };
 
-  const handleSave = async (id) => {
-    try {
-      const res = await fetch("/api/users", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id, ...formData }),
-      });
+  //   const handleSave = async (id) => {
+  //     try {
+  //       const res = await fetch("/api/users", {
+  //         method: "PUT",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({ id, ...formData }),
+  //       });
 
-      if (!res.ok) throw new Error("Fehler beim Aktualisieren des Benutzers.");
+  //       if (!res.ok) throw new Error("Fehler beim Aktualisieren des Benutzers.");
 
-      setUsers((prev) =>
-        prev.map((user) => (user._id === id ? { ...user, ...formData } : user))
-      );
+  //       setUsers((prev) =>
+  //         prev.map((user) => (user._id === id ? { ...user, ...formData } : user))
+  //       );
 
-      setEditing(null);
-      setFormData({});
-      setToastMessage("Benutzer erfolgreich aktualisiert.");
-    } catch (error) {
-      setToastMessage("Fehler beim Speichern: " + error.message);
-    }
-  };
+  //       setEditing(null);
+  //       setFormData({});
+  //       setToastMessage("Benutzer erfolgreich aktualisiert.");
+  //     } catch (error) {
+  //       setToastMessage("Fehler beim Speichern: " + error.message);
+  //     }
+  //   };
 
   const handleDelete = async () => {
     if (!userToDelete) return;
@@ -105,49 +110,112 @@ const Team = () => {
     }));
   };
 
-  const handleNewUserSubmit = async () => {
-    // Ensure all fields are filled, including password
-    if (
-      !newUser.email ||
-      !newUser.password ||
-      !newUser.name ||
-      !newUser.surname ||
-      !newUser.birthday ||
-      !newUser.role
-    ) {
-      setToastMessage("Bitte füllen Sie alle Felder aus.");
-      return;
+  //   const handleNewUserSubmit = async () => {
+  //     // Ensure all fields are filled, including password
+  //     if (
+  //       !newUser.email ||
+  //       !newUser.password ||
+  //       !newUser.name ||
+  //       !newUser.surname ||
+  //       !newUser.birthday ||
+  //       !newUser.role
+  //     ) {
+  //       setToastMessage("Bitte füllen Sie alle Felder aus.");
+  //       return;
+  //     }
+
+  //     try {
+  //       const res = await fetch("/api/users", {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(newUser),
+  //       });
+
+  //       const data = await res.json();
+
+  //       if (!res.ok) throw new Error(data.message || "Fehler beim Hinzufügen.");
+
+  //       // Update the user list and reset the form
+  //       setUsers((prev) => [...prev, { ...newUser, _id: data.data }]);
+  //       setNewUser({
+  //         email: "",
+  //         password: "", // Reset password field
+  //         name: "",
+  //         surname: "",
+  //         birthday: "",
+  //         role: "admin",
+  //       });
+  //       setShowModal(false); // Close the modal
+  //       setToastMessage("Benutzer erfolgreich hinzugefügt.");
+  //     } catch (error) {
+  //       console.error("API Error:", error.message);
+  //       setToastMessage("Fehler beim Hinzufügen: " + error.message);
+  //     }
+  //   };
+
+  const handleModalSubmit = async () => {
+    if (isEditing) {
+      // Editing an existing user
+      try {
+        const res = await fetch("/api/users", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: currentUser._id, ...newUser }),
+        });
+
+        if (!res.ok)
+          throw new Error("Fehler beim Aktualisieren des Benutzers.");
+
+        // Update the user list
+        setUsers((prev) =>
+          prev.map((user) =>
+            user._id === currentUser._id ? { ...user, ...newUser } : user
+          )
+        );
+
+        setToastMessage("Benutzer erfolgreich aktualisiert.");
+      } catch (error) {
+        setToastMessage("Fehler beim Speichern: " + error.message);
+      }
+    } else {
+      // Adding a new user
+      try {
+        const res = await fetch("/api/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newUser),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.message || "Fehler beim Hinzufügen.");
+
+        // Add the new user to the list
+        setUsers((prev) => [...prev, { ...newUser, _id: data.data }]);
+        setToastMessage("Benutzer erfolgreich hinzugefügt.");
+      } catch (error) {
+        setToastMessage("Fehler beim Hinzufügen: " + error.message);
+      }
     }
 
-    try {
-      const res = await fetch("/api/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newUser),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.message || "Fehler beim Hinzufügen.");
-
-      // Update the user list and reset the form
-      setUsers((prev) => [...prev, { ...newUser, _id: data.data }]);
-      setNewUser({
-        email: "",
-        password: "", // Reset password field
-        name: "",
-        surname: "",
-        birthday: "",
-        role: "admin",
-      });
-      setShowModal(false); // Close the modal
-      setToastMessage("Benutzer erfolgreich hinzugefügt.");
-    } catch (error) {
-      console.error("API Error:", error.message);
-      setToastMessage("Fehler beim Hinzufügen: " + error.message);
-    }
+    // Reset the modal state
+    setShowModal(false);
+    setIsEditing(false);
+    setCurrentUser(null);
+    setNewUser({
+      email: "",
+      password: "",
+      name: "",
+      surname: "",
+      birthday: "",
+      role: "admin",
+    });
   };
 
   if (loading)
@@ -283,37 +351,18 @@ const Team = () => {
                   )}
                 </td>
                 <td className="py-4 px-6 space-x-2">
-                  {editing === user._id ? (
-                    <>
-                      <button
-                        onClick={() => handleSave(user._id)}
-                        className="btn btn-success btn-xs"
-                      >
-                        <FaSave />
-                      </button>
-                      <button
-                        onClick={handleCancel}
-                        className="btn btn-error btn-xs"
-                      >
-                        <FaTimes />
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => handleEdit(user)}
-                        className="btn btn-neutral btn-xs"
-                      >
-                        <FaEdit />
-                      </button>
-                      <button
-                        onClick={() => setUserToDelete(user)}
-                        className="btn btn-error btn-xs"
-                      >
-                        <FaTrash />
-                      </button>
-                    </>
-                  )}
+                  <button
+                    onClick={() => handleEdit(user)} // Opens the modal for editing
+                    className="btn btn-neutral btn-xs"
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    onClick={() => setUserToDelete(user)} // Opens the delete confirmation modal
+                    className="btn btn-error btn-xs"
+                  >
+                    <FaTrash />
+                  </button>
                 </td>
               </tr>
             ))}
@@ -325,7 +374,7 @@ const Team = () => {
         <div className="modal modal-open">
           <div className="modal-box">
             <h3 className="font-bold text-lg mb-4">
-              Neuen Benutzer hinzufügen
+              {isEditing ? "Benutzer bearbeiten" : "Neuen Benutzer hinzufügen"}
             </h3>
             <form>
               <div className="form-control mb-4">
@@ -338,6 +387,7 @@ const Team = () => {
                   value={newUser.email}
                   onChange={handleNewUserChange}
                   className="input input-bordered"
+                  disabled={isEditing} // Disable email field when editing
                 />
               </div>
               <div className="form-control mb-4">
@@ -406,11 +456,15 @@ const Team = () => {
               </div>
             </form>
             <div className="modal-action">
-              <button onClick={handleNewUserSubmit} className="btn btn-success">
-                Speichern
+              <button onClick={handleModalSubmit} className="btn btn-success">
+                {isEditing ? "Speichern" : "Erstellen"}
               </button>
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                  setIsEditing(false);
+                  setCurrentUser(null);
+                }}
                 className="btn btn-error"
               >
                 Abbrechen
