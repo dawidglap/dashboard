@@ -128,3 +128,60 @@ export async function DELETE(request) {
     );
   }
 }
+
+export async function PUT(request) {
+  const { db } = await connectToDatabase();
+  const body = await request.json();
+
+  const { id, email, name, surname, birthday, role } = body;
+
+  // Validate required fields
+  if (!id || !ObjectId.isValid(id)) {
+    return new Response(
+      JSON.stringify({ success: false, message: "Invalid or missing user ID" }),
+      { status: 400 }
+    );
+  }
+
+  // Create the update object
+  const updateData = {};
+  if (email) updateData.email = email;
+  if (name) updateData.name = name;
+  if (surname) updateData.surname = surname;
+  if (birthday) updateData.birthday = birthday;
+  if (role) updateData.role = role;
+
+  // Check if there's any data to update
+  if (Object.keys(updateData).length === 0) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: "No fields provided to update",
+      }),
+      { status: 400 }
+    );
+  }
+
+  try {
+    const result = await db
+      .collection("users")
+      .updateOne({ _id: new ObjectId(id) }, { $set: updateData });
+
+    if (result.matchedCount === 0) {
+      return new Response(
+        JSON.stringify({ success: false, message: "User not found" }),
+        { status: 404 }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({ success: true, message: "User updated successfully" }),
+      { status: 200 }
+    );
+  } catch (error) {
+    return new Response(
+      JSON.stringify({ success: false, error: error.message }),
+      { status: 500 }
+    );
+  }
+}
