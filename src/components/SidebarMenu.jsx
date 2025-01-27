@@ -31,43 +31,31 @@ const SidebarMenu = ({ user }) => {
       title: "Home",
       href: "/dashboard",
       icon: <FaHome />,
-      color: "text-blue-500",
-      activeBg: "bg-blue-100",
     },
     {
       title: "Firmen",
       href: "/dashboard/firmen",
       icon: <FaBuilding />,
-      color: "text-green-500",
-      activeBg: "bg-green-100",
     },
     {
       title: "Demo Calls",
       href: "/dashboard/demo-calls",
       icon: <FaPhone />,
-      color: "text-indigo-500",
-      activeBg: "bg-indigo-100",
     },
     {
       title: "Aufgaben",
       href: "/dashboard/aufgaben",
       icon: <FaTasks />,
-      color: "text-yellow-500",
-      activeBg: "bg-yellow-100",
     },
     {
       title: "Support",
       href: "/dashboard/support",
       icon: <FaLifeRing />,
-      color: "text-gray-500",
-      activeBg: "bg-gray-100",
     },
     {
       title: "Logout",
       href: "#", // Use "#" since we're handling logout with onClick
-      icon: <FaSignOutAlt />,
-      color: "text-red-500",
-      activeBg: "bg-red-100",
+      icon: <FaSignOutAlt />, // Icon for Logout
       isLogout: true, // Mark this as the logout item
     },
   ];
@@ -77,48 +65,37 @@ const SidebarMenu = ({ user }) => {
   };
 
   return (
-    <div className="w-64 h-screen bg-base-200 shadow-md flex flex-col justify-between">
+    <div className="w-64 h-screen bg-base-200 shadow-lg flex flex-col justify-between">
       {/* Top Section */}
       <div>
-        {/* Title */}
-        <div className="p-6 text-center font-bold text-2xl text-indigo-500">
+        {/* Sidebar Title */}
+        <div className="p-6 text-center font-bold text-2xl text-primary">
           Webomo Business
         </div>
 
         {/* Menu Items */}
-        <ul className="menu p-4 space-y-4 text-lg">
+        <ul className="menu menu-compact p-4 space-y-2">
           {menuItems.map((item, index) => (
-            <li
-              key={index}
-              className={`flex items-center space-x-4 rounded-lg ${
-                isActive(item.href) ? item.activeBg : "hover:bg-gray-100"
-              }`}
-            >
+            <li key={index}>
               {item.isLogout ? (
                 <button
                   onClick={handleLogout} // Call handleLogout for logout
-                  className="flex items-center space-x-4 p-2 w-full"
+                  className={`flex items-center space-x-4 p-2 rounded-lg text-error hover:bg-error hover:text-white transition-all duration-300`}
                 >
-                  <div className={`${item.color} h-6 w-6`}>{item.icon}</div>
-                  <span className="font-semibold text-red-500">
-                    {item.title}
-                  </span>
+                  <span className="text-lg">{item.icon}</span>
+                  <span>{item.title}</span>
                 </button>
               ) : (
                 <Link
                   href={item.href}
-                  className="flex items-center space-x-4 p-2 w-full"
+                  className={`flex items-center space-x-4 p-2 rounded-lg hover:bg-primary hover:text-white transition-all duration-300 ${
+                    isActive(item.href)
+                      ? "bg-primary text-white"
+                      : "text-neutral"
+                  }`}
                 >
-                  <div className={`${item.color} h-6 w-6`}>{item.icon}</div>
-                  <span
-                    className={`${
-                      isActive(item.href)
-                        ? "font-bold text-black"
-                        : "text-gray-700"
-                    }`}
-                  >
-                    {item.title}
-                  </span>
+                  <span className="text-lg">{item.icon}</span>
+                  <span>{item.title}</span>
                 </Link>
               )}
             </li>
@@ -127,12 +104,14 @@ const SidebarMenu = ({ user }) => {
       </div>
 
       {/* Bottom Section (User Info) */}
-      <div className="p-4 flex flex-col items-center border-t border-gray-300">
+      <div className="p-4 flex flex-col items-center border-t border-base-300">
         <div className="avatar">
-          <div className="w-16 h-16 rounded-full bg-gray-300"></div>
+          <div className="w-16 h-16 rounded-full bg-neutral-focus text-neutral-content flex items-center justify-center">
+            {user?.name?.[0]?.toUpperCase() || "C"}
+          </div>
         </div>
         <p className="mt-2 text-lg font-semibold">{user?.name || "Cengiz"}</p>
-        <p className="text-sm text-gray-500">{user?.surname || "Cokickli"}</p>
+        <p className="text-sm text-neutral">{user?.surname || "Cokickli"}</p>
       </div>
     </div>
   );
