@@ -14,7 +14,6 @@ const FirmenWidget = () => {
       try {
         const response = await fetch("/api/companies");
         const data = await response.json();
-
         const companies = data?.data || [];
         setCompanyCount(companies.length);
 
@@ -46,7 +45,6 @@ const FirmenWidget = () => {
         setTopPlan(mostSoldPlan);
       } catch (error) {
         console.error("Error fetching companies:", error);
-        setCompanyCount(0);
       }
     };
 
