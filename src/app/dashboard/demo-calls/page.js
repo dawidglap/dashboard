@@ -35,20 +35,15 @@ const DemoCalls = () => {
             <thead>
               <tr className="bg-gray-200">
                 <th className="py-4 px-6">Titel</th>
-                <th className="py-4 px-6">Startzeit</th>
-                <th className="py-4 px-6">Endzeit</th>
+                <th className="py-4 px-6">Datum & Zeit</th>
                 <th className="py-4 px-6">Teilnehmer</th>
                 <th className="py-4 px-6">E-Mail</th>
                 <th className="py-4 px-6">Video-Call-Link</th>
               </tr>
             </thead>
             <tbody>
-              {/* Skeleton rows for loading state */}
               {[...Array(5)].map((_, index) => (
                 <tr key={index} className="bg-gray-50 animate-pulse">
-                  <td className="py-4 px-6">
-                    <div className="h-4 bg-gray-300 rounded"></div>
-                  </td>
                   <td className="py-4 px-6">
                     <div className="h-4 bg-gray-300 rounded"></div>
                   </td>
@@ -99,8 +94,7 @@ const DemoCalls = () => {
           <thead>
             <tr className="bg-gray-200">
               <th className="py-4 px-6">Titel</th>
-              <th className="py-4 px-6">Startzeit</th>
-              <th className="py-4 px-6">Endzeit</th>
+              <th className="py-4 px-6">Datum & Zeit</th>
               <th className="py-4 px-6">Teilnehmer</th>
               <th className="py-4 px-6">E-Mail</th>
               <th className="py-4 px-6">Video-Call-Link</th>
@@ -116,13 +110,9 @@ const DemoCalls = () => {
                 <td className="py-4 px-6">
                   {new Date(booking.startTime).toLocaleString("de-DE", {
                     weekday: "long",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </td>
-                <td className="py-4 px-6">
-                  {new Date(booking.endTime).toLocaleString("de-DE", {
-                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
