@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
+import CredentialsProvider from "next-auth/providers/credentials"; // Import CredentialsProvider
+import bcrypt from "bcrypt";
 import clientPromise from "@/lib/mongodb";
 
 export const authOptions = {
@@ -14,16 +15,27 @@ export const authOptions = {
         const client = await clientPromise;
         const db = client.db("dashboard");
 
-        // Check user credentials
+        // Find user by email
         const user = await db
           .collection("users")
           .findOne({ email: credentials.email });
 
-        if (!user || user.password !== credentials.password) {
-          throw new Error("Invalid credentials");
+        if (!user) {
+          throw new Error("Invalid email or password");
         }
 
-        return { email: user.email, role: user.role }; // Simplified return object
+        // Compare hashed password
+        const isValidPassword = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+
+        if (!isValidPassword) {
+          throw new Error("Invalid email or password");
+        }
+
+        // Return user data
+        return { email: user.email, role: user.role };
       },
     }),
   ],
