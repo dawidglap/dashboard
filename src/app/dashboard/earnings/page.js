@@ -85,7 +85,7 @@ const Earnings = () => {
       <h1 className="text-4xl font-bold mb-6">
         Bruttoumsatz: CHF{" "}
         <span className="text-[#8B5CF6]">
-          {bruttoUmsatz.toLocaleString("de-DE")}
+          {Math.round(bruttoUmsatz).toLocaleString("de-DE")}
         </span>
       </h1>
       {/* Gesamtprovisionen */}
