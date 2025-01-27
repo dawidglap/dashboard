@@ -1,68 +1,111 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 const Earnings = () => {
-  const [companies, setCompanies] = useState([]);
-  const [totalEarnings, setTotalEarnings] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [chartData, setChartData] = useState([]);
 
+  // Generate demo data (for visualization purposes)
   useEffect(() => {
-    const fetchCompaniesData = async () => {
-      try {
-        const response = await fetch("/api/companies"); // Fetch all companies
-        if (!response.ok) throw new Error("Error fetching companies data.");
-        const data = await response.json();
+    const generateDemoData = () => {
+      const data = [];
+      const startDate = new Date(2024, 0, 1); // January 2024
+      const endDate = new Date(2025, 0, 1); // January 2025
 
-        // Calculate total earnings
-        let earnings = 0;
-        data.data.forEach((company) => {
-          if (company.plan === "BASIC") {
-            earnings += 799 * 12 * 1.081; // BASIC plan price with tax
-          } else if (company.plan === "PRO") {
-            earnings += 899 * 12 * 1.081; // PRO plan price with tax
-          } else if (company.plan === "BUSINESS") {
-            earnings += company.plan_price ? parseFloat(company.plan_price) : 0; // Use custom price for BUSINESS
-          }
+      while (startDate <= endDate) {
+        const earnings = Math.floor(Math.random() * 20000 + 5000); // Between 5K and 25K
+        data.push({
+          month: `${startDate.toLocaleString("de-DE", {
+            month: "short",
+          })} '${startDate.getFullYear().toString().slice(-2)}`,
+          earnings,
         });
-
-        setCompanies(data.data);
-        setTotalEarnings(earnings || 0); // Ensure totalEarnings is a number
-      } catch (err) {
-        setError(err.message);
-        setTotalEarnings(0); // Set fallback value in case of an error
-      } finally {
-        setLoading(false);
+        startDate.setMonth(startDate.getMonth() + 1);
       }
+
+      setChartData(data);
     };
 
-    fetchCompaniesData();
+    generateDemoData();
   }, []);
 
-  if (loading) return <p>Loading earnings data...</p>;
-  if (error) return <p className="text-red-500">Error: {error}</p>;
+  // Filter the last 6 months for display
+  const today = new Date();
+  const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+  const filteredData = chartData.slice(-6); // Get only the last 6 months
 
   return (
     <div className="p-6">
-      <h1 className="text-4xl font-bold mb-8 text-gray-800">
-        Earnings Overview
-      </h1>
+      <h1 className="text-4xl font-bold mb-6">Monthly Earnings</h1>
 
-      {/* Display Total Earnings */}
-      <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Total Earnings</h2>
-        <p className="text-2xl font-bold text-green-600">
-          CHF {totalEarnings.toFixed(2)}
-        </p>
-      </div>
+      {/* Area Chart */}
+      <div className="mb-10">
+        <ResponsiveContainer width="100%" height={400}>
+          <AreaChart
+            data={filteredData} // Use filteredData here
+            margin={{
+              top: 10,
+              right: 30,
+              left: 50, // Added padding for CHF visibility
+              bottom: 10,
+            }}
+          >
+            {/* Grid */}
+            <CartesianGrid horizontal={true} vertical={false} />
 
-      {/* Display raw companies data */}
-      <div className="bg-white shadow-lg rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Raw Companies Data</h2>
-        <pre className="bg-gray-100 p-4 rounded-lg overflow-auto">
-          {JSON.stringify(companies, null, 2)}
-        </pre>
+            {/* X-Axis */}
+            <XAxis
+              dataKey="month"
+              padding={{ left: 20, right: 20 }} // Add space at the ends
+              tickFormatter={(tick) => tick} // Keep German month format
+              minTickGap={5}
+            />
+
+            {/* Y-Axis */}
+            <YAxis
+              domain={[0, 25000]} // Start from 0 to 25K
+              tickFormatter={(value) =>
+                value === 0
+                  ? ""
+                  : `CHF ${value >= 1000 ? `${value / 1000}K` : value}`
+              }
+              ticks={[5000, 10000, 15000, 20000, 25000]} // Tick intervals
+              allowDecimals={false}
+            />
+
+            {/* Tooltip */}
+            <Tooltip
+              formatter={(value) => `CHF ${value.toLocaleString("de-DE")}`}
+            />
+
+            {/* Area */}
+            <Area
+              type="monotone"
+              dataKey="earnings"
+              stroke="#8b5cf6"
+              strokeWidth={2}
+              fill="url(#colorEarnings)"
+              activeDot={{ r: 8 }}
+            />
+
+            {/* Gradient for the area */}
+            <defs>
+              <linearGradient id="colorEarnings" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.8} />
+                <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0.1} />
+              </linearGradient>
+            </defs>
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
