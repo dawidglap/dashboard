@@ -121,7 +121,7 @@ const Earnings = () => {
 
             {/* Y-Axis */}
             <YAxis
-              domain={[0, "auto"]}
+              domain={[0, (dataMax) => Math.max(dataMax, 20000)]}
               tickFormatter={(value) =>
                 value === 0
                   ? ""
