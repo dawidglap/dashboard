@@ -1,5 +1,6 @@
 import { connectToDatabase } from "@/lib/mongodb";
 import bcrypt from "bcrypt";
+import { ObjectId } from "mongodb";
 
 export async function GET(request) {
   const { db } = await connectToDatabase();
@@ -82,6 +83,48 @@ export async function POST(request) {
       {
         status: 500,
       }
+    );
+  }
+}
+
+export async function DELETE(request) {
+  const { db } = await connectToDatabase();
+
+  // Parse the user ID from the request URL
+  const { searchParams } = new URL(request.url);
+  const userId = searchParams.get("id");
+
+  // Validate the ID
+  if (!userId || !ObjectId.isValid(userId)) {
+    return new Response(
+      JSON.stringify({ success: false, message: "Invalid or missing user ID" }),
+      { status: 400 }
+    );
+  }
+
+  try {
+    // Attempt to delete the user
+    const result = await db
+      .collection("users")
+      .deleteOne({ _id: new ObjectId(userId) });
+
+    if (result.deletedCount === 0) {
+      return new Response(
+        JSON.stringify({ success: false, message: "User not found" }),
+        { status: 404 }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({ success: true, message: "User deleted successfully" }),
+      {
+        status: 200,
+      }
+    );
+  } catch (error) {
+    return new Response(
+      JSON.stringify({ success: false, error: error.message }),
+      { status: 500 }
     );
   }
 }
