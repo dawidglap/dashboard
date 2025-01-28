@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react"; // ✅ Import NextAuth session
 import TaskRow from "@/components/tasks/TaskRow";
 import NewTaskModal from "@/components/tasks/NewTaskModal";
+import TasksLoader from "@/components/Tasks/TasksLoader";
 
 const Tasks = () => {
   const { data: session } = useSession(); // ✅ Get user session
@@ -37,7 +38,8 @@ const Tasks = () => {
     setTasks((prevTasks) => [...prevTasks, newTask]); // Add new task to list
   };
 
-  if (loading) return <p className="text-center text-lg">Lädt...</p>;
+  if (loading) return <TasksLoader />;
+
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (

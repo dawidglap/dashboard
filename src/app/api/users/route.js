@@ -133,7 +133,7 @@ export async function PUT(request) {
   const { db } = await connectToDatabase();
   const body = await request.json();
 
-  const { id, email, name, surname, birthday, role } = body;
+  const { id, email, name, surname, birthday, role, password } = body;
 
   // Validate required fields
   if (!id || !ObjectId.isValid(id)) {
@@ -150,6 +150,12 @@ export async function PUT(request) {
   if (surname) updateData.surname = surname;
   if (birthday) updateData.birthday = birthday;
   if (role) updateData.role = role;
+
+  // Hash the password if it's provided
+  if (password) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    updateData.password = hashedPassword;
+  }
 
   // Check if there's any data to update
   if (Object.keys(updateData).length === 0) {
