@@ -150,3 +150,5 @@ const SidebarMenu = () => {
 };
 
 export default SidebarMenu;
+
+// SIDEBAR NOT WORKING FOR MARKENBOTSCHAFTER
