@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import TaskRow from "./TaskRow"; // We'll create this next
 
-const Tasks = () => {
+const TaskList = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,26 +31,19 @@ const Tasks = () => {
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6">Aufgaben</h1>
-      <div className="overflow-x-auto rounded-lg shadow-md bg-white">
-        <table className="table table-zebra w-full rounded-lg">
+      <div className="rounded-lg shadow-md bg-white overflow-hidden">
+        <table className="table w-full">
           <thead>
-            <tr className="bg-gray-200">
+            <tr className="bg-gray-200 text-left">
               <th className="py-4 px-6">Titel</th>
               <th className="py-4 px-6">Status</th>
               <th className="py-4 px-6">Priorität</th>
-              <th className="py-4 px-6">Erstellt am</th>
+              <th className="py-4 px-6">Aktionen</th>
             </tr>
           </thead>
           <tbody>
             {tasks.map((task) => (
-              <tr key={task._id}>
-                <td className="py-4 px-6">{task.title}</td>
-                <td className="py-4 px-6">{task.status}</td>
-                <td className="py-4 px-6">{task.priority}</td>
-                <td className="py-4 px-6">
-                  {new Date(task.createdAt).toLocaleDateString("de-DE")}
-                </td>
-              </tr>
+              <TaskRow key={task._id} task={task} />
             ))}
           </tbody>
         </table>
@@ -58,4 +52,4 @@ const Tasks = () => {
   );
 };
 
-export default Tasks;
+export default TaskList;

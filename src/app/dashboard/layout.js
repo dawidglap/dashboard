@@ -1,16 +1,19 @@
 "use client";
 
+import { SessionProvider } from "next-auth/react";
 import SidebarMenu from "@/components/SidebarMenu";
 
-const DashboardLayout = ({ children, user }) => {
+const DashboardLayout = ({ children }) => {
   return (
-    <div className="flex h-screen">
-      {/* Sidebar */}
-      <SidebarMenu user={user} />
+    <SessionProvider>
+      <div className="flex h-screen">
+        {/* Sidebar */}
+        <SidebarMenu />
 
-      {/* Main Content */}
-      <div className="flex-1 p-6 bg-base-100">{children}</div>
-    </div>
+        {/* Main Content */}
+        <div className="flex-1 p-6 bg-base-100">{children}</div>
+      </div>
+    </SessionProvider>
   );
 };
 
