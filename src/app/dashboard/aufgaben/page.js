@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import TaskRow from "@/components/tasks/TaskRow";
-import NewTaskModal from "@/components/tasks/NewTaskModal";
+import NewTaskModal from "@/components/tasks/NewTaskModal.jsx";
+import TaskRow from "@/components/Tasks/TaskRow.jsx";
 
 const Tasks = () => {
   const { data: session } = useSession();
