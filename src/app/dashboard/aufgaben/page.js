@@ -3,21 +3,21 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import NewTaskModal from "../../../components/Tasks/NewTaskModal";
-
 import TaskRow from "../../../components/Tasks/TaskRow";
 
 const Tasks = () => {
   const { data: session } = useSession();
-  const [user, setUser] = useState(null); // Store the full user object
+  const [user, setUser] = useState(null); // Store full user object
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [openDropdownId, setOpenDropdownId] = useState(null);
+  const [openDropdown, setOpenDropdown] = useState(null); // 🔥 Manages which dropdown is open
 
-  console.log("Session Data:", session); // Debugging session data
-  console.log("USER DATA:", user); // Debugging user data
+  console.log("Session Data:", session);
+  console.log("USER DATA:", user);
 
-  // Fetch full user data on load
   useEffect(() => {
     const fetchUserData = async () => {
       if (session?.user) {
@@ -25,7 +25,7 @@ const Tasks = () => {
           const res = await fetch(`/api/users/me`);
           if (!res.ok) throw new Error("Failed to fetch user data.");
           const data = await res.json();
-          setUser(data.user); // This should include _id
+          setUser(data.user); // This should include `_id`
         } catch (err) {
           console.error(err);
           setError("Failed to fetch user data.");
@@ -36,9 +36,8 @@ const Tasks = () => {
     fetchUserData();
   }, [session]);
 
-  // Fetch tasks only after user data is available
   useEffect(() => {
-    if (!user) return; // Do not fetch tasks until the user data is loaded
+    if (!user) return; // Do not fetch tasks until user data is loaded
 
     const fetchTasks = async () => {
       setLoading(true);
@@ -55,13 +54,13 @@ const Tasks = () => {
     };
 
     fetchTasks();
-  }, [user]); // Trigger fetching tasks only after `user` is set
+  }, [user]); // Fetch tasks only after `user` is set
 
-  // Function to update task status in UI
-  const handleTaskUpdate = (taskId, newStatus) => {
+  // Function to update a task in UI
+  const handleTaskUpdate = (taskId, updatedTask) => {
     setTasks((prevTasks) =>
       prevTasks.map((task) =>
-        task._id === taskId ? { ...task, status: newStatus } : task
+        task._id === taskId ? { ...task, ...updatedTask } : task
       )
     );
   };
@@ -69,6 +68,22 @@ const Tasks = () => {
   // Function to add a new task in UI
   const handleTaskCreated = (newTask) => {
     setTasks((prevTasks) => [...prevTasks, newTask]);
+  };
+
+  // Function to delete a task
+  const handleTaskDelete = async (taskId) => {
+    try {
+      const res = await fetch(`/api/tasks/${taskId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Fehler beim Löschen der Aufgabe");
+
+      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
+      setOpenDropdown(null);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   if (loading)
@@ -85,7 +100,6 @@ const Tasks = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Aufgaben</h1>
 
-        {/* Admins can create new tasks */}
         {user?.role === "admin" && (
           <button
             onClick={() => setIsModalOpen(true)}
@@ -96,8 +110,7 @@ const Tasks = () => {
         )}
       </div>
 
-      {/* Task Table */}
-      <div className="overflow-x-auto rounded-lg shadow-md bg-white">
+      <div className=" rounded-lg shadow-md bg-white">
         <table className="table table-zebra w-full rounded-lg">
           <thead>
             <tr className="bg-gray-200">
@@ -114,13 +127,15 @@ const Tasks = () => {
                 task={task}
                 user={user}
                 onUpdate={handleTaskUpdate}
+                onDelete={handleTaskDelete}
+                openDropdownId={openDropdownId} // Pass state
+                setOpenDropdownId={setOpenDropdownId}
               />
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* New Task Modal */}
       {isModalOpen && (
         <NewTaskModal
           isOpen={isModalOpen}
