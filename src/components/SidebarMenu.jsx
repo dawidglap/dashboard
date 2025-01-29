@@ -42,15 +42,15 @@ const SidebarMenu = () => {
 
   return (
     <div
-      className={`h-screen bg-white dark:bg-gray-900 shadow-lg flex flex-col py-4 transition-all duration-300 ${
-        expanded ? "w-60" : "w-16"
+      className={`h-screen bg-white dark:bg-gray-900 border-r-2  border-indigo-200 shadow-lg flex flex-col py-4 transition-all duration-300 ${
+        expanded ? "w-60 px-4   " : "w-16 pr-1 pl-1"
       }`}
     >
       {/* Logo & Expand Button */}
       <div className="flex items-center justify-between w-full px-4">
         {expanded && (
           <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
-            Webomo
+            Webomo <br /> Business
           </h2>
         )}
         <button
@@ -86,14 +86,18 @@ const SidebarMenu = () => {
                   <button
                     className={`flex items-center justify-between w-full px-4 py-2 rounded-lg transition ${
                       pathname.startsWith(item.href)
-                        ? "bg-green-100 text-green-600 dark:bg-green-900"
+                        ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-900"
                         : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                     }`}
                     onClick={() => setTasksExpanded(!tasksExpanded)}
                   >
                     <div className="flex items-center">
-                      <span className="text-xl">{item.icon}</span>
-                      {expanded && <span className="ml-4">{item.title}</span>}
+                      <span className="text-lg">{item.icon}</span>
+                      {expanded && (
+                        <span className="ml-4 text-sm font-bold">
+                          {item.title}
+                        </span>
+                      )}
                     </div>
                     {expanded && (
                       <FaChevronDown
@@ -109,9 +113,9 @@ const SidebarMenu = () => {
                         <li key={subIndex}>
                           <Link
                             href={subItem.href}
-                            className={`block px-4 py-2 rounded-lg transition ${
+                            className={`block px-4 py-2 rounded-lg  text-sm transition ${
                               pathname === subItem.href
-                                ? "bg-green-200 text-green-700 dark:bg-green-800"
+                                ? "bg-indigo-200 text-indigo-700 dark:bg-indigo-800"
                                 : "hover:bg-gray-100 dark:hover:bg-gray-800"
                             }`}
                           >
@@ -125,13 +129,13 @@ const SidebarMenu = () => {
               ) : (
                 <Link
                   href={item.href}
-                  className={`flex items-center w-full px-4 py-2 rounded-lg transition ${
+                  className={`flex items-center w-full text-sm font-bold px-4 py-2 rounded-lg transition ${
                     pathname === item.href
-                      ? "bg-green-100 text-green-600 dark:bg-green-900"
+                      ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-900"
                       : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                   }`}
                 >
-                  <span className="text-xl">{item.icon}</span>
+                  <span className="text-lg">{item.icon}</span>
                   {expanded && <span className="ml-4">{item.title}</span>}
                 </Link>
               )}
@@ -146,11 +150,11 @@ const SidebarMenu = () => {
           href="/help"
           className="flex items-center px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
         >
-          <FaQuestionCircle className="text-xl" />
+          <FaQuestionCircle className="text-md" />
           {expanded && <span className="ml-4">Help</span>}
         </Link>
         <button className="flex items-center w-full px-4 py-2 rounded-lg text-red-500 hover:bg-red-100 dark:hover:bg-red-900 transition">
-          <FaSignOutAlt className="text-xl" />
+          <FaSignOutAlt className="text-md" />
           {expanded && <span className="ml-4">Logout</span>}
         </button>
       </div>
