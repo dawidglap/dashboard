@@ -64,27 +64,42 @@ const TaskRow = ({
 
   // Handle updating task status
   const handleUpdateStatus = async (newStatus) => {
+    if (!task._id) {
+      console.error("❌ ERROR: Task ID is missing!", task);
+      return;
+    }
+
     setIsUpdating(true);
+
     try {
+      console.log(
+        `🔍 Sending request to update status: ${newStatus} for Task ID: ${task._id}`
+      );
+
       const res = await fetch(`/api/tasks/${task._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }), // ✅ Send only the status update
+        body: JSON.stringify({ status: newStatus }),
       });
 
+      const responseData = await res.json();
+
       if (!res.ok) {
-        const errorData = await res.json();
         throw new Error(
-          errorData.message || "Fehler beim Aktualisieren der Aufgabe"
+          responseData.message || "Fehler beim Aktualisieren der Aufgabe"
         );
       }
 
-      const updatedTask = await res.json();
+      console.log("✅ Server Response:", responseData);
 
-      // ✅ Instant UI Update
-      onUpdate(task._id, { ...task, status: newStatus });
+      // ✅ Check if the update actually changed anything
+      if (responseData.message === "Task status is already the same") {
+        console.warn("⚠️ Task status was already up to date.");
+      } else {
+        onUpdate(task._id, { ...task, status: newStatus });
+      }
     } catch (error) {
-      console.error(error);
+      console.error("❌ ERROR updating task:", error);
     } finally {
       setIsUpdating(false);
       setOpenDropdownId(null);
@@ -92,26 +107,35 @@ const TaskRow = ({
   };
 
   // Handle deleting a task
-  const handleDeleteTask = async () => {
-    setIsDeleting(true);
-    try {
-      const res = await fetch(`/api/tasks/${task._id}`, {
-        method: "DELETE",
-      });
+  // const handleDeleteTask = async () => {
+  //   if (!taskToDelete) return;
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "Fehler beim Löschen der Aufgabe");
-      }
+  //   try {
+  //     const res = await fetch(`/api/tasks/${taskToDelete}`, {
+  //       method: "DELETE",
+  //     });
 
-      onDelete(task._id); // ✅ Remove the task from UI immediately
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsDeleting(false);
-      setOpenDropdownId(null);
-    }
-  };
+  //     const responseData = await res.json();
+  //     console.log("Server Response:", responseData); // 🔥 Debugging output
+
+  //     if (!res.ok)
+  //       throw new Error(
+  //         responseData.message || "Fehler beim Löschen der Aufgabe"
+  //       );
+
+  //     setTasks((prevTasks) =>
+  //       prevTasks.filter((task) => task._id !== taskToDelete)
+  //     );
+
+  //     setIsDeleteModalOpen(false); // ✅ Close modal after delete
+  //     setToastMessage("Aufgabe erfolgreich gelöscht!"); // ✅ Show success toast
+  //     setToastType("success");
+  //   } catch (error) {
+  //     console.error("Error deleting task:", error);
+  //     setToastMessage(error.message);
+  //     setToastType("error");
+  //   }
+  // };
 
   // Determine if user can update the status
   const canUpdateStatus =
@@ -225,15 +249,10 @@ const TaskRow = ({
               {canDelete && (
                 <li>
                   <button
-                    onClick={handleDeleteTask}
+                    onClick={() => onDelete(task._id)} // ✅ Uses the function from Tasks.js
                     className="flex items-center px-4 py-2 text-red-500 hover:bg-gray-100 w-full"
                   >
-                    {isDeleting ? (
-                      <FaSpinner className="animate-spin mr-2" />
-                    ) : (
-                      <FaTrash className="mr-2" />
-                    )}
-                    Löschen
+                    <FaTrash className="mr-2" /> Löschen
                   </button>
                 </li>
               )}

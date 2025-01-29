@@ -20,23 +20,29 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
       const res = await fetch(`/api/tasks/${task._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description, priority, status }),
+        body: JSON.stringify({
+          title,
+          description,
+          priority,
+          status,
+        }),
       });
 
+      const responseData = await res.json();
+
       if (!res.ok) {
-        const errorData = await res.json();
         throw new Error(
-          errorData.message || "Fehler beim Aktualisieren der Aufgabe"
+          responseData.message || "Fehler beim Aktualisieren der Aufgabe"
         );
       }
 
-      const { task: updatedTask } = await res.json(); // ✅ Extract the `task` object
-      onUpdate(task._id, updatedTask);
+      // ✅ Ensure `_id` is always included when updating the UI state
+      onUpdate(task._id, { ...responseData.updatedFields, _id: task._id });
 
-      onClose(); // ✅ Close modal after success
-    } catch (err) {
-      console.error(err);
-      setError(err.message);
+      onClose();
+    } catch (error) {
+      console.error("Fehler:", error.message);
+      setError(error.message);
     } finally {
       setIsSaving(false);
     }

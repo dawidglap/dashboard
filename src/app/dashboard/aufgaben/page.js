@@ -7,16 +7,18 @@ import TaskRow from "../../../components/Tasks/TaskRow";
 
 const Tasks = () => {
   const { data: session } = useSession();
-  const [user, setUser] = useState(null); // Store full user object
+  const [user, setUser] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openDropdownId, setOpenDropdownId] = useState(null);
-  const [openDropdown, setOpenDropdown] = useState(null); // 🔥 Manages which dropdown is open
 
-  console.log("Session Data:", session);
-  console.log("USER DATA:", user);
+  // ✅ Delete Confirmation Modal
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState(null);
+  const [toastMessage, setToastMessage] = useState(null);
+  const [toastType, setToastType] = useState("info"); // success or error
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -25,7 +27,7 @@ const Tasks = () => {
           const res = await fetch(`/api/users/me`);
           if (!res.ok) throw new Error("Failed to fetch user data.");
           const data = await res.json();
-          setUser(data.user); // This should include `_id`
+          setUser(data.user);
         } catch (err) {
           console.error(err);
           setError("Failed to fetch user data.");
@@ -37,7 +39,7 @@ const Tasks = () => {
   }, [session]);
 
   useEffect(() => {
-    if (!user) return; // Do not fetch tasks until user data is loaded
+    if (!user) return;
 
     const fetchTasks = async () => {
       setLoading(true);
@@ -54,36 +56,50 @@ const Tasks = () => {
     };
 
     fetchTasks();
-  }, [user]); // Fetch tasks only after `user` is set
+  }, [user]);
 
-  // Function to update a task in UI
-  const handleTaskUpdate = (taskId, updatedTask) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task._id === taskId ? { ...task, ...updatedTask } : task
-      )
-    );
+  // ✅ Function to confirm delete (opens modal)
+  const confirmDelete = (taskId) => {
+    setTaskToDelete(taskId);
+    setIsDeleteModalOpen(true);
   };
 
-  // Function to add a new task in UI
-  const handleTaskCreated = (newTask) => {
-    setTasks((prevTasks) => [...prevTasks, newTask]);
-  };
+  // ✅ Function to delete task
+  const handleTaskDelete = async () => {
+    if (!taskToDelete) return;
 
-  // Function to delete a task
-  const handleTaskDelete = async (taskId) => {
     try {
-      const res = await fetch(`/api/tasks/${taskId}`, {
+      const res = await fetch(`/api/tasks/${taskToDelete}`, {
         method: "DELETE",
       });
 
-      if (!res.ok) throw new Error("Fehler beim Löschen der Aufgabe");
+      const responseData = await res.json();
+      console.log("Server Response:", responseData); // 🔍 Debugging output
 
-      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
-      setOpenDropdown(null);
+      if (!res.ok)
+        throw new Error(
+          responseData.message || "Fehler beim Löschen der Aufgabe"
+        );
+
+      setTasks((prevTasks) =>
+        prevTasks.filter((task) => task._id !== taskToDelete)
+      );
+
+      setIsDeleteModalOpen(false); // ✅ Close modal after delete
+      setToastMessage("Aufgabe erfolgreich gelöscht!"); // ✅ Show success toast
+      setToastType("success");
     } catch (error) {
-      console.error(error);
+      console.error("Error deleting task:", error);
+      setToastMessage(error.message);
+      setToastType("error");
     }
+  };
+
+  // ✅ Function to create a new task
+  const handleTaskCreated = (newTask) => {
+    setTasks((prevTasks) => [newTask, ...prevTasks]);
+    setToastMessage("Neue Aufgabe erfolgreich erstellt!");
+    setToastType("success");
   };
 
   if (loading)
@@ -110,7 +126,7 @@ const Tasks = () => {
         )}
       </div>
 
-      <div className=" rounded-lg shadow-md bg-white">
+      <div className="rounded-lg shadow-md bg-white">
         <table className="table table-zebra w-full rounded-lg">
           <thead>
             <tr className="bg-gray-200">
@@ -126,9 +142,15 @@ const Tasks = () => {
                 key={task._id}
                 task={task}
                 user={user}
-                onUpdate={handleTaskUpdate}
-                onDelete={handleTaskDelete}
-                openDropdownId={openDropdownId} // Pass state
+                onUpdate={(taskId, updatedTask) => {
+                  setTasks((prevTasks) =>
+                    prevTasks.map((t) =>
+                      t._id === taskId ? { ...updatedTask, _id: taskId } : t
+                    )
+                  );
+                }}
+                onDelete={confirmDelete} // ✅ Use modal for delete confirmation
+                openDropdownId={openDropdownId}
                 setOpenDropdownId={setOpenDropdownId}
               />
             ))}
@@ -142,6 +164,42 @@ const Tasks = () => {
           onClose={() => setIsModalOpen(false)}
           onTaskCreated={handleTaskCreated}
         />
+      )}
+
+      {/* ✅ DaisyUI Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="modal modal-open">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">Bist du sicher?</h3>
+            <p className="py-4">
+              Diese Aktion kann nicht rückgängig gemacht werden.
+            </p>
+            <div className="modal-action">
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="btn"
+              >
+                Abbrechen
+              </button>
+              <button onClick={handleTaskDelete} className="btn btn-error">
+                Löschen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ DaisyUI Toast Notification */}
+      {toastMessage && (
+        <div className="toast">
+          <div
+            className={`alert ${
+              toastType === "success" ? "alert-success" : "alert-error"
+            }`}
+          >
+            <span>{toastMessage}</span>
+          </div>
+        </div>
       )}
     </div>
   );
