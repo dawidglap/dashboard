@@ -62,6 +62,12 @@ const TaskRow = ({
     setOpenDropdownId(isDropdownOpen ? null : task._id);
   };
 
+  // ✅ Close dropdown & open edit modal when clicking "Bearbeiten"
+  const handleEditClick = () => {
+    setOpenDropdownId(null); // Close dropdown
+    setIsEditModalOpen(true); // Open edit modal
+  };
+
   // Handle updating task status
   const handleUpdateStatus = async (newStatus) => {
     if (!task._id) {
@@ -92,7 +98,6 @@ const TaskRow = ({
 
       console.log("✅ Server Response:", responseData);
 
-      // ✅ Check if the update actually changed anything
       if (responseData.message === "Task status is already the same") {
         console.warn("⚠️ Task status was already up to date.");
       } else {
@@ -105,37 +110,6 @@ const TaskRow = ({
       setOpenDropdownId(null);
     }
   };
-
-  // Handle deleting a task
-  // const handleDeleteTask = async () => {
-  //   if (!taskToDelete) return;
-
-  //   try {
-  //     const res = await fetch(`/api/tasks/${taskToDelete}`, {
-  //       method: "DELETE",
-  //     });
-
-  //     const responseData = await res.json();
-  //     console.log("Server Response:", responseData); // 🔥 Debugging output
-
-  //     if (!res.ok)
-  //       throw new Error(
-  //         responseData.message || "Fehler beim Löschen der Aufgabe"
-  //       );
-
-  //     setTasks((prevTasks) =>
-  //       prevTasks.filter((task) => task._id !== taskToDelete)
-  //     );
-
-  //     setIsDeleteModalOpen(false); // ✅ Close modal after delete
-  //     setToastMessage("Aufgabe erfolgreich gelöscht!"); // ✅ Show success toast
-  //     setToastType("success");
-  //   } catch (error) {
-  //     console.error("Error deleting task:", error);
-  //     setToastMessage(error.message);
-  //     setToastType("error");
-  //   }
-  // };
 
   // Determine if user can update the status
   const canUpdateStatus =
@@ -199,7 +173,7 @@ const TaskRow = ({
                 <>
                   <li>
                     <button
-                      onClick={() => setIsEditModalOpen(true)}
+                      onClick={handleEditClick} // ✅ Uses new function to close dropdown & open modal
                       className="flex items-center px-4 py-2 hover:bg-gray-100 w-full"
                     >
                       <FaEdit className="mr-2" /> Bearbeiten
