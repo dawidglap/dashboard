@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import NewTaskModal from "../../../components/Tasks/NewTaskModal";
 import TaskRow from "../../../components/Tasks/TaskRow";
@@ -15,7 +15,6 @@ const Tasks = () => {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openDropdownId, setOpenDropdownId] = useState(null);
-  const observer = useRef(null);
 
   // ✅ Delete Confirmation Modal
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -41,22 +40,23 @@ const Tasks = () => {
     fetchUserData();
   }, [session]);
 
-  // ✅ Fetch tasks with pagination (Preventing duplicate tasks)
-  const fetchTasks = useCallback(
-    async (currentPage) => {
-      if (!user || loading) return; // ✅ Prevent fetching while loading
+  useEffect(() => {
+    const fetchTasks = async () => {
+      if (!user || loading) return;
+
       setLoading(true);
+      setTasks([]); // ✅ Clear tasks before loading new ones
 
       try {
-        console.log(`⚡ Fetching tasks for page: ${currentPage}`);
-        const res = await fetch(`/api/tasks?page=${currentPage}&limit=15`);
+        console.log(`⚡ Fetching tasks for page: ${page}`);
+        const res = await fetch(`/api/tasks?page=${page}&limit=15`);
         if (!res.ok) throw new Error("Error fetching tasks.");
         const data = await res.json();
 
         if (data.data.length === 0) {
           setHasMore(false);
         } else {
-          setTasks(data.data); // ✅ Reset tasks on new page
+          setTasks(data.data);
           setHasMore(true);
         }
       } catch (err) {
@@ -65,23 +65,10 @@ const Tasks = () => {
       } finally {
         setLoading(false);
       }
-    },
-    [user, loading]
-  );
+    };
 
-  useEffect(() => {
-    if (user && !loading) {
-      console.log("🆕 Initial fetch for page 1");
-      fetchTasks(1); // ✅ Load Page 1 first
-    }
-  }, [user]); // ✅ Runs when `user` is available
-
-  useEffect(() => {
-    if (user && page > 1 && !loading) {
-      console.log(`🔄 Fetching tasks for page: ${page}`);
-      fetchTasks(page);
-    }
-  }, [page]); // ✅ Runs only when `page` changes
+    fetchTasks();
+  }, [page, user]); // ✅ `fetchTasks` is now inside `useEffect`
 
   // ✅ Function to confirm delete (opens modal)
   const confirmDelete = (taskId) => {
@@ -125,7 +112,7 @@ const Tasks = () => {
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="p-6">
+    <div className="p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Tasks</h1>
 
@@ -140,36 +127,33 @@ const Tasks = () => {
       </div>
 
       <div className="rounded-lg shadow-md bg-white">
-        <table className="table table-zebra w-full rounded-lg">
+        <table className="table table-compact table-zebra w-full rounded-lg border border-gray-300">
           <thead>
-            <tr className="bg-gray-200">
-              <th className="py-4 px-6">Title</th>
-              <th className="py-4 px-6">Status</th>
-              <th className="py-4 px-6">Priority</th>
-              <th className="py-4 px-6">Actions</th>
+            <tr className="bg-gray-100 text-gray-700 text-sm">
+              <th className="py-2 px-3 text-left">Title</th>
+              <th className="py-2 px-3 text-left">Status</th>
+              <th className="py-2 px-3 text-left">Priority</th>
+              <th className="py-2 px-3 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {tasks.map((task, index) => {
-              const isLastTask = index === tasks.length - 1;
-              return (
-                <TaskRow
-                  key={task._id}
-                  task={task}
-                  user={user}
-                  onUpdate={(taskId, updatedTask) => {
-                    setTasks((prevTasks) =>
-                      prevTasks.map((t) =>
-                        t._id === taskId ? { ...updatedTask, _id: taskId } : t
-                      )
-                    );
-                  }}
-                  onDelete={confirmDelete}
-                  openDropdownId={openDropdownId}
-                  setOpenDropdownId={setOpenDropdownId}
-                />
-              );
-            })}
+            {tasks.map((task) => (
+              <TaskRow
+                key={task._id}
+                task={task}
+                user={user}
+                onUpdate={(taskId, updatedTask) => {
+                  setTasks((prevTasks) =>
+                    prevTasks.map((t) =>
+                      t._id === taskId ? { ...updatedTask, _id: taskId } : t
+                    )
+                  );
+                }}
+                onDelete={confirmDelete}
+                openDropdownId={openDropdownId}
+                setOpenDropdownId={setOpenDropdownId}
+              />
+            ))}
           </tbody>
         </table>
       </div>

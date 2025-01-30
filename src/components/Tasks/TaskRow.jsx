@@ -124,33 +124,33 @@ const TaskRow = ({
 
   return (
     <>
-      <tr className="border-b hover:bg-gray-100 transition">
-        <td className="py-4 px-6">{task.title}</td>
+      <tr className="border-b hover:bg-gray-100 transition text-sm">
+        <td className="py-2 px-4">{task.title}</td>
 
-        {/* Status Column (with colored dot) */}
-        <td className="py-4 px-6">
-          <div className="flex items-center space-x-2">
-            <span
-              className={`w-3 h-3 rounded-full ${STATUS_COLORS[task.status]}`}
-            ></span>
-            <span>{STATUS_LABELS[task.status] || "Unbekannt"}</span>
-          </div>
+        {/* Status Column (with colored badge) */}
+        <td className="py-2 px-4">
+          <span
+            className={`px-2 py-1 text-white rounded ${
+              STATUS_COLORS[task.status]
+            }`}
+          >
+            {STATUS_LABELS[task.status] || "Unbekannt"}
+          </span>
         </td>
 
-        {/* Priority Column (with colored dot) */}
-        <td className="py-4 px-6">
-          <div className="flex items-center space-x-2">
-            <span
-              className={`w-3 h-3 rounded-full ${
-                PRIORITY_COLORS[task.priority]
-              }`}
-            ></span>
-            <span>{PRIORITY_LABELS[task.priority] || "Unbekannt"}</span>
-          </div>
+        {/* Priority Column (with colored badge) */}
+        <td className="py-2 px-4">
+          <span
+            className={`px-2 py-1 text-white rounded ${
+              PRIORITY_COLORS[task.priority]
+            }`}
+          >
+            {PRIORITY_LABELS[task.priority] || "Unbekannt"}
+          </span>
         </td>
 
         {/* Actions Column */}
-        <td className="relative py-4 px-6 text-left">
+        <td className="relative py-2 px-4 text-left">
           <button
             onClick={toggleDropdown}
             className="p-2 rounded bg-gray-200 hover:bg-gray-300"
@@ -173,7 +173,7 @@ const TaskRow = ({
                 <>
                   <li>
                     <button
-                      onClick={handleEditClick} // ✅ Uses new function to close dropdown & open modal
+                      onClick={handleEditClick}
                       className="flex items-center px-4 py-2 hover:bg-gray-100 w-full"
                     >
                       <FaEdit className="mr-2" /> Bearbeiten
@@ -223,7 +223,7 @@ const TaskRow = ({
               {canDelete && (
                 <li>
                   <button
-                    onClick={() => onDelete(task._id)} // ✅ Uses the function from Tasks.js
+                    onClick={() => onDelete(task._id)}
                     className="flex items-center px-4 py-2 text-red-500 hover:bg-gray-100 w-full"
                   >
                     <FaTrash className="mr-2" /> Löschen
