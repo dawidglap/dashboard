@@ -10,6 +10,7 @@ import { ObjectId } from "mongodb";
  * Managers: See their tasks and their team's tasks (Markenbotschafters they manage).
  * Markenbotschafters: See only their tasks.
  */
+
 export async function GET(request) {
   const { db } = await connectToDatabase();
   const session = await getServerSession(authOptions);
@@ -34,35 +35,36 @@ export async function GET(request) {
     }
 
     const { role, _id: userId } = user;
-    let tasks = [];
+    const { searchParams } = new URL(request.url);
 
-    if (role === "admin") {
-      // Admin: Fetch all tasks
-      tasks = await db.collection("tasks").find().toArray();
-    } else if (role === "manager") {
+    // ✅ Pagination parameters
+    const page = parseInt(searchParams.get("page")) || 1; // Default page = 1
+    const limit = parseInt(searchParams.get("limit")) || 15; // Default limit = 15 tasks
+    const skip = (page - 1) * limit; // Calculate how many tasks to skip
+
+    let query = {};
+
+    if (role === "manager") {
       // Manager: Fetch tasks assigned to them and their Markenbotschafters
       const markenbotschafters = await db
         .collection("users")
-        .find({ managerId: userId }) // Assuming `managerId` links Markenbotschafters to their Manager
+        .find({ managerId: userId })
         .toArray();
-
       const idsToInclude = [userId, ...markenbotschafters.map((u) => u._id)];
-      tasks = await db
-        .collection("tasks")
-        .find({ assignedTo: { $in: idsToInclude } })
-        .toArray();
+      query = { assignedTo: { $in: idsToInclude } };
     } else if (role === "markenbotschafter") {
       // Markenbotschafter: Fetch only tasks assigned to them
-      tasks = await db
-        .collection("tasks")
-        .find({ assignedTo: userId })
-        .toArray();
-    } else {
-      return new Response(
-        JSON.stringify({ success: false, message: "Access Denied" }),
-        { status: 403 }
-      );
+      query = { assignedTo: userId };
     }
+
+    // Fetch tasks with pagination and sorting
+    const tasks = await db
+      .collection("tasks")
+      .find(query)
+      .sort({ createdAt: -1 }) // Newest tasks first
+      .skip(skip) // Skip previous pages
+      .limit(limit) // Limit per page
+      .toArray();
 
     return new Response(JSON.stringify({ success: true, data: tasks }), {
       status: 200,
