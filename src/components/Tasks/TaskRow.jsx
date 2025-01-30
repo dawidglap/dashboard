@@ -6,39 +6,29 @@ import EditTaskModal from "./EditTaskModal";
 import {
   FaEllipsisH,
   FaEye,
-  FaCheck,
+  FaCheckCircle,
   FaTimesCircle,
   FaSpinner,
   FaEdit,
   FaTrash,
+  FaHourglassHalf,
+  FaPlayCircle,
+  FaFlag,
 } from "react-icons/fa";
 
-// Status Labels & Colors
-const STATUS_LABELS = {
-  pending: "Ausstehend",
-  in_progress: "In Bearbeitung",
-  done: "Erledigt",
-  cannot_complete: "Nicht abgeschlossen",
+// Status Icons with Colors
+const STATUS_ICONS = {
+  pending: { icon: <FaHourglassHalf />, color: "text-gray-500" },
+  in_progress: { icon: <FaPlayCircle />, color: "text-blue-500" },
+  done: { icon: <FaCheckCircle />, color: "text-green-500" },
+  cannot_complete: { icon: <FaTimesCircle />, color: "text-red-500" },
 };
 
-const STATUS_COLORS = {
-  pending: "bg-gray-400",
-  in_progress: "bg-blue-500",
-  done: "bg-green-500",
-  cannot_complete: "bg-red-500",
-};
-
-// Priority Labels & Colors
-const PRIORITY_LABELS = {
-  high: "Hoch",
-  medium: "Mittel",
-  low: "Niedrig",
-};
-
-const PRIORITY_COLORS = {
-  high: "bg-red-500",
-  medium: "bg-yellow-500",
-  low: "bg-green-500",
+// Priority Icons with Colors (Now properly colored)
+const PRIORITY_ICONS = {
+  high: { icon: <FaFlag />, color: "text-red-500" },
+  medium: { icon: <FaFlag />, color: "text-yellow-500" },
+  low: { icon: <FaFlag />, color: "text-green-500" },
 };
 
 const TaskRow = ({
@@ -50,7 +40,6 @@ const TaskRow = ({
   setOpenDropdownId,
 }) => {
   const [isUpdating, setIsUpdating] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
@@ -58,30 +47,20 @@ const TaskRow = ({
   const isDropdownOpen = openDropdownId === task._id;
 
   // Toggle dropdown & close others
-  const toggleDropdown = () => {
+  const toggleDropdown = (e) => {
+    e.stopPropagation(); // Prevent row click when opening dropdown
     setOpenDropdownId(isDropdownOpen ? null : task._id);
   };
 
-  // ✅ Close dropdown & open edit modal when clicking "Bearbeiten"
-  const handleEditClick = () => {
-    setOpenDropdownId(null); // Close dropdown
-    setIsEditModalOpen(true); // Open edit modal
+  // Open task details when clicking the row (except on action buttons)
+  const handleRowClick = () => {
+    setIsModalOpen(true);
   };
 
   // Handle updating task status
   const handleUpdateStatus = async (newStatus) => {
-    if (!task._id) {
-      console.error("❌ ERROR: Task ID is missing!", task);
-      return;
-    }
-
     setIsUpdating(true);
-
     try {
-      console.log(
-        `🔍 Sending request to update status: ${newStatus} for Task ID: ${task._id}`
-      );
-
       const res = await fetch(`/api/tasks/${task._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -89,22 +68,14 @@ const TaskRow = ({
       });
 
       const responseData = await res.json();
-
-      if (!res.ok) {
+      if (!res.ok)
         throw new Error(
           responseData.message || "Fehler beim Aktualisieren der Aufgabe"
         );
-      }
 
-      console.log("✅ Server Response:", responseData);
-
-      if (responseData.message === "Task status is already the same") {
-        console.warn("⚠️ Task status was already up to date.");
-      } else {
-        onUpdate(task._id, { ...task, status: newStatus });
-      }
+      onUpdate(task._id, { ...task, status: newStatus });
     } catch (error) {
-      console.error("❌ ERROR updating task:", error);
+      console.error("❌ Fehler beim Aktualisieren der Aufgabe:", error);
     } finally {
       setIsUpdating(false);
       setOpenDropdownId(null);
@@ -124,36 +95,42 @@ const TaskRow = ({
 
   return (
     <>
-      <tr className="border-b hover:bg-gray-100 transition text-sm">
-        <td className="py-2 px-4">{task.title}</td>
-
-        {/* Status Column (with colored badge) */}
-        <td className="py-2 px-4">
-          <span
-            className={`px-2 py-1 text-white rounded ${
-              STATUS_COLORS[task.status]
-            }`}
-          >
-            {STATUS_LABELS[task.status] || "Unbekannt"}
-          </span>
+      {/* Task Row */}
+      <tr
+        className="border-b hover:bg-gray-100 transition text-sm cursor-pointer group"
+        onClick={handleRowClick}
+      >
+        {/* Priority Flag Column (Visible only on hover) */}
+        <td className="py-0 px-2 text-center w-6">
+          <div className="relative">
+            <span
+              className={`opacity-0 group-hover:opacity-100 transition ${
+                PRIORITY_ICONS[task.priority]?.color
+              }`}
+            >
+              {PRIORITY_ICONS[task.priority]?.icon || ""}
+            </span>
+          </div>
         </td>
 
-        {/* Priority Column (with colored badge) */}
-        <td className="py-2 px-4">
-          <span
-            className={`px-2 py-1 text-white rounded ${
-              PRIORITY_COLORS[task.priority]
-            }`}
-          >
-            {PRIORITY_LABELS[task.priority] || "Unbekannt"}
+        {/* Task Title */}
+        <td className="py-0 px-4">{task.title}</td>
+
+        {/* Status Column (with icon) */}
+        <td className="pt-2 px-4 flex items-center space-x-2">
+          <span className={STATUS_ICONS[task.status]?.color}>
+            {STATUS_ICONS[task.status]?.icon || <FaHourglassHalf />}
           </span>
         </td>
 
         {/* Actions Column */}
-        <td className="relative py-2 px-4 text-left">
+        <td
+          className="relative py-0 px-4 text-left"
+          onClick={(e) => e.stopPropagation()}
+        >
           <button
             onClick={toggleDropdown}
-            className="p-2 rounded bg-gray-200 hover:bg-gray-300"
+            className="p-2 rounded hover:bg-gray-300"
           >
             <FaEllipsisH />
           </button>
@@ -173,7 +150,7 @@ const TaskRow = ({
                 <>
                   <li>
                     <button
-                      onClick={handleEditClick}
+                      onClick={() => setIsEditModalOpen(true)}
                       className="flex items-center px-4 py-2 hover:bg-gray-100 w-full"
                     >
                       <FaEdit className="mr-2" /> Bearbeiten
@@ -187,8 +164,9 @@ const TaskRow = ({
                       {isUpdating ? (
                         <FaSpinner className="animate-spin mr-2" />
                       ) : (
-                        "In Bearbeitung"
+                        <FaPlayCircle className="mr-2 text-blue-500" />
                       )}
+                      In Bearbeitung
                     </button>
                   </li>
                   <li>
@@ -199,7 +177,7 @@ const TaskRow = ({
                       {isUpdating ? (
                         <FaSpinner className="animate-spin mr-2" />
                       ) : (
-                        <FaCheck className="mr-2" />
+                        <FaCheckCircle className="mr-2 text-green-500" />
                       )}
                       Erledigt
                     </button>
@@ -212,7 +190,7 @@ const TaskRow = ({
                       {isUpdating ? (
                         <FaSpinner className="animate-spin mr-2" />
                       ) : (
-                        <FaTimesCircle className="mr-2" />
+                        <FaTimesCircle className="mr-2 text-red-500" />
                       )}
                       Nicht abgeschlossen
                     </button>
@@ -235,6 +213,7 @@ const TaskRow = ({
         </td>
       </tr>
 
+      {/* ✅ Ensure Modals are rendered */}
       {isModalOpen && (
         <TaskModal task={task} onClose={() => setIsModalOpen(false)} />
       )}

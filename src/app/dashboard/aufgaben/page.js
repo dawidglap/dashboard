@@ -27,12 +27,13 @@ const Tasks = () => {
       if (session?.user) {
         try {
           const res = await fetch(`/api/users/me`);
-          if (!res.ok) throw new Error("Failed to fetch user data.");
+          if (!res.ok)
+            throw new Error("Fehler beim Abrufen der Benutzerdaten.");
           const data = await res.json();
           setUser(data.user);
         } catch (err) {
           console.error(err);
-          setError("Failed to fetch user data.");
+          setError("Fehler beim Abrufen der Benutzerdaten.");
         }
       }
     };
@@ -45,30 +46,29 @@ const Tasks = () => {
       if (!user || loading) return;
 
       setLoading(true);
-      setTasks([]); // ✅ Clear tasks before loading new ones
 
       try {
-        console.log(`⚡ Fetching tasks for page: ${page}`);
+        console.log(`⚡ Aufgaben abrufen für Seite: ${page}`);
         const res = await fetch(`/api/tasks?page=${page}&limit=15`);
-        if (!res.ok) throw new Error("Error fetching tasks.");
+        if (!res.ok) throw new Error("Fehler beim Abrufen der Aufgaben.");
         const data = await res.json();
 
         if (data.data.length === 0) {
           setHasMore(false);
         } else {
           setTasks(data.data);
-          setHasMore(true);
+          setHasMore(data.data.length === 15); // ✅ Set hasMore based on limit
         }
       } catch (err) {
-        console.error("⚠️ Error fetching tasks:", err);
-        setError("Error fetching tasks.");
+        console.error("⚠️ Fehler beim Abrufen der Aufgaben:", err);
+        setError("Fehler beim Abrufen der Aufgaben.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchTasks();
-  }, [page, user]); // ✅ `fetchTasks` is now inside `useEffect`
+  }, [page, user]);
 
   // ✅ Function to confirm delete (opens modal)
   const confirmDelete = (taskId) => {
@@ -87,16 +87,18 @@ const Tasks = () => {
       const responseData = await res.json();
 
       if (!res.ok)
-        throw new Error(responseData.message || "Error deleting task");
+        throw new Error(
+          responseData.message || "Fehler beim Löschen der Aufgabe"
+        );
 
       setTasks((prevTasks) =>
         prevTasks.filter((task) => task._id !== taskToDelete)
       );
       setIsDeleteModalOpen(false);
-      setToastMessage("Task successfully deleted!");
+      setToastMessage("Aufgabe erfolgreich gelöscht!");
       setToastType("success");
     } catch (error) {
-      console.error("Error deleting task:", error);
+      console.error("Fehler beim Löschen der Aufgabe:", error);
       setToastMessage(error.message);
       setToastType("error");
     }
@@ -105,7 +107,7 @@ const Tasks = () => {
   // ✅ Function to create a new task
   const handleTaskCreated = (newTask) => {
     setTasks((prevTasks) => [newTask, ...prevTasks]);
-    setToastMessage("New task successfully created!");
+    setToastMessage("Neue Aufgabe erfolgreich erstellt!");
     setToastType("success");
   };
 
@@ -114,26 +116,26 @@ const Tasks = () => {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Tasks</h1>
+        <h1 className="text-3xl font-bold">Aufgaben</h1>
 
         {user?.role === "admin" && (
           <button
             onClick={() => setIsModalOpen(true)}
-            className="btn btn-primary"
+            className="btn btn-sm btn-neutral"
           >
-            + New Task
+            + Neue Aufgabe
           </button>
         )}
       </div>
 
       <div className="rounded-lg shadow-md bg-white">
-        <table className="table table-compact table-zebra w-full rounded-lg border border-gray-300">
+        <table className="table table-xs hover w-full rounded-lg border-gray-300">
           <thead>
             <tr className="bg-gray-100 text-gray-700 text-sm">
-              <th className="py-2 px-3 text-left">Title</th>
+              <th className="py-2 px-3 text-left w-8">🔻</th>
+              <th className="py-2 px-3 text-left">Titel</th>
               <th className="py-2 px-3 text-left">Status</th>
-              <th className="py-2 px-3 text-left">Priority</th>
-              <th className="py-2 px-3 text-left">Actions</th>
+              <th className="py-2 px-3 text-left">Aktionen</th>
             </tr>
           </thead>
           <tbody>
@@ -158,23 +160,24 @@ const Tasks = () => {
         </table>
       </div>
 
+      {/* ✅ Pagination Controls (Minimalistic & Functional) */}
       <div className="flex justify-between items-center mt-6">
         <button
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1}
-          className="btn btn-secondary"
+          className="btn btn-xs btn-neutral"
         >
-          ← Previous Page
+          ← Zurück
         </button>
 
-        <span>Page {page}</span>
+        <span className="text-gray-700">Seite {page}</span>
 
         <button
           onClick={() => setPage((prev) => prev + 1)}
           disabled={!hasMore}
-          className="btn btn-primary"
+          className="btn btn-xs btn-neutral"
         >
-          Next Page →
+          Weiter →
         </button>
       </div>
 
@@ -196,17 +199,22 @@ const Tasks = () => {
       {isDeleteModalOpen && (
         <div className="modal modal-open">
           <div className="modal-box">
-            <h3 className="font-bold text-lg">Are you sure?</h3>
-            <p className="py-4">This action cannot be undone.</p>
+            <h3 className="font-bold text-lg">Bist du sicher?</h3>
+            <p className="py-4">
+              Diese Aktion kann nicht rückgängig gemacht werden.
+            </p>
             <div className="modal-action">
               <button
                 onClick={() => setIsDeleteModalOpen(false)}
-                className="btn"
+                className="btn btn-sm btn-neutral"
               >
-                Cancel
+                Abbrechen
               </button>
-              <button onClick={handleTaskDelete} className="btn btn-error">
-                Delete
+              <button
+                onClick={handleTaskDelete}
+                className="btn btn-sm btn-error"
+              >
+                Löschen
               </button>
             </div>
           </div>
