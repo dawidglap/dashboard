@@ -42,7 +42,7 @@ const SidebarMenu = () => {
 
   return (
     <div
-      className={`h-screen bg-white dark:bg-gray-900 border-r-2  border-indigo-200 shadow-lg flex flex-col py-4 transition-all duration-300 ${
+      className={` h-screen bg-white dark:bg-gray-900 border-r-2  border-indigo-200 shadow-lg flex flex-col py-4 transition-all duration-300 ${
         expanded ? "w-60 px-4   " : "w-16 pr-1 pl-1"
       }`}
     >
