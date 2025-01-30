@@ -38,32 +38,30 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
 
     // ✅ Pagination parameters
-    const page = parseInt(searchParams.get("page")) || 1; // Default page = 1
-    const limit = parseInt(searchParams.get("limit")) || 15; // Default limit = 15 tasks
-    const skip = (page - 1) * limit; // Calculate how many tasks to skip
+    const page = parseInt(searchParams.get("page")) || 1;
+    const limit = parseInt(searchParams.get("limit")) || 15;
+    const skip = (page - 1) * limit;
 
     let query = {};
 
     if (role === "manager") {
-      // Manager: Fetch tasks assigned to them and their Markenbotschafters
       const markenbotschafters = await db
         .collection("users")
         .find({ managerId: userId })
         .toArray();
       const idsToInclude = [userId, ...markenbotschafters.map((u) => u._id)];
-      query = { assignedTo: { $in: idsToInclude } };
+      query = { "assignedTo._id": { $in: idsToInclude } };
     } else if (role === "markenbotschafter") {
-      // Markenbotschafter: Fetch only tasks assigned to them
-      query = { assignedTo: userId };
+      query = { "assignedTo._id": userId };
     }
 
-    // Fetch tasks with pagination and sorting
+    // ✅ Fetch tasks and include assigned user details
     const tasks = await db
       .collection("tasks")
       .find(query)
-      .sort({ createdAt: -1 }) // Newest tasks first
-      .skip(skip) // Skip previous pages
-      .limit(limit) // Limit per page
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .toArray();
 
     return new Response(JSON.stringify({ success: true, data: tasks }), {
@@ -78,6 +76,10 @@ export async function GET(request) {
   }
 }
 
+/**
+ * POST /api/tasks
+ * Create a new task.
+ */
 export async function POST(req) {
   const { db } = await connectToDatabase();
   const session = await getServerSession(authOptions);
@@ -90,18 +92,23 @@ export async function POST(req) {
   }
 
   try {
-    const { title, description, priority, status, assignedTo } =
+    const { title, description, priority, status, assignedTo, dueDate } =
       await req.json();
 
-    // Validate required fields
-    if (!title || !description || !priority || !status || !assignedTo) {
+    if (
+      !title ||
+      !description ||
+      !priority ||
+      !status ||
+      !assignedTo ||
+      !dueDate
+    ) {
       return new Response(
         JSON.stringify({ success: false, message: "All fields are required" }),
         { status: 400 }
       );
     }
 
-    // Ensure assignedTo is a valid ObjectId
     if (!ObjectId.isValid(assignedTo)) {
       return new Response(
         JSON.stringify({ success: false, message: "Invalid assignedTo ID" }),
@@ -109,7 +116,17 @@ export async function POST(req) {
       );
     }
 
-    // Get the user who is creating the task
+    const assignedUser = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(assignedTo) });
+
+    if (!assignedUser) {
+      return new Response(
+        JSON.stringify({ success: false, message: "Assigned user not found" }),
+        { status: 404 }
+      );
+    }
+
     const user = await db
       .collection("users")
       .findOne({ email: session.user.email });
@@ -121,16 +138,20 @@ export async function POST(req) {
       );
     }
 
-    // Insert the new task
     const newTask = {
       title,
       description,
       priority,
       status,
-      assignedTo: new ObjectId(assignedTo), // Convert assignedTo to ObjectId
-      createdBy: new ObjectId(user._id), // Store creator's ObjectId
-      createdAt: new Date(), // Auto-set creation date
-      updatedAt: new Date(), // Auto-set last updated date
+      assignedTo: {
+        _id: assignedUser._id,
+        name: assignedUser.name,
+        role: assignedUser.role,
+      },
+      createdBy: { _id: user._id, name: user.name },
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      dueDate: new Date(dueDate), // Ensure dueDate is stored correctly
     };
 
     const result = await db.collection("tasks").insertOne(newTask);

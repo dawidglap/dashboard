@@ -95,20 +95,26 @@ const Tasks = () => {
         prevTasks.filter((task) => task._id !== taskToDelete)
       );
       setIsDeleteModalOpen(false);
-      setToastMessage("Aufgabe erfolgreich gelöscht!");
-      setToastType("success");
+      showToast("Aufgabe erfolgreich gelöscht!", "success");
     } catch (error) {
       console.error("Fehler beim Löschen der Aufgabe:", error);
-      setToastMessage(error.message);
-      setToastType("error");
+      showToast(error.message, "error");
     }
   };
 
   // ✅ Function to create a new task
   const handleTaskCreated = (newTask) => {
     setTasks((prevTasks) => [newTask, ...prevTasks]);
-    setToastMessage("Neue Aufgabe erfolgreich erstellt!");
-    setToastType("success");
+    showToast("Neue Aufgabe erfolgreich erstellt!", "success");
+  };
+
+  // ✅ Function to show toast & auto-dismiss after 2 seconds
+  const showToast = (message, type) => {
+    setToastMessage(message);
+    setToastType(type);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 2000);
   };
 
   if (error) return <p className="text-center text-red-500">{error}</p>;
@@ -221,7 +227,7 @@ const Tasks = () => {
         </div>
       )}
 
-      {/* ✅ Toast Notification */}
+      {/* ✅ Toast Notification (Auto-disappears) */}
       {toastMessage && (
         <div className="toast">
           <div

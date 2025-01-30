@@ -6,16 +6,21 @@ export async function GET(request) {
   const { db } = await connectToDatabase();
 
   try {
-    const users = await db.collection("users").find().toArray();
-    return new Response(JSON.stringify({ success: true, data: users }), {
+    // ✅ Fetch only necessary fields (_id, name, role)
+    const users = await db
+      .collection("users")
+      .find({}, { projection: { _id: 1, name: 1, role: 1 } }) // Exclude sensitive data
+      .sort({ name: 1 }) // ✅ Sort alphabetically
+      .toArray();
+
+    return new Response(JSON.stringify({ success: true, users }), {
       status: 200,
     });
   } catch (error) {
+    console.error("❌ Fehler beim Abrufen der Benutzer:", error);
     return new Response(
       JSON.stringify({ success: false, error: error.message }),
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }
