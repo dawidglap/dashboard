@@ -131,7 +131,7 @@ const Tasks = () => {
       <div className="rounded-lg shadow-md bg-white">
         <table className="table table-xs hover w-full rounded-lg border-gray-300">
           <thead>
-            <tr className="bg-gray-100 text-gray-700 text-sm">
+            <tr className="bg-gray-100 text-gray-500 text-sm">
               <th className="py-2 px-3 text-left w-8">🔻</th>
               <th className="py-2 px-3 text-left">Titel</th>
               <th className="py-2 px-3 text-left">Status</th>
