@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { FaSearch, FaSyncAlt, FaUser, FaCalendarAlt } from "react-icons/fa";
 
 const FilterTaskBar = ({ onFilterChange }) => {
   const [statusFilter, setStatusFilter] = useState("");
@@ -10,7 +11,6 @@ const FilterTaskBar = ({ onFilterChange }) => {
   const [dueDateFilter, setDueDateFilter] = useState("");
   const [users, setUsers] = useState([]);
 
-  // ✅ Fetch Users for Assigned To Filter
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -26,7 +26,6 @@ const FilterTaskBar = ({ onFilterChange }) => {
     fetchUsers();
   }, []);
 
-  // ✅ Apply Filters when any filter changes
   useEffect(() => {
     onFilterChange({
       statusFilter,
@@ -44,33 +43,35 @@ const FilterTaskBar = ({ onFilterChange }) => {
     onFilterChange,
   ]);
 
-  // ✅ Reset Filters Function
   const resetFilters = () => {
     setStatusFilter("");
     setPriorityFilter("");
     setAssignedToFilter("");
     setSearchQuery("");
-    setDueDateFilter(""); // ✅ Reset Due Date
+    setDueDateFilter("");
   };
 
   return (
-    <div className="flex flex-wrap gap-4 bg-indigo-50 p-3 rounded-lg mb-4">
+    <div className="flex flex-wrap items-center gap-2 p-3 bg-base-200 rounded-t-lg shadow-sm">
       {/* 🔍 Search */}
-      <input
-        type="text"
-        placeholder="🔍 Suche nach Titel..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className="input input-sm input-bordered w-full md:w-1/5"
-      />
+      <div className="relative w-full md:w-1/5">
+        <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Suche..."
+          className="input input-sm input-bordered w-full pl-9"
+        />
+      </div>
 
       {/* 🔄 Status Filter */}
       <select
         value={statusFilter}
         onChange={(e) => setStatusFilter(e.target.value)}
-        className="select select-sm select-bordered w-full md:w-1/6"
+        className="select select-sm select-bordered w-full md:w-[150px]"
       >
-        <option value="">🔄 Status filtern</option>
+        <option value="">🔄 Status</option>
         <option value="pending">⏳ Ausstehend</option>
         <option value="in_progress">🚀 In Bearbeitung</option>
         <option value="done">✅ Erledigt</option>
@@ -81,9 +82,9 @@ const FilterTaskBar = ({ onFilterChange }) => {
       <select
         value={priorityFilter}
         onChange={(e) => setPriorityFilter(e.target.value)}
-        className="select select-sm select-bordered w-full md:w-1/6"
+        className="select select-sm select-bordered w-full md:w-[150px]"
       >
-        <option value="">🚦 Priorität filtern</option>
+        <option value="">🚦 Priorität</option>
         <option value="high">🔥 Hoch</option>
         <option value="medium">⚡ Mittel</option>
         <option value="low">🍃 Niedrig</option>
@@ -93,30 +94,30 @@ const FilterTaskBar = ({ onFilterChange }) => {
       <select
         value={assignedToFilter}
         onChange={(e) => setAssignedToFilter(e.target.value)}
-        className="select select-sm select-bordered w-full md:w-1/6"
+        className="select select-sm select-bordered w-full md:w-[140px]"
       >
-        <option value="">👤 Zugewiesen an</option>
+        <option value="">👤 </option> // Zugewiesen an
         {users.map((user) => (
           <option key={user._id} value={user._id}>
-            {user.name} ({user.role})
+            {user.name}
           </option>
         ))}
       </select>
 
       {/* 📅 Due Date Filter */}
-      <input
-        type="date"
-        value={dueDateFilter}
-        onChange={(e) => setDueDateFilter(e.target.value)}
-        className="input input-sm input-bordered w-full md:w-1/5"
-      />
+      <div className="relative w-full md:w-[120px]">
+        <FaCalendarAlt className="absolute left-3 top-2.5 text-gray-400" />
+        <input
+          type="date"
+          value={dueDateFilter}
+          onChange={(e) => setDueDateFilter(e.target.value)}
+          className="input input-sm input-bordered w-full pl-9"
+        />
+      </div>
 
-      {/* 🧹 Reset Button */}
-      <button
-        onClick={resetFilters}
-        className="btn btn-sm bg-gray-400 hover:bg-gray-500 text-white"
-      >
-        🧹 Filter zurücksetzen
+      {/* ♻ Reset Button */}
+      <button onClick={resetFilters} className="btn btn-sm btn-outline">
+        <FaSyncAlt />
       </button>
     </div>
   );
