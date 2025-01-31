@@ -65,10 +65,23 @@ export async function GET(request) {
     // ✅ Apply Filters
     if (statusFilter) query.status = statusFilter;
     if (priorityFilter) query.priority = priorityFilter;
-    if (assignedToFilter)
-      query["assignedTo._id"] = new ObjectId(assignedToFilter);
+
+    if (assignedToFilter) {
+      console.log("🔧 Filtering by assignedTo:", assignedToFilter);
+      query["assignedTo"] = new ObjectId(assignedToFilter);
+    }
+
     if (dueDateFilter) query.dueDate = { $lte: new Date(dueDateFilter) }; // Tasks due *before* this date
     if (searchQuery) query.title = { $regex: searchQuery, $options: "i" };
+    console.log("🔍 Received Query Params:", searchParams.toString());
+    console.log("🔍 AssignedTo Filter Raw:", assignedToFilter);
+    console.log(
+      "🔍 Converted to ObjectId?:",
+      ObjectId.isValid(assignedToFilter)
+        ? new ObjectId(assignedToFilter)
+        : assignedToFilter
+    );
+    console.log("🔍 Filter Query:", query);
 
     // ✅ Fetch Total Count After Filtering (for pagination)
     const totalCount = await db.collection("tasks").countDocuments(query);

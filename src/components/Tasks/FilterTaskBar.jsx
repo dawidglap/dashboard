@@ -93,12 +93,14 @@ const FilterTaskBar = ({ onFilterChange }) => {
       {/* 👤 Assigned To Filter */}
       <select
         value={assignedToFilter}
-        onChange={(e) => setAssignedToFilter(e.target.value)}
+        onChange={(e) => setAssignedToFilter(e.target.value || "")} // Ensure it doesn't pass undefined
         className="select select-sm select-bordered w-full md:w-[140px]"
       >
-        <option value="">👤 </option> // Zugewiesen an
+        <option value="">👤 Zugewiesen an</option>
         {users.map((user) => (
-          <option key={user._id} value={user._id}>
+          <option key={user._id} value={user._id.toString()}>
+            {" "}
+            {/* Ensure it's a string */}
             {user.name}
           </option>
         ))}

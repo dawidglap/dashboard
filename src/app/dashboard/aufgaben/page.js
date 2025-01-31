@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import NewTaskModal from "../../../components/Tasks/NewTaskModal";
 import TaskRow from "../../../components/Tasks/TaskRow";
 import FilterTaskBar from "../../../components/Tasks/FilterTaskBar"; // ✅ Import the filter component
+import BulkActions from "../../../components/Tasks/BulkActions";
 
 const Tasks = () => {
   const { data: session } = useSession();
@@ -26,6 +27,8 @@ const Tasks = () => {
     searchQuery: "",
   });
   const [selectedTasks, setSelectedTasks] = useState([]);
+  // ✅ Move toast state here
+
   // ✅ Delete Confirmation Modal
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
@@ -166,6 +169,61 @@ const Tasks = () => {
     }
   };
 
+  const onBulkDelete = async (taskIds) => {
+    if (!taskIds.length) return;
+
+    try {
+      const res = await fetch(`/api/tasks/bulk-delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ taskIds }),
+      });
+
+      const responseData = await res.json();
+      if (!res.ok)
+        throw new Error(responseData.message || "Fehler beim Löschen");
+
+      // ✅ Remove deleted tasks from UI
+      setTasks((prevTasks) =>
+        prevTasks.filter((task) => !taskIds.includes(task._id))
+      );
+      setSelectedTasks([]); // ✅ Reset selection after deletion
+      showToast("Mehrere Aufgaben erfolgreich gelöscht!", "success");
+    } catch (error) {
+      console.error("Fehler beim Löschen:", error);
+      showToast(error.message, "error");
+    }
+  };
+
+  const onBulkStatusUpdate = async (taskIds, newStatus) => {
+    if (!taskIds.length || !newStatus) return;
+
+    try {
+      const res = await fetch(`/api/tasks/bulk-update`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ taskIds, status: newStatus }),
+      });
+
+      const responseData = await res.json();
+      if (!res.ok)
+        throw new Error(responseData.message || "Fehler beim Aktualisieren");
+
+      // ✅ Update tasks in UI
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          taskIds.includes(task._id) ? { ...task, status: newStatus } : task
+        )
+      );
+
+      setSelectedTasks([]); // ✅ Reset selection
+      showToast("Status erfolgreich aktualisiert!", "success");
+    } catch (error) {
+      console.error("Fehler beim Aktualisieren:", error);
+      showToast(error.message, "error");
+    }
+  };
+
   // ✅ Function to create a new task
   const handleTaskCreated = (newTask) => {
     setTasks((prevTasks) => [newTask, ...prevTasks]);
@@ -173,12 +231,12 @@ const Tasks = () => {
   };
 
   // ✅ Function to show toast & auto-dismiss after 2 seconds
-  const showToast = (message, type) => {
+  const showToast = (message, type = "success") => {
     setToastMessage(message);
     setToastType(type);
     setTimeout(() => {
       setToastMessage(null);
-    }, 2000);
+    }, 3000);
   };
 
   const displayedTasks = useMemo(() => {
@@ -226,6 +284,17 @@ const Tasks = () => {
       <FilterTaskBar onFilterChange={handleFilterChange} users={users} />
 
       <div className="rounded-lg shadow-md bg-white">
+        {/* ✅ Global Toast Notification */}
+        <div className="toast toast-top toast-center"></div>
+        {selectedTasks.length > 0 && (
+          <BulkActions
+            selectedTasks={selectedTasks}
+            setSelectedTasks={setSelectedTasks}
+            setTasks={setTasks}
+            showToast={showToast} // ✅ Pass showToast function
+          />
+        )}
+
         <table className="table table-xs hover w-full rounded-lg border-indigo-300">
           <thead className="">
             <tr className="bg-indigo-100 text-slate-700 text-sm">
@@ -344,13 +413,15 @@ const Tasks = () => {
 
       {/* ✅ Toast Notification (Auto-disappears) */}
       {toastMessage && (
-        <div className="toast">
+        <div className="toast toast-bottom-right z-50">
           <div
-            className={`alert ${
-              toastType === "success" ? "alert-success" : "alert-error"
+            className={`alert p-2 text-sm shadow-lg ${
+              toastType === "success"
+                ? "bg-green-500 text-white"
+                : "bg-red-500 text-white"
             }`}
           >
-            <span>{toastMessage}</span>
+            {toastMessage}
           </div>
         </div>
       )}
