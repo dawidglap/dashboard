@@ -6,10 +6,22 @@ export async function GET(request) {
   const { db } = await connectToDatabase();
 
   try {
-    // ✅ Fetch only necessary fields (_id, name, role)
+    // ✅ Include email in the projection
     const users = await db
       .collection("users")
-      .find({}, { projection: { _id: 1, name: 1, role: 1 } }) // Exclude sensitive data
+      .find(
+        {},
+        {
+          projection: {
+            _id: 1,
+            name: 1,
+            role: 1,
+            email: 1,
+            birthday: 1,
+            createdAt: 1,
+          },
+        }
+      ) // Include `email` and `birthday`
       .sort({ name: 1 }) // ✅ Sort alphabetically
       .toArray();
 

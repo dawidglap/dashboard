@@ -66,9 +66,14 @@ export async function GET(request) {
     if (statusFilter) query.status = statusFilter;
     if (priorityFilter) query.priority = priorityFilter;
 
+    // if (assignedToFilter) {
+    //   console.log("🔧 Filtering by assignedTo:", assignedToFilter);
+    //   query["assignedTo"] = new ObjectId(assignedToFilter);
+    // }
+
     if (assignedToFilter) {
       console.log("🔧 Filtering by assignedTo:", assignedToFilter);
-      query["assignedTo"] = new ObjectId(assignedToFilter);
+      query["assignedTo._id"] = new ObjectId(assignedToFilter);
     }
 
     if (dueDateFilter) query.dueDate = { $lte: new Date(dueDateFilter) }; // Tasks due *before* this date

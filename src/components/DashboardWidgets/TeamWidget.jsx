@@ -16,13 +16,15 @@ const TeamWidget = () => {
         if (!res.ok) throw new Error("Error fetching team data.");
         const data = await res.json();
 
-        const teamMembers = data.data || [];
+        // ✅ Ensure correct data access
+        const teamMembers = data.users || [];
         setTeamCount(teamMembers.length);
 
-        // Calculate new members this month
+        // ✅ Check for `createdAt` before filtering
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
         const newMembers = teamMembers.filter((member) => {
+          if (!member.createdAt) return false; // Skip users without `createdAt`
           const createdAt = new Date(member.createdAt);
           return (
             createdAt.getMonth() === currentMonth &&

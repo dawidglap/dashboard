@@ -11,7 +11,7 @@ const DashboardLayout = ({ children }) => {
         <SidebarMenu />
 
         {/* Main Content */}
-        <div className="flex-1 p-6 bg-base-100">{children}</div>
+        <div className="flex-1 p-6 bg-slate-100 ">{children}</div>
       </div>
     </SessionProvider>
   );

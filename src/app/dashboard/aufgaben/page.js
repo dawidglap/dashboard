@@ -66,7 +66,7 @@ const Tasks = () => {
 
           const queryParams = new URLSearchParams({
             page: page.toString(), // ✅ Now correctly reset before fetch
-            limit: "15",
+            limit: "12",
           });
 
           if (filters.statusFilter)

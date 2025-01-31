@@ -29,7 +29,8 @@ const Team = () => {
         const res = await fetch("/api/users");
         if (!res.ok) throw new Error("Fehler beim Abrufen der Benutzerdaten.");
         const data = await res.json();
-        setUsers(data.data || []);
+        setUsers(data.users || []);
+        console.log("🔍 USERS DATA LOADED:", data.users);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -304,7 +305,8 @@ const Team = () => {
                 key={user._id}
                 className={`${index % 2 === 0 ? "bg-gray-50" : ""}`}
               >
-                <td className="py-4 px-6">{user.email}</td>
+                <td className="py-4 px-6">{user.email ? user.email : "N/A"}</td>
+
                 <td className="py-4 px-6">
                   {editing === user._id ? (
                     <input
