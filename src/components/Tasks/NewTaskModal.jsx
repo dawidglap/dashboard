@@ -72,10 +72,10 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
 
   return (
     isOpen && (
-      <div className="modal modal-open">
-        <div className="modal-box space-y-4">
+      <div className="modal modal-open ">
+        <div className="modal-box space-y-4 bg-indigo-100">
           <h3 className="text-lg font-semibold text-gray-700">
-            ✨ Neue Aufgabe erstellen
+            Neue Aufgabe erstellen
           </h3>
 
           {/* Task Title */}
@@ -152,7 +152,7 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              min={today} // ✅ Restrict past dates
+              min={new Date().toISOString().split("T")[0]}
               className="input input-sm input-bordered w-full"
             />
           </div>
@@ -162,12 +162,15 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
 
           {/* Modal Actions */}
           <div className="modal-action flex justify-between">
-            <button onClick={onClose} className="btn btn-sm btn-neutral">
+            <button
+              onClick={onClose}
+              className="btn btn-sm bg-red-400 hover:bg-red-500"
+            >
               Abbrechen
             </button>
             <button
               onClick={handleCreateTask}
-              className="btn btn-sm btn-primary"
+              className="btn btn-sm bg-green-500 hover:bg-green-600"
               disabled={isSaving}
             >
               {isSaving ? "Speichern..." : "Speichern"}

@@ -135,15 +135,28 @@ const Tasks = () => {
       </div>
 
       <div className="rounded-lg shadow-md bg-white">
-        <table className="table table-xs hover w-full rounded-lg border-gray-300">
-          <thead>
-            <tr className="bg-gray-100 text-gray-500 text-sm">
-              <th className="py-2 px-3 text-left w-8">🔻</th>
-              <th className="py-2 px-3 text-left">Titel</th>
-              <th className="py-2 px-3 text-left">Status</th>
-              <th className="py-2 px-3 text-left">Aktionen</th>
+        <table className="table table-xs hover w-full rounded-lg border-indigo-300">
+          <thead className="">
+            <tr className="bg-indigo-100 text-slate-700 text-sm">
+              <th className="py-2 px-3 text-left w-6">🔻</th>{" "}
+              {/* Priority column - small */}
+              <th className="py-2 px-3 text-left w-auto">Titel</th>{" "}
+              {/* Title - More space */}
+              <th className="py-2 px-3 text-left w-32">Status</th>{" "}
+              {/* Fixed width */}
+              <th className="py-2 px-3 text-left w-40">Zugewiesen an</th>{" "}
+              {/* Assigned To Name */}
+              <th className="py-2 px-3 text-left w-32">Rolle</th>{" "}
+              {/* Assigned To Role */}
+              <th className="py-2 px-3 text-left w-28">Fällig am</th>{" "}
+              {/* Due Date - Smaller */}
+              <th className="py-2 px-3 text-left w-28">Erstellt am</th>{" "}
+              {/* Created At - Smaller */}
+              <th className="py-2 px-3 text-center w-6">Aktion</th>{" "}
+              {/* Actions - Smallest */}
             </tr>
           </thead>
+
           <tbody>
             {tasks.map((task) => (
               <TaskRow
@@ -160,6 +173,9 @@ const Tasks = () => {
                 onDelete={confirmDelete}
                 openDropdownId={openDropdownId}
                 setOpenDropdownId={setOpenDropdownId}
+                assignedTo={task.assignedTo}
+                dueDate={task.dueDate}
+                createdAt={task.createdAt}
               />
             ))}
           </tbody>
