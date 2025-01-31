@@ -13,6 +13,7 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
   const [users, setUsers] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [toastMessage, setToastMessage] = useState(null); // ✅ Add toast state
 
   // Function to update the task
   const handleUpdateTask = async () => {
@@ -43,7 +44,12 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
 
       onUpdate(task._id, { ...responseData.updatedFields, _id: task._id });
 
-      onClose();
+      setToastMessage("Aufgabe erfolgreich aktualisiert! ✅"); // ✅ Show success toast
+
+      setTimeout(() => {
+        setToastMessage(null); // ✅ Hide toast after 2 seconds
+        onClose(); // ✅ Close modal after toast disappears
+      }, 2000);
     } catch (error) {
       console.error("Fehler:", error.message);
       setError(error.message);
@@ -167,6 +173,14 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
           </button>
         </div>
       </div>
+      {/* ✅ Toast Notification (Auto disappears) */}
+      {toastMessage && (
+        <div className="toast">
+          <div className="alert alert-success">
+            <span>{toastMessage}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
