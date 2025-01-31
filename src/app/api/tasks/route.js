@@ -37,13 +37,20 @@ export async function GET(request) {
     const { role, _id: userId } = user;
     const { searchParams } = new URL(request.url);
 
-    // ✅ Pagination parameters
+    // ✅ Extract Filters from Query Params
     const page = parseInt(searchParams.get("page")) || 1;
     const limit = parseInt(searchParams.get("limit")) || 15;
     const skip = (page - 1) * limit;
 
+    const statusFilter = searchParams.get("status") || null;
+    const priorityFilter = searchParams.get("priority") || null;
+    const assignedToFilter = searchParams.get("assignedTo") || null;
+    const dueDateFilter = searchParams.get("dueDate") || null;
+    const searchQuery = searchParams.get("search") || null;
+
     let query = {};
 
+    // ✅ Apply Role-Based Filtering
     if (role === "manager") {
       const markenbotschafters = await db
         .collection("users")
@@ -55,18 +62,35 @@ export async function GET(request) {
       query = { "assignedTo._id": userId };
     }
 
-    // ✅ Fetch tasks and include assigned user details
+    // ✅ Apply Filters
+    if (statusFilter) query.status = statusFilter;
+    if (priorityFilter) query.priority = priorityFilter;
+    if (assignedToFilter)
+      query["assignedTo._id"] = new ObjectId(assignedToFilter);
+    if (dueDateFilter) query.dueDate = { $lte: new Date(dueDateFilter) }; // Tasks due *before* this date
+    if (searchQuery) query.title = { $regex: searchQuery, $options: "i" };
+
+    // ✅ Fetch Total Count After Filtering (for pagination)
+    const totalCount = await db.collection("tasks").countDocuments(query);
+
+    // ✅ Fetch Tasks with Pagination
     const tasks = await db
       .collection("tasks")
       .find(query)
-      .sort({ createdAt: -1 })
+      .sort({ dueDate: 1 }) // Sort tasks by due date (earliest first)
       .skip(skip)
       .limit(limit)
       .toArray();
 
-    return new Response(JSON.stringify({ success: true, data: tasks }), {
-      status: 200,
-    });
+    return new Response(
+      JSON.stringify({
+        success: true,
+        data: tasks,
+        totalCount, // ✅ Send total count to update frontend pagination
+        hasMore: skip + tasks.length < totalCount, // ✅ Determine if more pages exist
+      }),
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching tasks:", error);
     return new Response(

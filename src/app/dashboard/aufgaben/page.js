@@ -25,7 +25,6 @@ const Tasks = () => {
     dueDateFilter: "",
     searchQuery: "",
   });
-  const [allTasks, setAllTasks] = useState([]); // ✅ Store all tasks before pagination
 
   // ✅ Delete Confirmation Modal
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -53,51 +52,55 @@ const Tasks = () => {
   }, [session]);
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      if (!user || loading || !session?.user) return;
+    if (user && session?.user) {
+      const fetchTasks = async () => {
+        setLoading(true);
+        try {
+          console.log(
+            `⚡ Fetching tasks for page ${page} with filters`,
+            filters
+          );
 
-      setLoading(true);
+          const queryParams = new URLSearchParams({
+            page: page.toString(), // ✅ Now correctly reset before fetch
+            limit: "15",
+          });
 
-      try {
-        console.log(`⚡ Abrufen aller Aufgaben`);
-        const res = await fetch(`/api/tasks`); // ✅ Fetch all tasks at once (no pagination)
-        if (!res.ok) throw new Error("Fehler beim Abrufen der Aufgaben.");
-        const data = await res.json();
+          if (filters.statusFilter)
+            queryParams.append("status", filters.statusFilter);
+          if (filters.priorityFilter)
+            queryParams.append("priority", filters.priorityFilter);
+          if (filters.assignedToFilter)
+            queryParams.append("assignedTo", filters.assignedToFilter);
+          if (filters.dueDateFilter)
+            queryParams.append("dueDate", filters.dueDateFilter);
+          if (filters.searchQuery)
+            queryParams.append("search", filters.searchQuery);
 
-        setAllTasks(data.data); // ✅ Store all tasks before filtering
-      } catch (err) {
-        console.error("⚠️ Fehler beim Abrufen der Aufgaben:", err);
-        setError("Fehler beim Abrufen der Aufgaben.");
-      } finally {
-        setLoading(false);
-      }
-    };
+          const res = await fetch(`/api/tasks?${queryParams.toString()}`);
+          if (!res.ok) throw new Error("Fehler beim Abrufen der Aufgaben.");
+          const data = await res.json();
 
-    fetchTasks();
-  }, [user]);
+          console.log("📡 API Response:", data);
+          setTasks(data.data || []);
+          setHasMore(data.hasMore || false);
+        } catch (err) {
+          console.error("⚠️ Fehler beim Abrufen der Aufgaben:", err);
+          setError("Fehler beim Abrufen der Aufgaben.");
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchTasks();
+    }
+  }, [page, user, filters]); // ✅ Page is now properly updated first before fetching tasks
 
   useEffect(() => {
-    const filtered = allTasks.filter((task) => {
-      const taskDate = task.dueDate ? new Date(task.dueDate) : null;
-      const filterDate = filters.dueDateFilter
-        ? new Date(filters.dueDateFilter)
-        : null;
-
-      return (
-        (!filters.statusFilter || task.status === filters.statusFilter) &&
-        (!filters.priorityFilter || task.priority === filters.priorityFilter) &&
-        (!filters.assignedToFilter ||
-          task.assignedTo?._id === filters.assignedToFilter) &&
-        (!filters.dueDateFilter || (taskDate && taskDate <= filterDate)) &&
-        (!filters.searchQuery ||
-          (task.title || "")
-            .toLowerCase()
-            .includes(filters.searchQuery.toLowerCase()))
-      );
-    });
-
-    setFilteredTasks(filtered); // ✅ Store filtered tasks (before pagination)
-  }, [filters, allTasks]);
+    if (Object.values(filters).some((filter) => filter !== "")) {
+      setPage(1);
+    }
+  }, [filters]);
 
   useEffect(() => {
     const cachedUsers = JSON.parse(localStorage.getItem("users"));
@@ -121,13 +124,10 @@ const Tasks = () => {
     }
   }, []);
 
-  const displayedTasks = useMemo(() => {
-    return filteredTasks.slice((page - 1) * 15, page * 15); // ✅ Paginate after filtering
-  }, [filteredTasks, page]);
-
   // ✅ Function to update filters
 
   const handleFilterChange = useCallback((newFilters) => {
+    setPage(1); // ✅ First reset to page 1
     setFilters((prevFilters) => ({
       ...prevFilters,
       ...newFilters,
@@ -168,7 +168,7 @@ const Tasks = () => {
 
   // ✅ Function to create a new task
   const handleTaskCreated = (newTask) => {
-    setAllTasks((prevTasks) => [newTask, ...prevTasks]); // ✅ Update `allTasks`
+    setTasks((prevTasks) => [newTask, ...prevTasks]);
     showToast("Neue Aufgabe erfolgreich erstellt!", "success");
   };
 
@@ -180,6 +180,10 @@ const Tasks = () => {
       setToastMessage(null);
     }, 2000);
   };
+
+  const displayedTasks = useMemo(() => {
+    return tasks.length > 0 ? tasks : []; // ✅ Fallback to tasks array
+  }, [tasks]);
 
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
@@ -221,6 +225,7 @@ const Tasks = () => {
               {/* Actions - Smallest */}
             </tr>
           </thead>
+
           <tbody>
             {displayedTasks.map((task) => (
               <TaskRow
@@ -228,7 +233,7 @@ const Tasks = () => {
                 task={task}
                 user={user}
                 onUpdate={(taskId, updatedTask) => {
-                  setAllTasks((prevTasks) =>
+                  setTasks((prevTasks) =>
                     prevTasks.map((t) =>
                       t._id === taskId ? { ...updatedTask, _id: taskId } : t
                     )
@@ -256,13 +261,11 @@ const Tasks = () => {
           ← Zurück
         </button>
 
-        <span className="text-gray-700">
-          Seite {page} von {Math.ceil(allTasks.length / 15)}
-        </span>
+        <span className="text-gray-700">Seite {page}</span>
 
         <button
           onClick={() => setPage((prev) => prev + 1)}
-          disabled={page * 15 >= allTasks.length} // ✅ Use `allTasks.length` instead of `filteredTasks`
+          disabled={!hasMore}
           className="btn btn-xs btn-neutral"
         >
           Weiter →
