@@ -83,29 +83,18 @@ const Tasks = () => {
 
   useEffect(() => {
     const filtered = tasks.filter((task) => {
-      // Convert task.dueDate and filter.dueDateFilter to the same format
-      const formattedTaskDate =
-        task.dueDate &&
-        new Date(task.dueDate).toLocaleDateString("de-DE", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "2-digit",
-        });
-
-      const formattedFilterDate =
-        filters.dueDateFilter &&
-        new Date(filters.dueDateFilter).toLocaleDateString("de-DE", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "2-digit",
-        });
+      // Convert task.dueDate to a comparable Date object
+      const taskDate = task.dueDate ? new Date(task.dueDate) : null;
+      const filterDate = filters.dueDateFilter
+        ? new Date(filters.dueDateFilter)
+        : null;
 
       return (
         (!filters.statusFilter || task.status === filters.statusFilter) &&
         (!filters.priorityFilter || task.priority === filters.priorityFilter) &&
         (!filters.assignedToFilter ||
           task.assignedTo?._id === filters.assignedToFilter) &&
-        (!filters.dueDateFilter || formattedTaskDate === formattedFilterDate) &&
+        (!filters.dueDateFilter || (taskDate && taskDate <= filterDate)) && // ✅ Updated filtering logic
         (!filters.searchQuery ||
           (task.title || "")
             .toLowerCase()
