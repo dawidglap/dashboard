@@ -174,7 +174,10 @@ const TaskRow = ({
                 <>
                   <li>
                     <button
-                      onClick={() => setIsEditModalOpen(true)}
+                      onClick={() => {
+                        setIsEditModalOpen(true);
+                        setOpenDropdownId(null); // ✅ Close dropdown after clicking
+                      }}
                       className="flex items-center px-4 py-2 hover:bg-indigo-50 w-full"
                     >
                       <FaEdit className="mr-2" /> Bearbeiten
