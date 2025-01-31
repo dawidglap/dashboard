@@ -169,14 +169,14 @@ const TaskRow = ({
 
           {isDropdownOpen && (
             <ul className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
-              <li>
+              {/* <li>
                 <button
                   onClick={() => setIsModalOpen(true)}
                   className="flex items-center px-4 py-2 hover:bg-indigo-50 w-full"
                 >
                   <FaEye className="mr-2" /> Details
                 </button>
-              </li>
+              </li> */}
 
               {canUpdateStatus && (
                 <>

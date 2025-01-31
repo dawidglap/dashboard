@@ -25,6 +25,7 @@ const Tasks = () => {
     dueDateFilter: "",
     searchQuery: "",
   });
+  const [allTasks, setAllTasks] = useState([]); // ✅ Store all tasks before pagination
 
   // ✅ Delete Confirmation Modal
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -58,18 +59,12 @@ const Tasks = () => {
       setLoading(true);
 
       try {
-        console.log(`⚡ Aufgaben abrufen für Seite: ${page}`);
-        const res = await fetch(`/api/tasks?page=${page}&limit=15`);
+        console.log(`⚡ Abrufen aller Aufgaben`);
+        const res = await fetch(`/api/tasks`); // ✅ Fetch all tasks at once (no pagination)
         if (!res.ok) throw new Error("Fehler beim Abrufen der Aufgaben.");
         const data = await res.json();
 
-        if (data.data.length === 0) {
-          setHasMore(false);
-        } else {
-          setTasks(data.data);
-          setFilteredTasks(data.data); // ✅ Initialize filteredTasks with fetched data
-          setHasMore(data.data.length === 15);
-        }
+        setAllTasks(data.data); // ✅ Store all tasks before filtering
       } catch (err) {
         console.error("⚠️ Fehler beim Abrufen der Aufgaben:", err);
         setError("Fehler beim Abrufen der Aufgaben.");
@@ -79,11 +74,10 @@ const Tasks = () => {
     };
 
     fetchTasks();
-  }, [page, user]);
+  }, [user]);
 
   useEffect(() => {
-    const filtered = tasks.filter((task) => {
-      // Convert task.dueDate to a comparable Date object
+    const filtered = allTasks.filter((task) => {
       const taskDate = task.dueDate ? new Date(task.dueDate) : null;
       const filterDate = filters.dueDateFilter
         ? new Date(filters.dueDateFilter)
@@ -94,7 +88,7 @@ const Tasks = () => {
         (!filters.priorityFilter || task.priority === filters.priorityFilter) &&
         (!filters.assignedToFilter ||
           task.assignedTo?._id === filters.assignedToFilter) &&
-        (!filters.dueDateFilter || (taskDate && taskDate <= filterDate)) && // ✅ Updated filtering logic
+        (!filters.dueDateFilter || (taskDate && taskDate <= filterDate)) &&
         (!filters.searchQuery ||
           (task.title || "")
             .toLowerCase()
@@ -102,8 +96,8 @@ const Tasks = () => {
       );
     });
 
-    setFilteredTasks(filtered);
-  }, [filters, tasks]);
+    setFilteredTasks(filtered); // ✅ Store filtered tasks (before pagination)
+  }, [filters, allTasks]);
 
   useEffect(() => {
     const cachedUsers = JSON.parse(localStorage.getItem("users"));
@@ -126,6 +120,10 @@ const Tasks = () => {
       fetchUsers();
     }
   }, []);
+
+  const displayedTasks = useMemo(() => {
+    return filteredTasks.slice((page - 1) * 15, page * 15); // ✅ Paginate after filtering
+  }, [filteredTasks, page]);
 
   // ✅ Function to update filters
 
@@ -170,7 +168,7 @@ const Tasks = () => {
 
   // ✅ Function to create a new task
   const handleTaskCreated = (newTask) => {
-    setTasks((prevTasks) => [newTask, ...prevTasks]);
+    setAllTasks((prevTasks) => [newTask, ...prevTasks]); // ✅ Update `allTasks`
     showToast("Neue Aufgabe erfolgreich erstellt!", "success");
   };
 
@@ -223,15 +221,14 @@ const Tasks = () => {
               {/* Actions - Smallest */}
             </tr>
           </thead>
-
           <tbody>
-            {filteredTasks.map((task) => (
+            {displayedTasks.map((task) => (
               <TaskRow
                 key={task._id}
                 task={task}
                 user={user}
                 onUpdate={(taskId, updatedTask) => {
-                  setTasks((prevTasks) =>
+                  setAllTasks((prevTasks) =>
                     prevTasks.map((t) =>
                       t._id === taskId ? { ...updatedTask, _id: taskId } : t
                     )
@@ -259,11 +256,13 @@ const Tasks = () => {
           ← Zurück
         </button>
 
-        <span className="text-gray-700">Seite {page}</span>
+        <span className="text-gray-700">
+          Seite {page} von {Math.ceil(allTasks.length / 15)}
+        </span>
 
         <button
           onClick={() => setPage((prev) => prev + 1)}
-          disabled={!hasMore}
+          disabled={page * 15 >= allTasks.length} // ✅ Use `allTasks.length` instead of `filteredTasks`
           className="btn btn-xs btn-neutral"
         >
           Weiter →
