@@ -124,26 +124,34 @@ const TaskRow = ({
         </td>
 
         {/* Assigned To Name */}
-        <td className="py-0 px-4 w-40">
+        <td className="py-0 px-4 w-40 font-semibold">
           {task.assignedTo?.name ? task.assignedTo.name : "Nicht zugewiesen"}
         </td>
 
         {/* Assigned To Role */}
-        <td className="py-0 px-4 w-32">
+        <td className="py-0 px-4 w-32 text-[10px] uppercase font-thin">
           {task.assignedTo?.role ? task.assignedTo.role : "Unbekannt"}
         </td>
 
         {/* Due Date */}
         <td className="py-0 px-4">
           {task.dueDate
-            ? new Date(task.dueDate).toLocaleDateString("de-DE")
+            ? new Date(task.dueDate).toLocaleDateString("de-DE", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "2-digit",
+              })
             : "Kein Datum"}
         </td>
 
         {/* Created At */}
         <td className="py-0 px-4">
           {task.createdAt
-            ? new Date(task.createdAt).toLocaleDateString("de-DE")
+            ? new Date(task.createdAt).toLocaleDateString("de-DE", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "2-digit",
+              })
             : "Unbekannt"}
         </td>
 
