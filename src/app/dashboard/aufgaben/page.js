@@ -1,20 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import NewTaskModal from "../../../components/Tasks/NewTaskModal";
 import TaskRow from "../../../components/Tasks/TaskRow";
+import FilterTaskBar from "../../../components/Tasks/FilterTaskBar"; // ✅ Import the filter component
 
 const Tasks = () => {
   const { data: session } = useSession();
   const [user, setUser] = useState(null);
+  const [users, setUsers] = useState([]); // ✅ Declare users state
   const [tasks, setTasks] = useState([]);
+  const [filteredTasks, setFilteredTasks] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openDropdownId, setOpenDropdownId] = useState(null);
+  const [filters, setFilters] = useState({
+    statusFilter: "",
+    priorityFilter: "",
+    assignedToFilter: "",
+    dueDateFilter: "",
+    searchQuery: "",
+  });
 
   // ✅ Delete Confirmation Modal
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -43,7 +53,7 @@ const Tasks = () => {
 
   useEffect(() => {
     const fetchTasks = async () => {
-      if (!user || loading) return;
+      if (!user || loading || !session?.user) return;
 
       setLoading(true);
 
@@ -57,7 +67,8 @@ const Tasks = () => {
           setHasMore(false);
         } else {
           setTasks(data.data);
-          setHasMore(data.data.length === 15); // ✅ Set hasMore based on limit
+          setFilteredTasks(data.data); // ✅ Initialize filteredTasks with fetched data
+          setHasMore(data.data.length === 15);
         }
       } catch (err) {
         console.error("⚠️ Fehler beim Abrufen der Aufgaben:", err);
@@ -69,6 +80,72 @@ const Tasks = () => {
 
     fetchTasks();
   }, [page, user]);
+
+  useEffect(() => {
+    const filtered = tasks.filter((task) => {
+      // Convert task.dueDate and filter.dueDateFilter to the same format
+      const formattedTaskDate =
+        task.dueDate &&
+        new Date(task.dueDate).toLocaleDateString("de-DE", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "2-digit",
+        });
+
+      const formattedFilterDate =
+        filters.dueDateFilter &&
+        new Date(filters.dueDateFilter).toLocaleDateString("de-DE", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "2-digit",
+        });
+
+      return (
+        (!filters.statusFilter || task.status === filters.statusFilter) &&
+        (!filters.priorityFilter || task.priority === filters.priorityFilter) &&
+        (!filters.assignedToFilter ||
+          task.assignedTo?._id === filters.assignedToFilter) &&
+        (!filters.dueDateFilter || formattedTaskDate === formattedFilterDate) &&
+        (!filters.searchQuery ||
+          (task.title || "")
+            .toLowerCase()
+            .includes(filters.searchQuery.toLowerCase()))
+      );
+    });
+
+    setFilteredTasks(filtered);
+  }, [filters, tasks]);
+
+  useEffect(() => {
+    const cachedUsers = JSON.parse(localStorage.getItem("users"));
+
+    if (cachedUsers) {
+      setUsers(cachedUsers);
+    } else {
+      const fetchUsers = async () => {
+        try {
+          const res = await fetch("/api/users");
+          if (!res.ok) throw new Error("Fehler beim Laden der Benutzerliste");
+          const data = await res.json();
+          setUsers(data.users); // ✅ Now it's properly set
+          localStorage.setItem("users", JSON.stringify(data.users)); // ✅ Cache users
+        } catch (error) {
+          console.error("❌ Fehler:", error.message);
+        }
+      };
+
+      fetchUsers();
+    }
+  }, []);
+
+  // ✅ Function to update filters
+
+  const handleFilterChange = useCallback((newFilters) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      ...newFilters,
+    }));
+  }, []);
 
   // ✅ Function to confirm delete (opens modal)
   const confirmDelete = (taskId) => {
@@ -133,6 +210,7 @@ const Tasks = () => {
           </button>
         )}
       </div>
+      <FilterTaskBar onFilterChange={handleFilterChange} users={users} />
 
       <div className="rounded-lg shadow-md bg-white">
         <table className="table table-xs hover w-full rounded-lg border-indigo-300">
@@ -158,7 +236,7 @@ const Tasks = () => {
           </thead>
 
           <tbody>
-            {tasks.map((task) => (
+            {filteredTasks.map((task) => (
               <TaskRow
                 key={task._id}
                 task={task}
