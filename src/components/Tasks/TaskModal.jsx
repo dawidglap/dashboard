@@ -163,7 +163,7 @@ const TaskModal = ({ task, onClose }) => {
             onClick={onClose}
             className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md transition"
           >
-            Schließen
+            Schliessen
           </button>
         </div>
       </div>
