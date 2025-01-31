@@ -38,6 +38,8 @@ const TaskRow = ({
   onDelete,
   openDropdownId,
   setOpenDropdownId,
+  isSelected, // ✅ Receive the selection state
+  onSelectTask, // ✅ Receive the function to handle selection
 }) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,6 +52,10 @@ const TaskRow = ({
   const toggleDropdown = (e) => {
     e.stopPropagation(); // Prevent row click when opening dropdown
     setOpenDropdownId(isDropdownOpen ? null : task._id);
+  };
+
+  const handleCheckboxChange = (e) => {
+    onSelectTask(task._id, e.target.checked);
   };
 
   // Open task details when clicking the row (except on action buttons)
@@ -107,8 +113,22 @@ const TaskRow = ({
       {/* Task Row */}
       <tr
         className="border-b hover:bg-indigo-50 transition text-sm cursor-pointer group"
-        onClick={handleRowClick}
+        onClick={(e) => {
+          if (e.target.type !== "checkbox") {
+            // ✅ Open modal only if not clicking a checkbox
+            handleRowClick();
+          }
+        }}
       >
+        {/* ✅ Checkbox Column */}
+        <td className="py-2 px-3">
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={handleCheckboxChange}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </td>
         {/* Priority Flag Column (Visible only on hover) */}
         <td className="py-0 px-2 text-center w-6">
           <div className="relative">

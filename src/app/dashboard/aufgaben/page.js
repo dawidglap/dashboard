@@ -25,7 +25,7 @@ const Tasks = () => {
     dueDateFilter: "",
     searchQuery: "",
   });
-
+  const [selectedTasks, setSelectedTasks] = useState([]);
   // ✅ Delete Confirmation Modal
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
@@ -185,6 +185,28 @@ const Tasks = () => {
     return tasks.length > 0 ? tasks : []; // ✅ Fallback to tasks array
   }, [tasks]);
 
+  const handleTaskSelect = (taskId, isSelected) => {
+    setSelectedTasks((prevSelected) =>
+      isSelected
+        ? [...prevSelected, taskId]
+        : prevSelected.filter((id) => id !== taskId)
+    );
+  };
+
+  // ✅ Handle "Select All" checkbox
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      setSelectedTasks(tasks.map((task) => task._id)); // Select all tasks
+    } else {
+      setSelectedTasks([]); // Deselect all
+    }
+  };
+
+  // ✅ Check if all tasks are selected
+  const allSelected = tasks.length > 0 && selectedTasks.length === tasks.length;
+  const someSelected =
+    selectedTasks.length > 0 && selectedTasks.length < tasks.length;
+
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
@@ -207,7 +229,14 @@ const Tasks = () => {
         <table className="table table-xs hover w-full rounded-lg border-indigo-300">
           <thead className="">
             <tr className="bg-indigo-100 text-slate-700 text-sm">
-              <th className="py-2 px-3 text-left w-6">🔻</th>{" "}
+              <th className="py-2 px-3 w-6">
+                <input
+                  type="checkbox"
+                  checked={allSelected}
+                  onChange={handleSelectAll}
+                />
+              </th>
+              <th className="py-2 px-3 text-left w-6">⚠️</th>{" "}
               {/* Priority column - small */}
               <th className="py-2 px-3 text-left w-auto">Titel</th>{" "}
               {/* Title - More space */}
@@ -233,10 +262,9 @@ const Tasks = () => {
                 task={task}
                 user={user}
                 onUpdate={(taskId, updatedTask) => {
-                  setTasks((prevTasks) =>
-                    prevTasks.map(
-                      (t) => (t._id === taskId ? updatedTask : t) // ✅ Now replacing with full object
-                    )
+                  setTasks(
+                    (prevTasks) =>
+                      prevTasks.map((t) => (t._id === taskId ? updatedTask : t)) // ✅ Now replacing with full object
                   );
                 }}
                 onDelete={confirmDelete}
@@ -245,6 +273,8 @@ const Tasks = () => {
                 assignedTo={task.assignedTo}
                 dueDate={task.dueDate}
                 createdAt={task.createdAt}
+                onSelectTask={handleTaskSelect} // ✅ Add task selection function
+                isSelected={selectedTasks.includes(task._id)} // ✅ Track selection state
               />
             ))}
           </tbody>
