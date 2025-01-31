@@ -62,11 +62,19 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
         );
       }
 
-      onUpdate(task._id, { ...responseData.updatedFields, _id: task._id });
+      // ✅ Fetch latest data
+      const updatedRes = await fetch(`/api/tasks/${task._id}`);
+      const updatedTaskData = await updatedRes.json();
 
-      // ✅ Show success toast and auto-close after 2 seconds
+      if (!updatedRes.ok) {
+        throw new Error(
+          updatedTaskData.message || "Failed to fetch updated task"
+        );
+      }
+
+      onUpdate(task._id, updatedTaskData.task);
+
       setToastMessage("✅ Aufgabe erfolgreich aktualisiert!");
-
       setTimeout(() => {
         setToastMessage(null);
         onClose();

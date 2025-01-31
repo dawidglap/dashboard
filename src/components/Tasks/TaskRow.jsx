@@ -68,12 +68,21 @@ const TaskRow = ({
       });
 
       const responseData = await res.json();
-      if (!res.ok)
+      if (!res.ok) throw new Error(responseData.message || "Update failed");
+
+      console.log("✅ Updated Task Response:", responseData.task);
+
+      // ✅ Fetch full task data to update UI properly
+      const updatedRes = await fetch(`/api/tasks/${task._id}`);
+      const updatedTaskData = await updatedRes.json();
+
+      if (!updatedRes.ok)
         throw new Error(
-          responseData.message || "Fehler beim Aktualisieren der Aufgabe"
+          updatedTaskData.message || "Failed to fetch updated task"
         );
 
-      onUpdate(task._id, { ...task, status: newStatus });
+      // ✅ Update UI with full task data
+      onUpdate(task._id, updatedTaskData.task);
     } catch (error) {
       console.error("❌ Fehler beim Aktualisieren der Aufgabe:", error);
     } finally {

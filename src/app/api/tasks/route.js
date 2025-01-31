@@ -73,11 +73,36 @@ export async function GET(request) {
     // ✅ Fetch Total Count After Filtering (for pagination)
     const totalCount = await db.collection("tasks").countDocuments(query);
 
-    // ✅ Fetch Tasks with Pagination
     const tasks = await db
       .collection("tasks")
-      .find(query)
-      .sort({ dueDate: 1 }) // Sort tasks by due date (earliest first)
+      .aggregate([
+        { $match: query },
+        {
+          $lookup: {
+            from: "users", // 🔥 Join with 'users' collection
+            localField: "assignedTo",
+            foreignField: "_id",
+            as: "assignedTo",
+          },
+        },
+        { $unwind: { path: "$assignedTo", preserveNullAndEmptyArrays: true } }, // 🔥 Keep null values
+        {
+          $project: {
+            _id: 1,
+            title: 1,
+            description: 1,
+            priority: 1,
+            status: 1,
+            dueDate: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            "assignedTo._id": 1,
+            "assignedTo.name": 1,
+            "assignedTo.role": 1,
+          },
+        },
+      ])
+      .sort({ dueDate: 1 })
       .skip(skip)
       .limit(limit)
       .toArray();

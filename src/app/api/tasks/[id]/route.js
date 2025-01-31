@@ -3,6 +3,64 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { ObjectId } from "mongodb";
 
+export async function GET(request, context) {
+  const { db } = await connectToDatabase();
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return new Response(
+      JSON.stringify({ success: false, message: "Unauthorized" }),
+      { status: 401 }
+    );
+  }
+
+  try {
+    const { params } = context; // ✅ Ensure `params` is awaited properly
+    const taskId = params.id; // ✅ Correctly access `id`
+
+    if (!taskId || !ObjectId.isValid(taskId)) {
+      return new Response(
+        JSON.stringify({ success: false, message: "Invalid task ID" }),
+        { status: 400 }
+      );
+    }
+
+    // ✅ Fetch task with assigned user details
+    const task = await db
+      .collection("tasks")
+      .aggregate([
+        { $match: { _id: new ObjectId(taskId) } },
+        {
+          $lookup: {
+            from: "users",
+            localField: "assignedTo",
+            foreignField: "_id",
+            as: "assignedTo",
+          },
+        },
+        { $unwind: { path: "$assignedTo", preserveNullAndEmptyArrays: true } },
+      ])
+      .toArray();
+
+    if (!task || task.length === 0) {
+      return new Response(
+        JSON.stringify({ success: false, message: "Task not found" }),
+        { status: 404 }
+      );
+    }
+
+    return new Response(JSON.stringify({ success: true, task: task[0] }), {
+      status: 200,
+    });
+  } catch (error) {
+    console.error("❌ Error fetching task:", error);
+    return new Response(
+      JSON.stringify({ success: false, error: error.message }),
+      { status: 500 }
+    );
+  }
+}
+
 /**
  * PUT /api/tasks/:id
  * Allows authorized users to update task details (title, description, priority, status).
@@ -20,6 +78,16 @@ export async function PUT(request, context) {
   }
 
   try {
+    const { params } = context; // ✅ Fix: Ensure `params` is properly accessed
+    const taskId = params.id; // ✅ Correct usage
+
+    if (!taskId || !ObjectId.isValid(taskId)) {
+      return new Response(
+        JSON.stringify({ success: false, message: "Invalid task ID" }),
+        { status: 400 }
+      );
+    }
+
     const user = await db
       .collection("users")
       .findOne({ email: session.user.email });
@@ -33,24 +101,14 @@ export async function PUT(request, context) {
 
     const { role, _id: userId } = user;
 
-    // ✅ Ensure `params.id` is retrieved properly
-    const id = context.params?.id;
-
-    if (!id || !ObjectId.isValid(id)) {
-      return new Response(
-        JSON.stringify({ success: false, message: "Invalid task ID" }),
-        { status: 400 }
-      );
-    }
-
-    // ✅ Read request body only ONCE
+    // ✅ Read request body
     const body = await request.json();
-    const { title, description, priority, status } = body;
+    const { title, description, priority, status, assignedTo, dueDate } = body;
 
     // ✅ Fetch Task
     const task = await db
       .collection("tasks")
-      .findOne({ _id: new ObjectId(id) });
+      .findOne({ _id: new ObjectId(taskId) });
 
     if (!task) {
       return new Response(
@@ -62,7 +120,7 @@ export async function PUT(request, context) {
     // ✅ Authorization Check
     if (
       role === "markenbotschafter" &&
-      task.assignedTo.toString() !== userId.toString()
+      task.assignedTo?.toString() !== userId.toString()
     ) {
       return new Response(
         JSON.stringify({ success: false, message: "Forbidden" }),
@@ -72,7 +130,7 @@ export async function PUT(request, context) {
 
     if (
       role === "manager" &&
-      ![task.assignedTo.toString(), userId.toString()].includes(
+      ![task.assignedTo?.toString(), userId.toString()].includes(
         userId.toString()
       )
     ) {
@@ -88,11 +146,13 @@ export async function PUT(request, context) {
     if (description) updateFields.description = description;
     if (priority) updateFields.priority = priority;
     if (status) updateFields.status = status;
+    if (assignedTo) updateFields.assignedTo = new ObjectId(assignedTo);
+    if (dueDate) updateFields.dueDate = new Date(dueDate);
 
     // ✅ Execute Update
     const result = await db
       .collection("tasks")
-      .updateOne({ _id: new ObjectId(id) }, { $set: updateFields });
+      .updateOne({ _id: new ObjectId(taskId) }, { $set: updateFields });
 
     if (result.modifiedCount === 0) {
       return new Response(
@@ -104,11 +164,43 @@ export async function PUT(request, context) {
       );
     }
 
+    // ✅ Fetch Updated Task with `assignedTo` details
+    const updatedTask = await db
+      .collection("tasks")
+      .aggregate([
+        { $match: { _id: new ObjectId(taskId) } },
+        {
+          $lookup: {
+            from: "users",
+            localField: "assignedTo",
+            foreignField: "_id",
+            as: "assignedTo",
+          },
+        },
+        { $unwind: { path: "$assignedTo", preserveNullAndEmptyArrays: true } },
+        {
+          $project: {
+            _id: 1,
+            title: 1,
+            description: 1,
+            priority: 1,
+            status: 1,
+            dueDate: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            "assignedTo._id": 1,
+            "assignedTo.name": 1,
+            "assignedTo.role": 1,
+          },
+        },
+      ])
+      .toArray();
+
     return new Response(
       JSON.stringify({
         success: true,
         message: "Task updated successfully",
-        updatedFields: updateFields,
+        updatedTask: updatedTask[0], // ✅ Return full updated task
       }),
       { status: 200 }
     );

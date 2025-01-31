@@ -234,8 +234,8 @@ const Tasks = () => {
                 user={user}
                 onUpdate={(taskId, updatedTask) => {
                   setTasks((prevTasks) =>
-                    prevTasks.map((t) =>
-                      t._id === taskId ? { ...updatedTask, _id: taskId } : t
+                    prevTasks.map(
+                      (t) => (t._id === taskId ? updatedTask : t) // ✅ Now replacing with full object
                     )
                   );
                 }}
