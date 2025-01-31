@@ -91,14 +91,30 @@ export async function GET(request) {
       .aggregate([
         { $match: query },
         {
-          $lookup: {
-            from: "users", // 🔥 Join with 'users' collection
-            localField: "assignedTo",
-            foreignField: "_id",
-            as: "assignedTo",
+          $addFields: {
+            assignedToId: "$assignedTo._id", // ✅ Extract ID from embedded object
           },
         },
-        { $unwind: { path: "$assignedTo", preserveNullAndEmptyArrays: true } }, // 🔥 Keep null values
+        {
+          $lookup: {
+            from: "users",
+            localField: "assignedToId", // ✅ Now referencing only the ID
+            foreignField: "_id",
+            as: "assignedUser",
+          },
+        },
+        {
+          $set: {
+            assignedTo: {
+              $cond: {
+                if: { $gt: [{ $size: "$assignedUser" }, 0] }, // ✅ If user exists
+                then: { $arrayElemAt: ["$assignedUser", 0] }, // ✅ Assign first user match
+                else: "$assignedTo", // ✅ If no match, keep existing embedded object
+              },
+            },
+          },
+        },
+        { $unset: "assignedUser" }, // ✅ Remove temporary field
         {
           $project: {
             _id: 1,
@@ -119,6 +135,8 @@ export async function GET(request) {
       .skip(skip)
       .limit(limit)
       .toArray();
+
+    console.log("📡 FETCHED TASKS FROM DB:", JSON.stringify(tasks, null, 2));
 
     return new Response(
       JSON.stringify({
@@ -213,8 +231,13 @@ export async function POST(req) {
       createdBy: { _id: user._id, name: user.name },
       createdAt: new Date(),
       updatedAt: new Date(),
-      dueDate: new Date(dueDate), // Ensure dueDate is stored correctly
+      dueDate: new Date(dueDate),
     };
+
+    console.log(
+      "🛠 NEW TASK OBJECT BEFORE INSERT:",
+      JSON.stringify(newTask, null, 2)
+    ); // 🔥 Debugging
 
     const result = await db.collection("tasks").insertOne(newTask);
 
@@ -225,6 +248,11 @@ export async function POST(req) {
       );
     }
 
+    console.log(
+      "✅ TASK SUCCESSFULLY INSERTED:",
+      JSON.stringify(newTask, null, 2)
+    ); // 🔥 Debugging
+
     return new Response(
       JSON.stringify({
         success: true,
@@ -234,7 +262,7 @@ export async function POST(req) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("❌ Error creating task:", error);
+    console.error("❌ ERROR CREATING TASK:", error);
     return new Response(
       JSON.stringify({
         success: false,
