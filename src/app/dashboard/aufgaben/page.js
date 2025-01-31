@@ -211,7 +211,7 @@ const Tasks = () => {
               {/* Priority column - small */}
               <th className="py-2 px-3 text-left w-auto">Titel</th>{" "}
               {/* Title - More space */}
-              <th className="py-2 px-3 text-left w-32">Status</th>{" "}
+              <th className="py-2 px-3 text-left w-44">Status</th>{" "}
               {/* Fixed width */}
               <th className="py-2 px-3 text-left w-40">Zugewiesen an</th>{" "}
               {/* Assigned To Name */}
@@ -261,7 +261,7 @@ const Tasks = () => {
           ← Zurück
         </button>
 
-        <span className="text-gray-700">Seite {page}</span>
+        <span className="text-gray-700 text-xs">Seite {page}</span>
 
         <button
           onClick={() => setPage((prev) => prev + 1)}

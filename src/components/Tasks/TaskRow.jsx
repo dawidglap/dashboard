@@ -117,10 +117,33 @@ const TaskRow = ({
         <td className="py-0 px-4">{task.title}</td>
 
         {/* Status Column */}
-        <td className="pt-2 px-4 flex items-center space-x-2">
+        {/* <td className="pt-2 px-4 flex items-center space-x-2">
           <span className={STATUS_ICONS[task.status]?.color}>
             {STATUS_ICONS[task.status]?.icon || <FaHourglassHalf />}
           </span>
+        </td> */}
+        {/* Status Column - Matches Filter UI */}
+        <td className="py-2 px-4 flex items-center gap-2">
+          {task.status === "pending" && (
+            <span className="text-gray-500 flex items-center gap-1">
+              ⏳ Ausstehend
+            </span>
+          )}
+          {task.status === "in_progress" && (
+            <span className="text-blue-500 flex items-center gap-1">
+              🚀 In Bearbeitung
+            </span>
+          )}
+          {task.status === "done" && (
+            <span className="text-green-500 flex items-center gap-1">
+              ✅ Erledigt
+            </span>
+          )}
+          {task.status === "cannot_complete" && (
+            <span className="text-red-500 flex items-center gap-1">
+              ❌ Nicht abgeschlossen
+            </span>
+          )}
         </td>
 
         {/* Assigned To Name */}
@@ -134,7 +157,7 @@ const TaskRow = ({
         </td>
 
         {/* Due Date */}
-        <td className="py-0 px-4">
+        <td className="py-0 px-4 font-semibold">
           {task.dueDate
             ? new Date(task.dueDate).toLocaleDateString("de-DE", {
                 day: "2-digit",

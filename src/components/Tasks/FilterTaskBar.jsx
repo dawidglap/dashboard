@@ -52,7 +52,7 @@ const FilterTaskBar = ({ onFilterChange }) => {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2 p-3 bg-base-200 rounded-t-lg shadow-sm">
+    <div className="flex flex-wrap items-center gap-2 p-3 bg-indigo-200 rounded-t-lg shadow-sm">
       {/* 🔍 Search */}
       <div className="relative w-full md:w-1/5">
         <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
