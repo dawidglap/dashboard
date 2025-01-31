@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const EditTaskModal = ({ task, onClose, onUpdate }) => {
   // Initialize state with existing task data
@@ -8,6 +8,9 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
   const [description, setDescription] = useState(task.description || "");
   const [priority, setPriority] = useState(task.priority || "medium");
   const [status, setStatus] = useState(task.status || "pending");
+  const [assignedTo, setAssignedTo] = useState(task.assignedTo?._id || "");
+  const [dueDate, setDueDate] = useState(task.dueDate?.split("T")[0] || "");
+  const [users, setUsers] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
 
@@ -25,6 +28,8 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
           description,
           priority,
           status,
+          assignedTo,
+          dueDate, // ✅ Send updated due date
         }),
       });
 
@@ -36,7 +41,6 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
         );
       }
 
-      // ✅ Ensure `_id` is always included when updating the UI state
       onUpdate(task._id, { ...responseData.updatedFields, _id: task._id });
 
       onClose();
@@ -47,6 +51,22 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
       setIsSaving(false);
     }
   };
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch("/api/users");
+        if (!res.ok) throw new Error("Fehler beim Laden der Benutzerliste");
+        const data = await res.json();
+        setUsers(data.users);
+      } catch (error) {
+        console.error("❌ Fehler:", error.message);
+        setError(error.message);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   return (
     <div className="modal modal-open">
@@ -72,6 +92,22 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
             onChange={(e) => setDescription(e.target.value)}
             className="textarea textarea-bordered w-full"
           ></textarea>
+        </div>
+        {/* Assigned To (Dropdown) */}
+        <div className="mt-4">
+          <label className="block text-sm font-medium">Zugewiesen an</label>
+          <select
+            value={assignedTo}
+            onChange={(e) => setAssignedTo(e.target.value)}
+            className="select select-bordered w-full"
+          >
+            <option value="">-- Benutzer auswählen --</option>
+            {users.map((user) => (
+              <option key={user._id} value={user._id}>
+                {user.name} ({user.role})
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Task Priority */}
@@ -101,6 +137,17 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
             <option value="done">Erledigt</option>
             <option value="cannot_complete">Nicht abgeschlossen</option>
           </select>
+        </div>
+        {/* Due Date - Prevents past dates */}
+        <div className="mt-4">
+          <label className="block text-sm font-medium">Fällig am</label>
+          <input
+            type="date"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+            min={new Date().toISOString().split("T")[0]} // ✅ Blocks past dates
+            className="input input-bordered w-full"
+          />
         </div>
 
         {/* Error Message */}
