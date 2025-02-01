@@ -32,18 +32,31 @@ export async function GET(req, { params }) {
 }
 
 // PUT: Update a company by its _id
-export async function PUT(req, { params }) {
+
+export async function PUT(req) {
   try {
     const client = await clientPromise;
     const db = client.db("dashboard");
 
-    const { id } = params;
+    // Extract `id` properly
+    const id = req.nextUrl.pathname.split("/").pop(); // ✅ Correct way to get ID
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, message: "Invalid company ID" },
+        { status: 400 }
+      );
+    }
+
     const updates = await req.json();
 
     // Ensure expiration_date is stored correctly (if provided)
     if (updates.expiration_date) {
       updates.expiration_date = new Date(updates.expiration_date);
     }
+
+    console.log("Received update request for ID:", id);
+    console.log("Update Data:", updates);
 
     const result = await db
       .collection("companies")
@@ -56,6 +69,7 @@ export async function PUT(req, { params }) {
       );
     }
 
+    console.log("Company updated successfully:", id);
     return NextResponse.json({
       success: true,
       message: "Company updated successfully",
