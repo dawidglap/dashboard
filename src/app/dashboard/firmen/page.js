@@ -17,13 +17,23 @@ const Firmen = () => {
   const [showModal, setShowModal] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
+  // ✅ Pagination State
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const companiesPerPage = 10;
+
+  // ✅ Fetch Companies with Pagination
   useEffect(() => {
     const fetchCompanies = async () => {
+      setLoading(true);
       try {
-        const res = await fetch("/api/companies");
+        const res = await fetch(
+          `/api/companies?page=${page}&limit=${companiesPerPage}`
+        );
         if (!res.ok) throw new Error("Fehler beim Abrufen der Firmen-Daten.");
         const data = await res.json();
         setCompanies(data.data || []);
+        setHasMore(data.hasMore || false);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -32,7 +42,7 @@ const Firmen = () => {
     };
 
     fetchCompanies();
-  }, []);
+  }, [page]); // ✅ Re-fetch when page changes
 
   const handleDelete = async () => {
     if (!companyToDelete) return;
@@ -165,7 +175,31 @@ const Firmen = () => {
         companies={companies}
         onEdit={setCompanyToEdit}
         onDelete={setCompanyToDelete}
+        page={page}
+        setPage={setPage}
+        hasMore={hasMore}
       />
+
+      <div className="flex justify-between items-center mt-6">
+        <button
+          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+          disabled={page === 1}
+          className="btn btn-xs btn-neutral"
+        >
+          ← Zurück
+        </button>
+
+        <span className="text-gray-700 text-xs">Seite {page}</span>
+
+        <button
+          onClick={() => setPage((prev) => prev + 1)}
+          disabled={!hasMore}
+          className="btn btn-xs btn-neutral"
+        >
+          Weiter →
+        </button>
+      </div>
+
       <DeleteCompanyModal
         company={companyToDelete}
         onDelete={handleDelete}
@@ -178,7 +212,7 @@ const Firmen = () => {
       />
       <EditCompanyModal
         company={companyToEdit}
-        onSave={handleEditCompany}
+        onSave={handleEditCompany} // ✅ Ensure this function exists
         onClose={() => setCompanyToEdit(null)}
       />
       <ToastNotification
@@ -190,5 +224,3 @@ const Firmen = () => {
 };
 
 export default Firmen;
-
-// just wrote something to create a proepr commit

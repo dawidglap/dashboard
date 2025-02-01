@@ -59,7 +59,7 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
         telephone: company.telephone || "",
         mobile: company.mobile || "",
         plan: company.plan || "BASIC",
-        company_owner: company.company_owner || "",
+        company_owner: company.company_owner || "", // ✅ Added Inhaber
         plan_price: company.plan_price || "",
         expiration_date: company.expiration_date
           ? new Date(company.expiration_date).toISOString().split("T")[0]
@@ -169,6 +169,18 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
             />
           </div>
 
+          {/* Inhaber (Company Owner) */}
+          <div>
+            <label className="text-sm font-medium">👤 Inhaber</label>
+            <input
+              type="text"
+              name="company_owner"
+              value={formData.company_owner}
+              onChange={handleChange}
+              className="input input-sm input-bordered w-full"
+            />
+          </div>
+
           {/* Contact Information */}
           <div>
             <label className="text-sm font-medium">📧 Firmen-E-Mail</label>
@@ -219,7 +231,7 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
                 )
                 .map((user) => (
                   <option key={user._id} value={user._id}>
-                    {user.name} {user.surname} ({user.role})
+                    {user.name} {user.surname}
                   </option>
                 ))}
             </select>
@@ -242,7 +254,7 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
                 )
                 .map((user) => (
                   <option key={user._id} value={user._id}>
-                    {user.name} {user.surname} ({user.role})
+                    {user.name} {user.surname}
                   </option>
                 ))}
             </select>
@@ -259,12 +271,7 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
           </button>
           <button
             onClick={handleSubmit}
-            className={`btn btn-sm text-white ${
-              isSaving
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-green-500 hover:bg-green-600"
-            }`}
-            disabled={isSaving}
+            className="btn btn-sm bg-green-500 hover:bg-green-600 text-white"
           >
             {isSaving ? <FaSpinner className="animate-spin" /> : "✅ Speichern"}
           </button>

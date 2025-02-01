@@ -3,10 +3,15 @@
 import { useState, useEffect } from "react";
 import CompanyTableRow from "./CompanyTableRow";
 
-const CompanyTable = ({ companies, onEdit, onDelete }) => {
-  const [page, setPage] = useState(1);
+const CompanyTable = ({
+  companies,
+  onEdit,
+  onDelete,
+  page,
+  setPage,
+  hasMore,
+}) => {
   const [users, setUsers] = useState([]); // Store users
-  const companiesPerPage = 12;
 
   // ✅ Fetch users when component mounts
   useEffect(() => {
@@ -27,31 +32,25 @@ const CompanyTable = ({ companies, onEdit, onDelete }) => {
   // ✅ Get user by ID
   const getUserById = (userId) => users.find((u) => u._id === userId);
 
-  const totalPages = Math.ceil(companies.length / companiesPerPage);
-  const displayedCompanies = companies.slice(
-    (page - 1) * companiesPerPage,
-    page * companiesPerPage
-  );
-
   return (
     <div className="overflow-x-auto rounded-lg shadow-md bg-white">
       <table className="table table-xs hover w-full rounded-lg border-indigo-300">
         <thead>
           <tr className="bg-indigo-100 text-slate-700 text-sm">
             <th className="py-2 px-3 text-left w-auto">🏢 Firmen-Name</th>
-            <th className="py-2 px-3 text-left w-32">📋 Plan</th>
-            <th className="py-2 px-3 text-left w-36">💰 Plan-Preis</th>
+            <th className="py-2 px-3 text-left w-24">📋 Plan</th>
+            <th className="py-2 px-3 text-left w-32">💰 Plan-Preis</th>
             <th className="py-2 px-3 text-left w-40">👤 Inhaber</th>
             <th className="py-2 px-3 text-left w-40">🧑‍💼 Manager</th>
             <th className="py-2 px-3 text-left w-40">🎤 Markenbotschafter</th>
-            <th className="py-2 px-3 text-left w-36">📅 Ablaufdatum</th>
+            <th className="py-2 px-3 text-left w-[60px]">📅 Ablaufdatum</th>
             <th className="py-2 px-3 text-left w-32">💸 Provisionen</th>
-            <th className="py-2 px-3 text-center w-16">⚙️ Aktion</th>
+            <th className="py-2 px-3 text-center w-18">⚙️ Aktion</th>
           </tr>
         </thead>
 
         <tbody>
-          {displayedCompanies.map((company, index) => {
+          {companies.map((company, index) => {
             const manager = getUserById(company.manager_id);
             const markenbotschafter = getUserById(company.markenbotschafter_id);
 
@@ -59,7 +58,7 @@ const CompanyTable = ({ companies, onEdit, onDelete }) => {
               <CompanyTableRow
                 key={company._id}
                 company={company}
-                index={(page - 1) * companiesPerPage + index + 1}
+                index={index + 1}
                 onEdit={onEdit}
                 onDelete={onDelete}
                 manager={manager}
@@ -69,31 +68,6 @@ const CompanyTable = ({ companies, onEdit, onDelete }) => {
           })}
         </tbody>
       </table>
-
-      {/* ✅ Pagination Controls */}
-      {totalPages > 1 && (
-        <div className="flex justify-between items-center mt-6">
-          <button
-            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-            disabled={page === 1}
-            className="btn btn-xs btn-neutral"
-          >
-            ← Zurück
-          </button>
-
-          <span className="text-gray-700 text-xs">
-            Seite {page} von {totalPages}
-          </span>
-
-          <button
-            onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={page === totalPages}
-            className="btn btn-xs btn-neutral"
-          >
-            Weiter →
-          </button>
-        </div>
-      )}
     </div>
   );
 };
