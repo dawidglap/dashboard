@@ -177,12 +177,12 @@ const TaskRow = ({
 
         {/* Assigned To Name */}
         <td className="py-0 px-4 w-40 font-semibold">
-          {task.assignedTo?.name ? task.assignedTo.name : "Nicht zugewiesen"}
+          {task.assignedTo?.name || "Nicht zugewiesen"}
         </td>
 
         {/* Assigned To Role */}
         <td className="py-0 px-4 w-32 text-[10px] uppercase font-thin">
-          {task.assignedTo?.role ? task.assignedTo.role : "Unbekannt"}
+          {task.assignedTo?.role || "Unbekannt"}
         </td>
 
         {/* Due Date */}

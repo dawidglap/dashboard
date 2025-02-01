@@ -27,6 +27,7 @@ const Tasks = () => {
     searchQuery: "",
   });
   const [selectedTasks, setSelectedTasks] = useState([]);
+
   // ✅ Move toast state here
 
   // ✅ Delete Confirmation Modal
@@ -325,27 +326,40 @@ const Tasks = () => {
           </thead>
 
           <tbody>
-            {displayedTasks.map((task) => (
-              <TaskRow
-                key={task._id}
-                task={task}
-                user={user}
-                onUpdate={(taskId, updatedTask) => {
-                  setTasks(
-                    (prevTasks) =>
-                      prevTasks.map((t) => (t._id === taskId ? updatedTask : t)) // ✅ Now replacing with full object
-                  );
-                }}
-                onDelete={confirmDelete}
-                openDropdownId={openDropdownId}
-                setOpenDropdownId={setOpenDropdownId}
-                assignedTo={task.assignedTo}
-                dueDate={task.dueDate}
-                createdAt={task.createdAt}
-                onSelectTask={handleTaskSelect} // ✅ Add task selection function
-                isSelected={selectedTasks.includes(task._id)} // ✅ Track selection state
-              />
-            ))}
+            {displayedTasks
+              .flatMap((task) =>
+                (task.assignedTo?.length > 0 ? task.assignedTo : [null])
+                  .filter(
+                    (assignee) =>
+                      !filters.assignedToFilter ||
+                      assignee?._id === filters.assignedToFilter // ✅ Fix: Use filters.assignedToFilter
+                  )
+                  .map((user) => ({
+                    ...task,
+                    assignedTo: user,
+                  }))
+              )
+              .slice(0, 12) // ✅ Apply limit after expansion
+              .map((task) => (
+                <TaskRow
+                  key={`${task._id}-${task.assignedTo?._id || "unassigned"}`}
+                  task={task}
+                  user={user}
+                  onUpdate={(taskId, updatedTask) => {
+                    setTasks((prevTasks) =>
+                      prevTasks.map((t) => (t._id === taskId ? updatedTask : t))
+                    );
+                  }}
+                  onDelete={confirmDelete}
+                  openDropdownId={openDropdownId}
+                  setOpenDropdownId={setOpenDropdownId}
+                  assignedTo={task.assignedTo}
+                  dueDate={task.dueDate}
+                  createdAt={task.createdAt}
+                  onSelectTask={handleTaskSelect}
+                  isSelected={selectedTasks.includes(task._id)}
+                />
+              ))}
           </tbody>
         </table>
       </div>

@@ -29,7 +29,7 @@ const CompanyTable = ({
     fetchUsers();
   }, []);
 
-  // ✅ Get user by ID
+  // ✅ Get user by ID. and adding something else
   const getUserById = (userId) => users.find((u) => u._id === userId);
 
   return (

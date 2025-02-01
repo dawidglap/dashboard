@@ -7,7 +7,8 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("medium");
-  const [assignedTo, setAssignedTo] = useState("");
+  const [assignedTo, setAssignedTo] = useState([]); // ✅ Now an array
+  const [selectAll, setSelectAll] = useState(false); // ✅ Track "Select All"
   const [dueDate, setDueDate] = useState("");
   const [users, setUsers] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -30,11 +31,35 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
     if (isOpen) fetchUsers();
   }, [isOpen]);
 
+  // ✅ Handle multi-user selection
+  const handleUserSelect = (userId) => {
+    if (assignedTo.includes(userId)) {
+      setAssignedTo(assignedTo.filter((id) => id !== userId));
+    } else {
+      setAssignedTo([...assignedTo, userId]);
+    }
+  };
+
+  // ✅ Handle "Select All"
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setAssignedTo([]); // Deselect all
+    } else {
+      setAssignedTo(users.map((user) => user._id)); // Select all users
+    }
+    setSelectAll(!selectAll);
+  };
+
   // ✅ Prevent past dates in the date picker
   const today = new Date().toISOString().split("T")[0];
 
   // ✅ Handle task creation
   const handleCreateTask = async () => {
+    if (assignedTo.length === 0) {
+      setError("Mindestens ein Benutzer muss ausgewählt werden.");
+      return;
+    }
+
     setIsSaving(true);
     setError(null);
 
@@ -47,7 +72,7 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
           description,
           priority,
           status,
-          assignedTo,
+          assignedTo, // ✅ Now sending an array of user IDs
           dueDate,
         }),
       });
@@ -128,21 +153,30 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
             </select>
           </div>
 
-          {/* Assigned To (User Dropdown) */}
+          {/* Assigned To (Multi-Select) */}
           <div>
-            <label className="text-sm font-medium">👤 Zugewiesen an</label>
-            <select
-              value={assignedTo}
-              onChange={(e) => setAssignedTo(e.target.value)}
-              className="select select-sm select-bordered w-full"
-            >
-              <option value="">-- Benutzer auswählen --</option>
+            <label className="text-sm font-medium">👥 Zugewiesen an</label>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={handleSelectAll}
+                className="btn btn-xs btn-outline"
+              >
+                {selectAll ? "Alle abwählen" : "Alle auswählen"}
+              </button>
               {users.map((user) => (
-                <option key={user._id} value={user._id}>
+                <button
+                  key={user._id}
+                  onClick={() => handleUserSelect(user._id)}
+                  className={`btn btn-xs ${
+                    assignedTo.includes(user._id)
+                      ? "bg-green-500 text-white"
+                      : "btn-outline"
+                  }`}
+                >
                   {user.name} ({user.role})
-                </option>
+                </button>
               ))}
-            </select>
+            </div>
           </div>
 
           {/* Due Date */}
@@ -152,7 +186,7 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              min={new Date().toISOString().split("T")[0]}
+              min={today}
               className="input input-sm input-bordered w-full"
             />
           </div>

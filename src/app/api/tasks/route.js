@@ -73,7 +73,7 @@ export async function GET(request) {
 
     if (assignedToFilter) {
       console.log("🔧 Filtering by assignedTo:", assignedToFilter);
-      query["assignedTo._id"] = new ObjectId(assignedToFilter);
+      query["assignedTo._id"] = new ObjectId(assignedToFilter); // ✅ Use direct match instead of $in
     }
 
     if (dueDateFilter) query.dueDate = { $lte: new Date(dueDateFilter) }; // Tasks due *before* this date
@@ -113,7 +113,7 @@ export async function GET(request) {
             assignedTo: {
               $cond: {
                 if: { $gt: [{ $size: "$assignedUser" }, 0] }, // ✅ If user exists
-                then: { $arrayElemAt: ["$assignedUser", 0] }, // ✅ Assign first user match
+                then: "$assignedUser", // ✅ Assign full array instead of only first user
                 else: "$assignedTo", // ✅ If no match, keep existing embedded object
               },
             },
@@ -185,7 +185,8 @@ export async function POST(req) {
       !description ||
       !priority ||
       !status ||
-      !assignedTo ||
+      !Array.isArray(assignedTo) || // ✅ Ensure it's an array
+      assignedTo.length === 0 ||
       !dueDate
     ) {
       return new Response(
@@ -194,20 +195,18 @@ export async function POST(req) {
       );
     }
 
-    if (!ObjectId.isValid(assignedTo)) {
-      return new Response(
-        JSON.stringify({ success: false, message: "Invalid assignedTo ID" }),
-        { status: 400 }
-      );
-    }
+    // ✅ Convert assignedTo array to ObjectIds
+    const assignedUserIds = assignedTo.map((id) => new ObjectId(id));
 
-    const assignedUser = await db
+    // ✅ Fetch all assigned users from DB
+    const assignedUsers = await db
       .collection("users")
-      .findOne({ _id: new ObjectId(assignedTo) });
+      .find({ _id: { $in: assignedUserIds } })
+      .toArray();
 
-    if (!assignedUser) {
+    if (assignedUsers.length === 0) {
       return new Response(
-        JSON.stringify({ success: false, message: "Assigned user not found" }),
+        JSON.stringify({ success: false, message: "Assigned users not found" }),
         { status: 404 }
       );
     }
@@ -228,21 +227,16 @@ export async function POST(req) {
       description,
       priority,
       status,
-      assignedTo: {
-        _id: assignedUser._id,
-        name: assignedUser.name,
-        role: assignedUser.role,
-      },
+      assignedTo: assignedUsers.map((user) => ({
+        _id: user._id,
+        name: user.name,
+        role: user.role,
+      })), // ✅ Store multiple assigned users
       createdBy: { _id: user._id, name: user.name },
       createdAt: new Date(),
       updatedAt: new Date(),
       dueDate: new Date(dueDate),
     };
-
-    console.log(
-      "🛠 NEW TASK OBJECT BEFORE INSERT:",
-      JSON.stringify(newTask, null, 2)
-    ); // 🔥 Debugging
 
     const result = await db.collection("tasks").insertOne(newTask);
 
@@ -252,11 +246,6 @@ export async function POST(req) {
         { status: 500 }
       );
     }
-
-    console.log(
-      "✅ TASK SUCCESSFULLY INSERTED:",
-      JSON.stringify(newTask, null, 2)
-    ); // 🔥 Debugging
 
     return new Response(
       JSON.stringify({
