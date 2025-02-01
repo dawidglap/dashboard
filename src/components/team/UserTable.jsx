@@ -14,13 +14,14 @@ const UserTable = ({ users, onEdit, onDelete }) => {
   );
 
   return (
-    <div className="overflow-x-auto rounded-lg  ">
-      <table className="table table-xs hover w-full rounded-lg border-indigo-300">
+    <div className="overflow-x-auto rounded-lg">
+      <table className="table table-xs hover w-full bg-white rounded-lg border-indigo-300">
         <thead>
-          <tr className="bg-indigo-100 text-slate-700 text-sm">
-            <th className="py-2 px-3 w-6">#</th>
+          <tr className="bg-indigo-200 text-slate-700 text-sm">
+            {/* <th className="py-2 px-3 w-6">#</th> */}
+            <th className="py-2 px-3 text-left w-auto">👤 Vorname</th>
+
             <th className="py-2 px-3 text-left w-auto">📧 E-Mail</th>
-            <th className="py-2 px-3 text-left w-48">👤 Name</th>
             <th className="py-2 px-3 text-left w-32">🎂 Geburtstag</th>
             <th className="py-2 px-3 text-left w-36">🎭 Rolle</th>
             <th className="py-2 px-3 text-center w-16">⚙️ Aktion</th>
@@ -32,16 +33,31 @@ const UserTable = ({ users, onEdit, onDelete }) => {
               key={user._id}
               className="border-b hover:bg-indigo-50 transition text-sm"
             >
-              <td className="py-0 px-3">
+              {/* <td className="py-2 px-3">
                 {(page - 1) * usersPerPage + index + 1}
+              </td> */}
+
+              <td className="py-2 px-3 font-semibold">{user.name || "N/A"}</td>
+
+              {/* ✅ Clickable Email - Opens Email Client */}
+              <td className="py-2 px-3">
+                {user.email ? (
+                  <a
+                    href={`mailto:${user.email}`}
+                    className="text-indigo-600 hover:underline"
+                  >
+                    {user.email}
+                  </a>
+                ) : (
+                  "N/A"
+                )}
               </td>
-              <td className="py-0 px-3">{user.email || "N/A"}</td>
-              <td className="py-0 px-3 font-semibold">{user.name || "N/A"}</td>
-              <td className="py-0 px-3">{user.birthday || "N/A"}</td>
-              <td className="py-0 px-3 uppercase text-[10px] font-medium text-gray-600">
+
+              <td className="py-2 px-3">{user.birthday || "N/A"}</td>
+              <td className="py-2 px-3 uppercase text-[10px] font-medium text-gray-600">
                 {user.role}
               </td>
-              <td className="py-0 px-3 flex justify-center space-x-2">
+              <td className="py-2 px-3 flex justify-center space-x-2">
                 <button
                   onClick={() => onEdit(user)}
                   className="p-2 rounded hover:bg-indigo-200 transition"
