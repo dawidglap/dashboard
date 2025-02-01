@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import useCompanyForm from "../../hooks/useCompanyForm";
+import { FaSpinner } from "react-icons/fa";
 
 const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
   const { formData, handleChange, setFormData } = useCompanyForm({
@@ -15,108 +16,124 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
     markenbotschafter_id: "",
   });
 
-  const [managers, setManagers] = useState([]);
-  const [markenbotschafters, setMarkenbotschafters] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState([]); // Store users
+  const [toastMessage, setToastMessage] = useState(null);
+  const [isSaving, setIsSaving] = useState(false); // Track saving state
+  const [loadingUsers, setLoadingUsers] = useState(true);
   const [error, setError] = useState(null);
 
-  // ✅ Fetch managers & markenbotschafters when the modal opens
+  // ✅ Fetch users only when the modal opens
   useEffect(() => {
+    if (!isOpen) return;
+
     const fetchUsers = async () => {
       try {
         const res = await fetch("/api/users");
         if (!res.ok) throw new Error("Fehler beim Laden der Benutzerliste");
         const data = await res.json();
-
-        setManagers(
-          data.users.filter(
-            (user) => user.role === "manager" || user.role === "admin"
-          )
-        );
-
-        setMarkenbotschafters(
-          data.users.filter(
-            (user) => user.role === "markenbotschafter" || user.role === "admin"
-          )
-        );
+        setUsers(data.users || []);
       } catch (error) {
+        console.error("❌ Fehler:", error.message);
         setError(error.message);
       } finally {
-        setLoading(false);
+        setLoadingUsers(false);
       }
     };
 
-    if (isOpen) fetchUsers();
+    fetchUsers();
   }, [isOpen]);
 
-  const handleSubmit = () => {
+  // ✅ Reset loading state when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setIsSaving(false);
+      setToastMessage(null);
+    }
+  }, [isOpen]);
+
+  const handleSubmit = async () => {
     if (!formData.manager_id || !formData.markenbotschafter_id) {
-      alert("Bitte wählen Sie einen Manager und einen Markenbotschafter aus.");
+      setToastMessage(
+        "❌ Bitte wählen Sie einen Manager und einen Markenbotschafter aus."
+      );
       return;
     }
 
-    onSubmit(formData);
-    setFormData({
-      company_name: "",
-      company_address: "",
-      plan: "BASIC",
-      company_owner: "",
-      plan_price: "",
-      expiration_date: "",
-      manager_id: "",
-      markenbotschafter_id: "",
-    });
-    onClose();
+    try {
+      setIsSaving(true);
+      await onSubmit(formData);
+      setToastMessage("✅ Firma erfolgreich hinzugefügt!");
+
+      // Reset form & close after success
+      setTimeout(() => {
+        setToastMessage(null);
+        setFormData({
+          company_name: "",
+          company_address: "",
+          plan: "BASIC",
+          company_owner: "",
+          plan_price: "",
+          expiration_date: "",
+          manager_id: "",
+          markenbotschafter_id: "",
+        });
+        onClose();
+      }, 2000);
+    } catch (error) {
+      console.error("❌ Fehler:", error.message);
+      setToastMessage("❌ Fehler beim Speichern der Firma.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (!isOpen) return null;
 
   return (
     <div className="modal modal-open">
-      <div className="modal-box">
-        <h3 className="font-bold text-lg mb-4">Neue Firma hinzufügen</h3>
+      <div className="modal-box space-y-4 bg-indigo-100 shadow-lg rounded-lg p-6">
+        <h3 className="text-lg font-semibold text-gray-700">
+          ➕ Neue Firma hinzufügen
+        </h3>
 
-        {loading ? (
+        {loadingUsers ? (
           <p>Lade Benutzer...</p>
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : (
-          <form>
-            <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text">Firmen-Name</span>
-              </label>
+          <>
+            {/* Firmen-Name */}
+            <div>
+              <label className="text-sm font-medium">🏢 Firmen-Name</label>
               <input
                 type="text"
                 name="company_name"
                 value={formData.company_name}
                 onChange={handleChange}
-                className="input input-bordered"
+                className="input input-sm input-bordered w-full"
               />
             </div>
 
-            <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text">Firmen-Adresse</span>
-              </label>
+            {/* Firmen-Adresse */}
+            <div>
+              <label className="text-sm font-medium">📍 Firmen-Adresse</label>
               <input
                 type="text"
                 name="company_address"
                 value={formData.company_address}
                 onChange={handleChange}
-                className="input input-bordered"
+                className="input input-sm input-bordered w-full"
               />
             </div>
 
-            <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text">Plan</span>
-              </label>
+            {/* Plan Auswahl */}
+            <div>
+              <label className="text-sm font-medium">📋 Plan</label>
               <select
                 name="plan"
                 value={formData.plan}
                 onChange={handleChange}
-                className="select select-bordered"
+                className="select select-sm select-bordered w-full"
               >
                 <option value="BASIC">BASIC</option>
                 <option value="PRO">PRO</option>
@@ -124,100 +141,123 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
               </select>
             </div>
 
+            {/* Plan-Preis (Nur für BUSINESS) */}
             {formData.plan === "BUSINESS" && (
-              <div className="form-control mb-4">
-                <label className="label">
-                  <span className="label-text">Plan-Preis</span>
-                </label>
+              <div>
+                <label className="text-sm font-medium">💰 Plan-Preis</label>
                 <input
                   type="number"
                   name="plan_price"
                   value={formData.plan_price}
                   onChange={handleChange}
-                  className="input input-bordered"
+                  className="input input-sm input-bordered w-full"
                 />
               </div>
             )}
 
-            <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text">Inhaber</span>
-              </label>
+            {/* Inhaber */}
+            <div>
+              <label className="text-sm font-medium">👤 Inhaber</label>
               <input
                 type="text"
                 name="company_owner"
                 value={formData.company_owner}
                 onChange={handleChange}
-                className="input input-bordered"
+                className="input input-sm input-bordered w-full"
               />
             </div>
 
-            <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text">Ablaufdatum</span>
-              </label>
+            {/* Ablaufdatum */}
+            <div>
+              <label className="text-sm font-medium">📅 Ablaufdatum</label>
               <input
                 type="date"
                 name="expiration_date"
                 value={formData.expiration_date}
                 onChange={handleChange}
-                className="input input-bordered"
+                className="input input-sm input-bordered w-full"
               />
             </div>
 
             {/* Manager Auswahl */}
-            <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text">Manager</span>
-              </label>
+            <div>
+              <label className="text-sm font-medium">🧑‍💼 Manager</label>
               <select
                 name="manager_id"
                 value={formData.manager_id}
                 onChange={handleChange}
-                className="select select-bordered"
+                className="select select-sm select-bordered w-full"
               >
-                <option value="">-- Wählen Sie einen Manager --</option>
-                {managers.map((manager) => (
-                  <option key={manager._id} value={manager._id}>
-                    {manager.name} {manager.surname} ({manager.email})
-                  </option>
-                ))}
+                <option value="">-- Manager auswählen --</option>
+                {users
+                  .filter(
+                    (user) => user.role === "manager" || user.role === "admin"
+                  )
+                  .map((user) => (
+                    <option key={user._id} value={user._id}>
+                      {user.name} {user.surname} ({user.email})
+                    </option>
+                  ))}
               </select>
             </div>
 
             {/* Markenbotschafter Auswahl */}
-            <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text">Markenbotschafter</span>
+            <div>
+              <label className="text-sm font-medium">
+                🎤 Markenbotschafter
               </label>
               <select
                 name="markenbotschafter_id"
                 value={formData.markenbotschafter_id}
                 onChange={handleChange}
-                className="select select-bordered"
+                className="select select-sm select-bordered w-full"
               >
-                <option value="">
-                  -- Wählen Sie einen Markenbotschafter --
-                </option>
-                {markenbotschafters.map((bot) => (
-                  <option key={bot._id} value={bot._id}>
-                    {bot.name} {bot.surname} ({bot.email})
-                  </option>
-                ))}
+                <option value="">-- Markenbotschafter auswählen --</option>
+                {users
+                  .filter(
+                    (user) =>
+                      user.role === "markenbotschafter" || user.role === "admin"
+                  )
+                  .map((user) => (
+                    <option key={user._id} value={user._id}>
+                      {user.name} {user.surname} ({user.email})
+                    </option>
+                  ))}
               </select>
             </div>
-          </form>
+          </>
         )}
 
-        <div className="modal-action">
-          <button onClick={handleSubmit} className="btn btn-success">
-            Speichern
+        {/* Modal Actions */}
+        <div className="modal-action flex justify-between">
+          <button
+            onClick={onClose}
+            className="btn btn-sm bg-red-400 hover:bg-red-500 text-white"
+          >
+            ❌ Abbrechen
           </button>
-          <button onClick={onClose} className="btn btn-error">
-            Abbrechen
+          <button
+            onClick={handleSubmit}
+            className={`btn btn-sm text-white ${
+              isSaving
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-green-500 hover:bg-green-600"
+            }`}
+            disabled={isSaving}
+          >
+            {isSaving ? <FaSpinner className="animate-spin" /> : "✅ Speichern"}
           </button>
         </div>
       </div>
+
+      {/* ✅ Toast Notification */}
+      {toastMessage && (
+        <div className="toast fixed bottom-4 right-4 z-50">
+          <div className="alert alert-success shadow-lg px-2 py-1">
+            <span>{toastMessage}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

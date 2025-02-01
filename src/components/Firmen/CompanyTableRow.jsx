@@ -11,7 +11,13 @@ const CompanyTableRow = ({
   markenbotschafterName,
 }) => {
   return (
-    <tr className="border-b hover:bg-indigo-50 transition text-sm">
+    <tr
+      className={`border-b hover:bg-indigo-50 transition text-sm ${
+        !company.manager_id || !company.markenbotschafter_id
+          ? "bg-yellow-100"
+          : ""
+      }`}
+    >
       {/* Firmen-Name */}
       <td className="py-2 px-3 font-semibold">
         {company.company_name || "N/A"}
