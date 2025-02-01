@@ -25,7 +25,7 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
     company
   );
 
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([]); // ✅ Store all users
   const [toastMessage, setToastMessage] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -203,17 +203,49 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
             />
           </div>
 
-          {/* Ablaufdatum */}
+          {/* Manager Selection */}
           <div>
-            <label className="text-sm font-medium">📅 Ablaufdatum</label>
-            <input
-              type="date"
-              name="expiration_date"
-              value={formData.expiration_date}
+            <label className="text-sm font-medium">🧑‍💼 Manager</label>
+            <select
+              name="manager_id"
+              value={formData.manager_id}
               onChange={handleChange}
-              className="input input-sm input-bordered w-full"
-              min={new Date().toISOString().split("T")[0]}
-            />
+              className="select select-sm select-bordered w-full"
+            >
+              <option value="">-- Manager auswählen --</option>
+              {users
+                .filter(
+                  (user) => user.role === "manager" || user.role === "admin"
+                )
+                .map((user) => (
+                  <option key={user._id} value={user._id}>
+                    {user.name} {user.surname} ({user.role})
+                  </option>
+                ))}
+            </select>
+          </div>
+
+          {/* Markenbotschafter Selection */}
+          <div>
+            <label className="text-sm font-medium">🎤 Markenbotschafter</label>
+            <select
+              name="markenbotschafter_id"
+              value={formData.markenbotschafter_id}
+              onChange={handleChange}
+              className="select select-sm select-bordered w-full"
+            >
+              <option value="">-- Markenbotschafter auswählen --</option>
+              {users
+                .filter(
+                  (user) =>
+                    user.role === "markenbotschafter" || user.role === "admin"
+                )
+                .map((user) => (
+                  <option key={user._id} value={user._id}>
+                    {user.name} {user.surname} ({user.role})
+                  </option>
+                ))}
+            </select>
           </div>
         </div>
 

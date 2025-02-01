@@ -24,13 +24,8 @@ const CompanyTable = ({ companies, onEdit, onDelete }) => {
     fetchUsers();
   }, []);
 
-  // ✅ Get user name safely
-  const getUserNameById = (userId) => {
-    const user = users.find((u) => u._id === userId);
-    return user
-      ? `${user.name || ""} ${user.surname || ""} (${user.role || ""})`.trim()
-      : "Unbekannt";
-  };
+  // ✅ Get user by ID
+  const getUserById = (userId) => users.find((u) => u._id === userId);
 
   const totalPages = Math.ceil(companies.length / companiesPerPage);
   const displayedCompanies = companies.slice(
@@ -50,24 +45,28 @@ const CompanyTable = ({ companies, onEdit, onDelete }) => {
             <th className="py-2 px-3 text-left w-40">🧑‍💼 Manager</th>
             <th className="py-2 px-3 text-left w-40">🎤 Markenbotschafter</th>
             <th className="py-2 px-3 text-left w-36">📅 Ablaufdatum</th>
+            <th className="py-2 px-3 text-left w-32">💸 Provisionen</th>
             <th className="py-2 px-3 text-center w-16">⚙️ Aktion</th>
           </tr>
         </thead>
 
         <tbody>
-          {displayedCompanies.map((company, index) => (
-            <CompanyTableRow
-              key={company._id}
-              company={company}
-              index={(page - 1) * companiesPerPage + index + 1}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              managerName={getUserNameById(company.manager_id)}
-              markenbotschafterName={getUserNameById(
-                company.markenbotschafter_id
-              )}
-            />
-          ))}
+          {displayedCompanies.map((company, index) => {
+            const manager = getUserById(company.manager_id);
+            const markenbotschafter = getUserById(company.markenbotschafter_id);
+
+            return (
+              <CompanyTableRow
+                key={company._id}
+                company={company}
+                index={(page - 1) * companiesPerPage + index + 1}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                manager={manager}
+                markenbotschafter={markenbotschafter}
+              />
+            );
+          })}
         </tbody>
       </table>
 
