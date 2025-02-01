@@ -1,11 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CompanyTableRow from "./CompanyTableRow";
 
 const CompanyTable = ({ companies, onEdit, onDelete }) => {
   const [page, setPage] = useState(1);
+  const [users, setUsers] = useState([]); // Store users
   const companiesPerPage = 12;
+
+  // ✅ Fetch users when component mounts
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch("/api/users");
+        if (!res.ok) throw new Error("Fehler beim Laden der Benutzer");
+        const data = await res.json();
+        setUsers(data.users || []);
+      } catch (error) {
+        console.error("Fehler beim Laden der Benutzer:", error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  // ✅ Get user name safely
+  const getUserNameById = (userId) => {
+    const user = users.find((u) => u._id === userId);
+    return user
+      ? `${user.name || ""} ${user.surname || ""} (${user.role || ""})`.trim()
+      : "Unbekannt";
+  };
 
   const totalPages = Math.ceil(companies.length / companiesPerPage);
   const displayedCompanies = companies.slice(
@@ -18,16 +43,17 @@ const CompanyTable = ({ companies, onEdit, onDelete }) => {
       <table className="table table-xs hover w-full rounded-lg border-indigo-300">
         <thead>
           <tr className="bg-indigo-100 text-slate-700 text-sm">
-            <th className="py-2 px-3 w-6">#</th>
             <th className="py-2 px-3 text-left w-auto">🏢 Firmen-Name</th>
-            <th className="py-2 px-3 text-left w-36">🆔 ID</th>
             <th className="py-2 px-3 text-left w-32">📋 Plan</th>
             <th className="py-2 px-3 text-left w-36">💰 Plan-Preis</th>
             <th className="py-2 px-3 text-left w-40">👤 Inhaber</th>
+            <th className="py-2 px-3 text-left w-40">🧑‍💼 Manager</th>
+            <th className="py-2 px-3 text-left w-40">🎤 Markenbotschafter</th>
             <th className="py-2 px-3 text-left w-36">📅 Ablaufdatum</th>
             <th className="py-2 px-3 text-center w-16">⚙️ Aktion</th>
           </tr>
         </thead>
+
         <tbody>
           {displayedCompanies.map((company, index) => (
             <CompanyTableRow
@@ -36,6 +62,10 @@ const CompanyTable = ({ companies, onEdit, onDelete }) => {
               index={(page - 1) * companiesPerPage + index + 1}
               onEdit={onEdit}
               onDelete={onDelete}
+              managerName={getUserNameById(company.manager_id)}
+              markenbotschafterName={getUserNameById(
+                company.markenbotschafter_id
+              )}
             />
           ))}
         </tbody>

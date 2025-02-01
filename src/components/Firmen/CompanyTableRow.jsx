@@ -2,22 +2,19 @@
 
 import { FaEdit, FaTrash } from "react-icons/fa";
 
-const CompanyTableRow = ({ company, index, onEdit, onDelete }) => {
+const CompanyTableRow = ({
+  company,
+  index,
+  onEdit,
+  onDelete,
+  managerName,
+  markenbotschafterName,
+}) => {
   return (
     <tr className="border-b hover:bg-indigo-50 transition text-sm">
-      {/* Index */}
-      <td className="py-2 px-3">{index}</td>
-
       {/* Firmen-Name */}
       <td className="py-2 px-3 font-semibold">
         {company.company_name || "N/A"}
-      </td>
-
-      {/* Firmen-ID (Tooltip) */}
-      <td className="py-2 px-3">
-        <div className="tooltip tooltip-bottom" data-tip={company._id}>
-          {company._id.slice(0, 3)}...{company._id.slice(-3)}
-        </div>
       </td>
 
       {/* Plan */}
@@ -36,6 +33,12 @@ const CompanyTableRow = ({ company, index, onEdit, onDelete }) => {
 
       {/* Inhaber */}
       <td className="py-2 px-3">{company.company_owner || "N/A"}</td>
+
+      {/* Manager */}
+      <td className="py-2 px-3">{managerName}</td>
+
+      {/* Markenbotschafter */}
+      <td className="py-2 px-3">{markenbotschafterName}</td>
 
       {/* Ablaufdatum */}
       <td className="py-2 px-3">

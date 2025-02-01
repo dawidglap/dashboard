@@ -154,7 +154,7 @@ const Firmen = () => {
         <h1 className="text-4xl font-bold text-gray-800">Firmen</h1>
         <button
           onClick={() => setShowModal(true)}
-          className="btn btn-warning btn-sm flex items-center space-x-2"
+          className="btn btn-neutral btn-sm flex items-center space-x-2"
         >
           <FaPlus />
           <span>Neue Firma</span>
