@@ -3,12 +3,12 @@ import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
 // GET: Fetch a single company by its _id
-export async function GET(req, { params }) {
+export async function GET(req, context) {
   try {
     const client = await clientPromise;
     const db = client.db("dashboard");
 
-    const { id } = params; // Extract `_id` from the request URL
+    const { id } = context.params;
 
     const company = await db.collection("companies").findOne({
       _id: new ObjectId(id),
@@ -32,12 +32,13 @@ export async function GET(req, { params }) {
 }
 
 // PUT: Update a company by its _id
-export async function PUT(req, { params }) {
+
+export async function PUT(req, context) {
   try {
     const client = await clientPromise;
     const db = client.db("dashboard");
 
-    const { id } = params;
+    const { id } = context.params;
     const updates = await req.json();
 
     if (!ObjectId.isValid(id)) {
@@ -47,50 +48,45 @@ export async function PUT(req, { params }) {
       );
     }
 
-    // Convert manager and markenbotschafter IDs to ObjectId
+    // Convert manager and markenbotschafter IDs to ObjectId if provided
     if (updates.manager_id)
       updates.manager_id = new ObjectId(updates.manager_id);
     if (updates.markenbotschafter_id)
       updates.markenbotschafter_id = new ObjectId(updates.markenbotschafter_id);
 
-    // Ensure expiration_date is stored correctly
-    if (updates.expiration_date) {
-      updates.expiration_date = new Date(updates.expiration_date);
+    // Validate Manager & Markenbotschafter before saving
+    if (updates.manager_id) {
+      const manager = await db.collection("users").findOne({
+        _id: updates.manager_id,
+        role: { $in: ["manager", "admin"] },
+      });
+      if (!manager)
+        return NextResponse.json(
+          { success: false, error: "Ungültige Manager-ID" },
+          { status: 400 }
+        );
     }
 
-    // Validate Manager exists
-    const manager = await db.collection("users").findOne({
-      _id: updates.manager_id,
-      role: { $in: ["manager", "admin"] },
-    });
-
-    if (!manager) {
-      return NextResponse.json(
-        { success: false, error: "Manager-ID ist ungültig" },
-        { status: 400 }
-      );
-    }
-
-    // Validate Markenbotschafter exists
-    const markenbotschafter = await db.collection("users").findOne({
-      _id: updates.markenbotschafter_id,
-      role: { $in: ["markenbotschafter", "admin"] },
-    });
-
-    if (!markenbotschafter) {
-      return NextResponse.json(
-        { success: false, error: "Markenbotschafter-ID ist ungültig" },
-        { status: 400 }
-      );
+    if (updates.markenbotschafter_id) {
+      const markenbotschafter = await db.collection("users").findOne({
+        _id: updates.markenbotschafter_id,
+        role: { $in: ["markenbotschafter", "admin"] },
+      });
+      if (!markenbotschafter)
+        return NextResponse.json(
+          { success: false, error: "Ungültige Markenbotschafter-ID" },
+          { status: 400 }
+        );
     }
 
     // Auto-adjust plan price if changed
     if (!updates.plan_price) {
-      if (updates.plan === "BASIC") {
-        updates.plan_price = 799 * 12 * 1.081;
-      } else if (updates.plan === "PRO") {
-        updates.plan_price = 899 * 12 * 1.081;
-      }
+      updates.plan_price =
+        updates.plan === "BASIC"
+          ? 799 * 12 * 1.081
+          : updates.plan === "PRO"
+          ? 899 * 12 * 1.081
+          : null;
     }
 
     const result = await db
@@ -118,12 +114,12 @@ export async function PUT(req, { params }) {
 }
 
 // DELETE: Delete a company by its _id
-export async function DELETE(req, { params }) {
+export async function DELETE(req, context) {
   try {
     const client = await clientPromise;
     const db = client.db("dashboard");
 
-    const { id } = params; // Extract `_id` from the request URL
+    const { id } = context.params;
 
     const result = await db
       .collection("companies")

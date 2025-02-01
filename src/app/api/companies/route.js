@@ -24,6 +24,8 @@ export async function GET() {
   }
 }
 
+const ADMIN_ID = "679396cd375db32de1bbfd01"; // Default Admin ID
+
 export async function POST(req) {
   try {
     const client = await clientPromise;
@@ -32,30 +34,36 @@ export async function POST(req) {
     const {
       company_id,
       company_name,
-      company_address,
+      company_street,
+      company_street_number,
+      company_post_code,
+      company_city,
+      company_email,
+      telephone,
+      mobile,
       plan,
       company_owner,
       expiration_date,
       plan_price,
-      manager_id,
-      markenbotschafter_id,
+      manager_id = ADMIN_ID,
+      markenbotschafter_id = ADMIN_ID,
     } = await req.json();
 
     // ✅ Validate required fields
     if (
       !company_name ||
-      !company_address ||
-      !plan ||
-      !manager_id ||
-      !markenbotschafter_id
+      !company_street ||
+      !company_post_code ||
+      !company_city ||
+      !plan
     ) {
       return NextResponse.json(
-        { success: false, error: "Alle Felder müssen ausgefüllt sein." },
+        { success: false, error: "Pflichtfelder fehlen." },
         { status: 400 }
       );
     }
 
-    // ✅ Convert IDs safely (Avoid error if invalid format)
+    // ✅ Convert IDs safely
     let managerObjectId, markenbotschafterObjectId;
     try {
       managerObjectId = new ObjectId(manager_id);
@@ -67,33 +75,22 @@ export async function POST(req) {
       );
     }
 
-    // ✅ Check if the manager exists in the users collection
-    const manager = await db.collection("users").findOne({
-      _id: managerObjectId,
-      role: { $in: ["manager", "admin"] },
-    });
+    // ✅ Validate Manager & Markenbotschafter
+    const manager = await db
+      .collection("users")
+      .findOne({ _id: managerObjectId, role: { $in: ["manager", "admin"] } });
+    const markenbotschafter = await db
+      .collection("users")
+      .findOne({
+        _id: markenbotschafterObjectId,
+        role: { $in: ["markenbotschafter", "admin"] },
+      });
 
-    if (!manager) {
+    if (!manager || !markenbotschafter) {
       return NextResponse.json(
         {
           success: false,
-          error: "Manager-ID ist ungültig oder nicht gefunden.",
-        },
-        { status: 400 }
-      );
-    }
-
-    // ✅ Check if the markenbotschafter exists in the users collection
-    const markenbotschafter = await db.collection("users").findOne({
-      _id: markenbotschafterObjectId,
-      role: { $in: ["markenbotschafter", "admin"] },
-    });
-
-    if (!markenbotschafter) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Markenbotschafter-ID ist ungültig oder nicht gefunden.",
+          error: "Manager oder Markenbotschafter nicht gefunden.",
         },
         { status: 400 }
       );
@@ -102,11 +99,12 @@ export async function POST(req) {
     // ✅ Ensure `plan_price` is always valid
     let calculatedPlanPrice = parseFloat(plan_price) || null;
     if (!plan_price) {
-      if (plan === "BASIC") {
-        calculatedPlanPrice = 799 * 12 * 1.081; // Includes 8.1% tax
-      } else if (plan === "PRO") {
-        calculatedPlanPrice = 899 * 12 * 1.081; // Includes 8.1% tax
-      }
+      calculatedPlanPrice =
+        plan === "BASIC"
+          ? 799 * 12 * 1.081
+          : plan === "PRO"
+          ? 899 * 12 * 1.081
+          : null;
     }
 
     const determinedExpirationDate = expiration_date
@@ -117,7 +115,13 @@ export async function POST(req) {
     const result = await db.collection("companies").insertOne({
       company_id: company_id || null,
       company_name: company_name.trim(),
-      company_address: company_address.trim(),
+      company_street: company_street.trim(),
+      company_street_number: company_street_number?.trim() || "",
+      company_post_code: company_post_code.trim(),
+      company_city: company_city.trim(),
+      company_email: company_email?.trim() || "",
+      telephone: telephone?.trim() || "",
+      mobile: mobile?.trim() || "",
       plan: plan.trim(),
       company_owner: company_owner || "",
       expiration_date: determinedExpirationDate,

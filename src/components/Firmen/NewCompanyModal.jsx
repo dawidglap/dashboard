@@ -5,15 +5,24 @@ import useCompanyForm from "../../hooks/useCompanyForm";
 import { FaSpinner } from "react-icons/fa";
 
 const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
+  const adminId = "679396cd375db32de1bbfd01"; // Default Admin ID
+  const today = new Date().toISOString().split("T")[0]; // ✅ Ensure only future dates can be selected
+
   const { formData, handleChange, setFormData } = useCompanyForm({
     company_name: "",
-    company_address: "",
+    company_street: "",
+    company_street_number: "",
+    company_post_code: "",
+    company_city: "",
+    company_email: "",
+    telephone: "",
+    mobile: "",
     plan: "BASIC",
     company_owner: "",
     plan_price: "",
-    expiration_date: "",
-    manager_id: "",
-    markenbotschafter_id: "",
+    expiration_date: today, // ✅ Default to today
+    manager_id: adminId, // Default to Admin
+    markenbotschafter_id: adminId, // Default to Admin
   });
 
   const [users, setUsers] = useState([]); // Store users
@@ -52,16 +61,17 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
   }, [isOpen]);
 
   const handleSubmit = async () => {
-    if (!formData.manager_id || !formData.markenbotschafter_id) {
-      setToastMessage(
-        "❌ Bitte wählen Sie einen Manager und einen Markenbotschafter aus."
-      );
-      return;
-    }
-
     try {
       setIsSaving(true);
-      await onSubmit(formData);
+
+      // ✅ Ensure default values are set if no selection is made
+      const finalData = {
+        ...formData,
+        manager_id: formData.manager_id || adminId,
+        markenbotschafter_id: formData.markenbotschafter_id || adminId,
+      };
+
+      await onSubmit(finalData);
       setToastMessage("✅ Firma erfolgreich hinzugefügt!");
 
       // Reset form & close after success
@@ -69,13 +79,19 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
         setToastMessage(null);
         setFormData({
           company_name: "",
-          company_address: "",
+          company_street: "",
+          company_street_number: "",
+          company_post_code: "",
+          company_city: "",
+          company_email: "",
+          telephone: "",
+          mobile: "",
           plan: "BASIC",
           company_owner: "",
           plan_price: "",
-          expiration_date: "",
-          manager_id: "",
-          markenbotschafter_id: "",
+          expiration_date: today, // ✅ Reset to today's date
+          manager_id: adminId,
+          markenbotschafter_id: adminId,
         });
         onClose();
       }, 2000);
@@ -115,56 +131,47 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
 
             {/* Firmen-Adresse */}
-            <div>
-              <label className="text-sm font-medium">📍 Firmen-Adresse</label>
-              <input
-                type="text"
-                name="company_address"
-                value={formData.company_address}
-                onChange={handleChange}
-                className="input input-sm input-bordered w-full"
-              />
-            </div>
-
-            {/* Plan Auswahl */}
-            <div>
-              <label className="text-sm font-medium">📋 Plan</label>
-              <select
-                name="plan"
-                value={formData.plan}
-                onChange={handleChange}
-                className="select select-sm select-bordered w-full"
-              >
-                <option value="BASIC">BASIC</option>
-                <option value="PRO">PRO</option>
-                <option value="BUSINESS">BUSINESS</option>
-              </select>
-            </div>
-
-            {/* Plan-Preis (Nur für BUSINESS) */}
-            {formData.plan === "BUSINESS" && (
+            <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="text-sm font-medium">💰 Plan-Preis</label>
+                <label className="text-sm font-medium">📍 Straße</label>
                 <input
-                  type="number"
-                  name="plan_price"
-                  value={formData.plan_price}
+                  type="text"
+                  name="company_street"
+                  value={formData.company_street}
                   onChange={handleChange}
                   className="input input-sm input-bordered w-full"
                 />
               </div>
-            )}
-
-            {/* Inhaber */}
-            <div>
-              <label className="text-sm font-medium">👤 Inhaber</label>
-              <input
-                type="text"
-                name="company_owner"
-                value={formData.company_owner}
-                onChange={handleChange}
-                className="input input-sm input-bordered w-full"
-              />
+              <div>
+                <label className="text-sm font-medium">🏠 Hausnummer</label>
+                <input
+                  type="text"
+                  name="company_street_number"
+                  value={formData.company_street_number}
+                  onChange={handleChange}
+                  className="input input-sm input-bordered w-full"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">📮 PLZ</label>
+                <input
+                  type="text"
+                  name="company_post_code"
+                  value={formData.company_post_code}
+                  onChange={handleChange}
+                  className="input input-sm input-bordered w-full"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">🏙 Stadt</label>
+                <input
+                  type="text"
+                  name="company_city"
+                  value={formData.company_city}
+                  onChange={handleChange}
+                  className="input input-sm input-bordered w-full"
+                />
+              </div>
             </div>
 
             {/* Ablaufdatum */}
@@ -174,11 +181,43 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
                 type="date"
                 name="expiration_date"
                 value={formData.expiration_date}
+                min={today} // ✅ Prevent past dates
                 onChange={handleChange}
                 className="input input-sm input-bordered w-full"
               />
             </div>
 
+            {/* Kontaktinformationen */}
+            <div>
+              <label className="text-sm font-medium">📧 Firmen-E-Mail</label>
+              <input
+                type="email"
+                name="company_email"
+                value={formData.company_email}
+                onChange={handleChange}
+                className="input input-sm input-bordered w-full"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">📞 Telefon</label>
+              <input
+                type="text"
+                name="telephone"
+                value={formData.telephone}
+                onChange={handleChange}
+                className="input input-sm input-bordered w-full"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">📱 Mobil</label>
+              <input
+                type="text"
+                name="mobile"
+                value={formData.mobile}
+                onChange={handleChange}
+                className="input input-sm input-bordered w-full"
+              />
+            </div>
             {/* Manager Auswahl */}
             <div>
               <label className="text-sm font-medium">🧑‍💼 Manager</label>
@@ -188,7 +227,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
                 onChange={handleChange}
                 className="select select-sm select-bordered w-full"
               >
-                <option value="">-- Manager auswählen --</option>
+                <option value={adminId}>-- Standard: Admin --</option>
                 {users
                   .filter(
                     (user) => user.role === "manager" || user.role === "admin"
@@ -212,7 +251,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
                 onChange={handleChange}
                 className="select select-sm select-bordered w-full"
               >
-                <option value="">-- Markenbotschafter auswählen --</option>
+                <option value={adminId}>-- Standard: Admin --</option>
                 {users
                   .filter(
                     (user) =>
@@ -228,36 +267,15 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
           </>
         )}
 
-        {/* Modal Actions */}
         <div className="modal-action flex justify-between">
-          <button
-            onClick={onClose}
-            className="btn btn-sm bg-red-400 hover:bg-red-500 text-white"
-          >
+          <button onClick={onClose} className="btn btn-error">
             ❌ Abbrechen
           </button>
-          <button
-            onClick={handleSubmit}
-            className={`btn btn-sm text-white ${
-              isSaving
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-green-500 hover:bg-green-600"
-            }`}
-            disabled={isSaving}
-          >
+          <button onClick={handleSubmit} className="btn btn-success">
             {isSaving ? <FaSpinner className="animate-spin" /> : "✅ Speichern"}
           </button>
         </div>
       </div>
-
-      {/* ✅ Toast Notification */}
-      {toastMessage && (
-        <div className="toast fixed bottom-4 right-4 z-50">
-          <div className="alert alert-success shadow-lg px-2 py-1">
-            <span>{toastMessage}</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

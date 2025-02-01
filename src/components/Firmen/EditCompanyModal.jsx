@@ -5,10 +5,16 @@ import useCompanyForm from "../../hooks/useCompanyForm";
 import { FaSpinner } from "react-icons/fa";
 
 const EditCompanyModal = ({ company, onClose, onSave }) => {
-  const { formData, handleChange } = useCompanyForm(
+  const { formData, handleChange, setFormData } = useCompanyForm(
     {
       company_name: "",
-      company_address: "",
+      company_street: "",
+      company_street_number: "",
+      company_post_code: "",
+      company_city: "",
+      company_email: "",
+      telephone: "",
+      mobile: "",
       plan: "BASIC",
       company_owner: "",
       plan_price: "",
@@ -19,9 +25,9 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
     company
   );
 
-  const [users, setUsers] = useState([]); // Store all users
+  const [users, setUsers] = useState([]);
   const [toastMessage, setToastMessage] = useState(null);
-  const [isSaving, setIsSaving] = useState(false); // ✅ Track saving state
+  const [isSaving, setIsSaving] = useState(false);
 
   // ✅ Fetch users when modal opens
   useEffect(() => {
@@ -40,11 +46,31 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
     fetchUsers();
   }, []);
 
+  // ✅ Populate fields when opening the modal
   useEffect(() => {
     if (company) {
-      setIsSaving(false); // ✅ Reset loading state when a new company is opened
+      setFormData({
+        company_name: company.company_name || "",
+        company_street: company.company_street || "",
+        company_street_number: company.company_street_number || "",
+        company_post_code: company.company_post_code || "",
+        company_city: company.company_city || "",
+        company_email: company.company_email || "",
+        telephone: company.telephone || "",
+        mobile: company.mobile || "",
+        plan: company.plan || "BASIC",
+        company_owner: company.company_owner || "",
+        plan_price: company.plan_price || "",
+        expiration_date: company.expiration_date
+          ? new Date(company.expiration_date).toISOString().split("T")[0]
+          : "",
+        manager_id: company.manager_id || "",
+        markenbotschafter_id: company.markenbotschafter_id || "",
+      });
+
+      setIsSaving(false);
     }
-  }, [company]);
+  }, [company, setFormData]);
 
   const handleSubmit = async () => {
     if (!company || !company._id) {
@@ -61,19 +87,16 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
     console.log("Submitting update with data:", updatedData);
 
     try {
-      setIsSaving(true); // ✅ Show loader while saving
-
+      setIsSaving(true);
       await onSave(company._id, updatedData);
       setToastMessage("✅ Firma erfolgreich aktualisiert!");
 
-      // Delay closing the modal to allow toast visibility
       setTimeout(() => {
         setToastMessage(null);
         onClose();
       }, 2000);
     } catch (error) {
-      setIsSaving(false); // ✅ Hide loader after success/error
-
+      setIsSaving(false);
       console.error("Update error:", error);
       setToastMessage("❌ Fehler beim Aktualisieren!");
     }
@@ -83,131 +106,115 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
 
   return (
     <div className="modal modal-open">
-      <div className="modal-box space-y-4 bg-indigo-100 shadow-lg rounded-lg p-6">
+      <div className="modal-box w-3/4 max-w-5xl space-y-4 bg-indigo-100 shadow-lg rounded-lg p-6">
         <h3 className="text-lg font-semibold text-gray-700">
           ✏️ Firma bearbeiten
         </h3>
 
-        {/* Firmen-Name */}
-        <div>
-          <label className="text-sm font-medium">🏢 Firmen-Name</label>
-          <input
-            type="text"
-            name="company_name"
-            value={formData.company_name}
-            onChange={handleChange}
-            className="input input-sm input-bordered w-full"
-          />
-        </div>
-
-        {/* Firmen-Adresse */}
-        <div>
-          <label className="text-sm font-medium">📍 Firmen-Adresse</label>
-          <input
-            type="text"
-            name="company_address"
-            value={formData.company_address}
-            onChange={handleChange}
-            className="input input-sm input-bordered w-full"
-          />
-        </div>
-
-        {/* Plan Auswahl */}
-        <div>
-          <label className="text-sm font-medium">📋 Plan</label>
-          <select
-            name="plan"
-            value={formData.plan}
-            onChange={handleChange}
-            className="select select-sm select-bordered w-full"
-          >
-            <option value="BASIC">BASIC</option>
-            <option value="PRO">PRO</option>
-            <option value="BUSINESS">BUSINESS</option>
-          </select>
-        </div>
-
-        {/* Plan-Preis (Nur für BUSINESS) */}
-        {formData.plan === "BUSINESS" && (
+        <div className="grid grid-cols-2 gap-4">
+          {/* Firmen-Name */}
           <div>
-            <label className="text-sm font-medium">💰 Plan-Preis</label>
+            <label className="text-sm font-medium">🏢 Firmen-Name</label>
             <input
-              type="number"
-              name="plan_price"
-              value={formData.plan_price}
+              type="text"
+              name="company_name"
+              value={formData.company_name}
               onChange={handleChange}
               className="input input-sm input-bordered w-full"
             />
           </div>
-        )}
 
-        {/* Inhaber */}
-        <div>
-          <label className="text-sm font-medium">👤 Inhaber</label>
-          <input
-            type="text"
-            name="company_owner"
-            value={formData.company_owner}
-            onChange={handleChange}
-            className="input input-sm input-bordered w-full"
-          />
-        </div>
+          {/* Firmen-Adresse */}
+          <div>
+            <label className="text-sm font-medium">📍 Straße</label>
+            <input
+              type="text"
+              name="company_street"
+              value={formData.company_street}
+              onChange={handleChange}
+              className="input input-sm input-bordered w-full"
+            />
+          </div>
 
-        {/* Ablaufdatum */}
-        <div>
-          <label className="text-sm font-medium">📅 Ablaufdatum</label>
-          <input
-            type="date"
-            name="expiration_date"
-            value={formData.expiration_date}
-            onChange={handleChange}
-            className="input input-sm input-bordered w-full"
-          />
-        </div>
+          <div>
+            <label className="text-sm font-medium">🏠 Hausnummer</label>
+            <input
+              type="text"
+              name="company_street_number"
+              value={formData.company_street_number}
+              onChange={handleChange}
+              className="input input-sm input-bordered w-full"
+            />
+          </div>
 
-        {/* Manager Auswahl */}
-        <div>
-          <label className="text-sm font-medium">🧑‍💼 Manager</label>
-          <select
-            name="manager_id"
-            value={formData.manager_id}
-            onChange={handleChange}
-            className="select select-sm select-bordered w-full"
-          >
-            <option value="">-- Manager auswählen --</option>
-            {users
-              .filter(
-                (user) => user.role === "manager" || user.role === "admin"
-              )
-              .map((user) => (
-                <option key={user._id} value={user._id}>
-                  {user.name} {user.surname} ({user.role})
-                </option>
-              ))}
-          </select>
-        </div>
+          <div>
+            <label className="text-sm font-medium">📮 Postleitzahl</label>
+            <input
+              type="text"
+              name="company_post_code"
+              value={formData.company_post_code}
+              onChange={handleChange}
+              className="input input-sm input-bordered w-full"
+            />
+          </div>
 
-        {/* Markenbotschafter Auswahl */}
-        <div>
-          <label className="text-sm font-medium">🎤 Markenbotschafter</label>
-          <select
-            name="markenbotschafter_id"
-            value={formData.markenbotschafter_id}
-            onChange={handleChange}
-            className="select select-sm select-bordered w-full"
-          >
-            <option value="">-- Markenbotschafter auswählen --</option>
-            {users
-              .filter(
-                (user) =>
-                  user.role === "markenbotschafter" || user.role === "admin"
-              )
-              .map((user) => (
-                <option key={user._id} value={user._id}>
-                  {user.name} {user.surname} ({user.role})
-                </option>
-              ))}
-          </select>
+          <div>
+            <label className="text-sm font-medium">🏙️ Stadt</label>
+            <input
+              type="text"
+              name="company_city"
+              value={formData.company_city}
+              onChange={handleChange}
+              className="input input-sm input-bordered w-full"
+            />
+          </div>
+
+          {/* Contact Information */}
+          <div>
+            <label className="text-sm font-medium">📧 Firmen-E-Mail</label>
+            <input
+              type="email"
+              name="company_email"
+              value={formData.company_email}
+              onChange={handleChange}
+              className="input input-sm input-bordered w-full"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium">📞 Telefon</label>
+            <input
+              type="text"
+              name="telephone"
+              value={formData.telephone}
+              onChange={handleChange}
+              className="input input-sm input-bordered w-full"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium">📱 Mobil</label>
+            <input
+              type="text"
+              name="mobile"
+              value={formData.mobile}
+              onChange={handleChange}
+              className="input input-sm input-bordered w-full"
+            />
+          </div>
+
+          {/* Ablaufdatum */}
+          <div>
+            <label className="text-sm font-medium">📅 Ablaufdatum</label>
+            <input
+              type="date"
+              name="expiration_date"
+              value={formData.expiration_date}
+              onChange={handleChange}
+              className="input input-sm input-bordered w-full"
+              min={new Date().toISOString().split("T")[0]}
+            />
+          </div>
         </div>
 
         {/* Modal Actions */}
@@ -222,28 +229,17 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
             onClick={handleSubmit}
             className={`btn btn-sm text-white ${
               isSaving
-                ? "bg-gray-400 cursor-not-allowed" // ✅ Change color & disable during saving
+                ? "bg-gray-400 cursor-not-allowed"
                 : "bg-green-500 hover:bg-green-600"
             }`}
-            disabled={isSaving} // ✅ Disable button while saving
+            disabled={isSaving}
           >
             {isSaving ? <FaSpinner className="animate-spin" /> : "✅ Speichern"}
           </button>
         </div>
       </div>
-
-      {/* ✅ Toast Notification */}
-      {toastMessage && (
-        <div className="toast fixed bottom-4 right-4 z-50">
-          <div className="alert alert-success shadow-lg px-2 py-1">
-            <span>{toastMessage}</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
 export default EditCompanyModal;
-
-// ---
