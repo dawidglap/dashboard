@@ -245,3 +245,5 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
 };
 
 export default EditCompanyModal;
+
+// ---
