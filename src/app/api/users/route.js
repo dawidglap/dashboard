@@ -150,7 +150,17 @@ export async function PUT(request) {
   const { db } = await connectToDatabase();
   const body = await request.json();
 
-  const { id, email, name, surname, birthday, role, password } = body;
+  const {
+    id,
+    email,
+    phone_number,
+    user_street,
+    user_street_number,
+    user_postcode,
+    user_city,
+    subscription_expiration,
+    is_active,
+  } = body;
 
   // Validate required fields
   if (!id || !ObjectId.isValid(id)) {
@@ -163,27 +173,14 @@ export async function PUT(request) {
   // Create the update object
   const updateData = {};
   if (email) updateData.email = email;
-  if (name) updateData.name = name;
-  if (surname) updateData.surname = surname;
-  if (birthday) updateData.birthday = birthday;
-  if (role) updateData.role = role;
-
-  // Hash the password if it's provided
-  if (password) {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    updateData.password = hashedPassword;
-  }
-
-  // Check if there's any data to update
-  if (Object.keys(updateData).length === 0) {
-    return new Response(
-      JSON.stringify({
-        success: false,
-        message: "No fields provided to update",
-      }),
-      { status: 400 }
-    );
-  }
+  if (phone_number) updateData.phone_number = phone_number;
+  if (user_street) updateData.user_street = user_street;
+  if (user_street_number) updateData.user_street_number = user_street_number;
+  if (user_postcode) updateData.user_postcode = user_postcode;
+  if (user_city) updateData.user_city = user_city;
+  if (subscription_expiration)
+    updateData.subscription_expiration = new Date(subscription_expiration);
+  if (typeof is_active !== "undefined") updateData.is_active = is_active; // Allow toggling activation status
 
   try {
     const result = await db

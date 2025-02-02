@@ -5,7 +5,7 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 
 const UserTable = ({ users, onEdit, onDelete }) => {
   const [page, setPage] = useState(1);
-  const usersPerPage = 12;
+  const usersPerPage = 10;
 
   const totalPages = Math.ceil(users.length / usersPerPage);
   const displayedUsers = users.slice(
