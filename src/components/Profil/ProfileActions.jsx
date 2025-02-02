@@ -7,35 +7,45 @@ const ProfileActions = ({
   isSaving,
 }) => {
   return (
-    <div className="flex justify-end mt-6 gap-4">
+    <div className="flex justify-end mt-6">
       {isEditing ? (
-        <>
+        <div className="flex gap-3">
+          {/* Cancel Button */}
           <button
             onClick={() => setIsEditing(false)}
-            className="btn btn-outline"
+            className="btn btn-outline btn-sm rounded-full"
             disabled={isSaving} // ✅ Disable while saving
           >
-            <FaTimesCircle className="mr-2" /> Abbrechen
+            <FaTimesCircle className="mr-2" />
+            Abbrechen
           </button>
+
+          {/* Save Button */}
           <button
             onClick={handleSaveChanges}
-            className="btn btn-primary"
+            className="btn btn-neutral rounded-full btn-sm"
             disabled={isSaving} // ✅ Disable while saving
           >
             {isSaving ? (
-              <FaSpinner className="mr-2 animate-spin" />
+              <>
+                <FaSpinner className="mr-2 animate-spin" />
+                Speichern...
+              </>
             ) : (
-              <FaSave className="mr-2" />
+              <>
+                <FaSave className="mr-2" />
+                Speichern
+              </>
             )}
-            {isSaving ? "Speichern..." : "Speichern"}
           </button>
-        </>
+        </div>
       ) : (
         <button
           onClick={() => setIsEditing(true)}
-          className="btn btn-secondary"
+          className="btn btn-neutral btn-sm rounded-full flex items-center gap-2"
         >
-          <FaEdit className="mr-2" /> Profil bearbeiten
+          <FaEdit />
+          Profil bearbeiten
         </button>
       )}
     </div>

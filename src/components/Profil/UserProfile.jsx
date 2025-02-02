@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
-  const [isEditing, setIsEditing] = useState(false); // ✅ Ensure state exists
+  const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -20,6 +20,7 @@ const UserProfile = () => {
     subscription_expiration: "",
   });
   const [toastMessage, setToastMessage] = useState(null);
+  const [isLoading, setIsLoading] = useState(true); // ✅ Track loading state
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -40,6 +41,8 @@ const UserProfile = () => {
       } catch (error) {
         console.error("❌ Fehler:", error.message);
         setError(error.message);
+      } finally {
+        setIsLoading(false); // ✅ Stop loading after data fetch
       }
     };
     fetchUser();
@@ -75,12 +78,10 @@ const UserProfile = () => {
 
       // ✅ Show success toast
       setToastMessage("✅ Profil erfolgreich aktualisiert!");
-      setTimeout(() => setToastMessage(null), 2000); // Auto-hide toast
+      setTimeout(() => setToastMessage(null), 2000);
     } catch (error) {
       console.error("❌ Fehler:", error.message);
       setError(error.message);
-
-      // ❌ Show error toast
       setToastMessage(`❌ Fehler: ${error.message}`);
       setTimeout(() => setToastMessage(null), 3000);
     } finally {
@@ -88,29 +89,62 @@ const UserProfile = () => {
     }
   };
 
-  if (!user) {
-    return <div className="p-6 text-center">Lädt...</div>;
-  }
-
   return (
-    <div className="p-8 max-w-4xl mx-auto bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-semibold mb-6">📄 Dein Profil</h2>
+    <div className="p-6 max-w-6xl mx-auto bg-white shadow-md rounded-lg">
+      <h2 className="text-2xl font-semibold mb-6">Mein Profil</h2>
 
-      <div className="flex gap-6">
-        <ProfileForm
-          formData={formData}
-          handleChange={handleChange}
-          isEditing={isEditing}
-        />
-        <ProfileAvatar user={user} />
-      </div>
+      {isLoading ? (
+        // ✅ DaisyUI Skeleton Loader
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div className="skeleton h-10 w-full"></div>
+            <div className="skeleton h-10 w-full"></div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="skeleton h-10 w-full"></div>
+              <div className="skeleton h-10 w-full"></div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="skeleton h-10 w-full"></div>
+              <div className="skeleton h-10 w-full"></div>
+            </div>
+            <div className="skeleton h-10 w-full"></div>
+          </div>
 
-      <ProfileActions
-        isEditing={isEditing}
-        setIsEditing={setIsEditing} // ✅ Pass function correctly
-        handleSaveChanges={handleSaveChanges}
-        isSaving={isSaving}
-      />
+          <div className="flex flex-col items-center">
+            <div className="skeleton w-24 h-24 rounded-full"></div>
+            <div className="skeleton h-6 w-32 mt-3"></div>
+            <div className="skeleton h-4 w-20 mt-1"></div>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* ✅ Responsive Two-Column Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left Side: Form */}
+            <div className="flex flex-col space-y-4">
+              <ProfileForm
+                formData={formData}
+                handleChange={handleChange}
+                isEditing={isEditing}
+              />
+            </div>
+
+            {/* Right Side: Avatar */}
+            <div className="flex flex-col space-y-4 items-center">
+              <ProfileAvatar user={user} />
+            </div>
+          </div>
+
+          {/* Actions */}
+          <ProfileActions
+            isEditing={isEditing}
+            setIsEditing={setIsEditing}
+            handleSaveChanges={handleSaveChanges}
+            isSaving={isSaving}
+          />
+        </>
+      )}
+
       {/* ✅ Toast Notification */}
       {toastMessage && (
         <div className="toast">
