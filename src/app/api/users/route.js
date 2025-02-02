@@ -41,15 +41,28 @@ export async function POST(request) {
   const { db } = await connectToDatabase();
   const body = await request.json();
 
-  const { email, password, name, surname, birthday, role } = body;
+  const {
+    email,
+    password,
+    name = "", // Optional
+    surname = "",
+    birthday = "",
+    role = "kunde",
+    phone_number = "",
+    user_street = "",
+    user_street_number = "",
+    user_postcode = "",
+    user_city = "",
+    subscription_expiration = null,
+    is_active = true,
+  } = body;
 
-  // Validate required fields
-  if (!email || !password || !name || !surname || !birthday || !role) {
+  // ✅ Only `email` and `password` are required now
+  if (!email || !password) {
     return new Response(
       JSON.stringify({
         success: false,
-        message:
-          "All fields are required: email, password, name, surname, birthday, role",
+        message: "Email and password are required.",
       }),
       { status: 400 }
     );
@@ -79,6 +92,15 @@ export async function POST(request) {
       surname,
       birthday,
       role,
+      phone_number,
+      user_street,
+      user_street_number,
+      user_postcode,
+      user_city,
+      subscription_expiration: subscription_expiration
+        ? new Date(subscription_expiration)
+        : null,
+      is_active,
       createdAt: new Date(),
     };
 
@@ -153,6 +175,7 @@ export async function PUT(request) {
   const {
     id,
     email,
+    password, // ✅ Handle password update separately
     phone_number,
     user_street,
     user_street_number,
@@ -162,7 +185,6 @@ export async function PUT(request) {
     is_active,
   } = body;
 
-  // Validate required fields
   if (!id || !ObjectId.isValid(id)) {
     return new Response(
       JSON.stringify({ success: false, message: "Invalid or missing user ID" }),
@@ -170,7 +192,6 @@ export async function PUT(request) {
     );
   }
 
-  // Create the update object
   const updateData = {};
   if (email) updateData.email = email;
   if (phone_number) updateData.phone_number = phone_number;
@@ -180,7 +201,12 @@ export async function PUT(request) {
   if (user_city) updateData.user_city = user_city;
   if (subscription_expiration)
     updateData.subscription_expiration = new Date(subscription_expiration);
-  if (typeof is_active !== "undefined") updateData.is_active = is_active; // Allow toggling activation status
+  if (typeof is_active !== "undefined") updateData.is_active = is_active;
+
+  // ✅ Only update password if a new one is provided
+  if (password && password.trim() !== "") {
+    updateData.password = await bcrypt.hash(password, 10);
+  }
 
   try {
     const result = await db
