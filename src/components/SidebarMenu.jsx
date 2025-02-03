@@ -58,7 +58,7 @@ const SidebarMenu = ({ onLogout }) => {
   }, []);
 
   return (
-    <div className="min-h-screen w-60 bg-slate-50 dark:bg-gray-900 border-r-2 border-indigo-200 shadow-lg flex flex-col py-2 px-2">
+    <div className="min-h-screen w-60 bg-slate-50 dark:bg-gray-900 border-r  border-indigo-200 shadow-lg flex flex-col py-2 px-2">
       {/* Logo */}
       <div className="flex items-center justify-start w-full">
         <h2 className="text-lg font-semibold text-gray-800 dark:text-white ps-2 pt-2">
