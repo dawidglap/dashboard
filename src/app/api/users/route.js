@@ -6,7 +6,6 @@ export async function GET(request) {
   const { db } = await connectToDatabase();
 
   try {
-    // ✅ Include email in the projection
     const users = await db
       .collection("users")
       .find(
@@ -21,8 +20,8 @@ export async function GET(request) {
             createdAt: 1,
           },
         }
-      ) // Include `email` and `birthday`
-      .sort({ name: 1 }) // ✅ Sort alphabetically
+      )
+      .sort({ name: 1 })
       .toArray();
 
     return new Response(JSON.stringify({ success: true, users }), {
@@ -44,7 +43,7 @@ export async function POST(request) {
   const {
     email,
     password,
-    name = "", // Optional
+    name = "",
     surname = "",
     birthday = "",
     role = "kunde",
@@ -57,7 +56,6 @@ export async function POST(request) {
     is_active = true,
   } = body;
 
-  // ✅ Only `email` and `password` are required now
   if (!email || !password) {
     return new Response(
       JSON.stringify({
@@ -68,7 +66,6 @@ export async function POST(request) {
     );
   }
 
-  // Check if user already exists
   const existingUser = await db.collection("users").findOne({ email });
   if (existingUser) {
     return new Response(
@@ -80,10 +77,8 @@ export async function POST(request) {
     );
   }
 
-  // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // Insert new user
   try {
     const newUser = {
       email,
@@ -105,35 +100,92 @@ export async function POST(request) {
     };
 
     const result = await db.collection("users").insertOne(newUser);
+    const userId = result.insertedId;
 
-    // Respond with inserted user
+    if (role !== "admin") {
+      const tasks = await generateWeeklyTasks(userId, db);
+      if (tasks.length > 0) {
+        await db.collection("tasks").insertMany(tasks);
+      } else {
+        console.error(
+          "❌ No tasks generated! Check user ID and database connection."
+        );
+      }
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
-        data: { ...newUser, _id: result.insertedId },
+        data: { ...newUser, _id: userId },
       }),
-      {
-        status: 201,
-      }
+      { status: 201 }
     );
   } catch (error) {
     return new Response(
       JSON.stringify({ success: false, error: error.message }),
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
+}
+
+// ✅ Function to Generate 52 Weekly Tasks (Final Fix)
+async function generateWeeklyTasks(userId, db) {
+  const tasks = [];
+  const firstMonday = getFirstMondayOfNextMonth();
+
+  const user = await db
+    .collection("users")
+    .findOne({ _id: new ObjectId(userId) });
+  if (!user) return [];
+
+  for (let i = 0; i < 52; i++) {
+    const unlockDate = new Date(
+      firstMonday.getTime() + i * 7 * 24 * 60 * 60 * 1000
+    );
+
+    tasks.push({
+      title: `Lade den wöchentlichen POST herunter und veröffentliche ihn – Woche ${
+        i + 1
+      }`,
+      description:
+        "Im Bereich „Materialien“ findest du die POSTs für alle Wochen von 1 bis 52. Lade den POST für die aktuelle Woche herunter und veröffentliche ihn auf deinen Social-Media-Kanälen gemäss den erhaltenen Anweisungen.",
+      assignedTo: [
+        {
+          _id: new ObjectId(userId),
+          name: user.name || "Unbekannt",
+          role: user.role || "markenbotschafter",
+        },
+      ],
+      weekNumber: i + 1,
+      unlockDate: unlockDate,
+      dueDate: unlockDate,
+      status: "pending",
+      locked: true,
+      createdAt: new Date(),
+    });
+  }
+
+  return tasks;
+}
+
+// ✅ Function to Get First Monday of Next Month
+function getFirstMondayOfNextMonth() {
+  const now = new Date();
+  const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+  while (nextMonth.getDay() !== 1) {
+    nextMonth.setDate(nextMonth.getDate() + 1);
+  }
+
+  return nextMonth;
 }
 
 export async function DELETE(request) {
   const { db } = await connectToDatabase();
 
-  // Parse the user ID from the request URL
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get("id");
 
-  // Validate the ID
   if (!userId || !ObjectId.isValid(userId)) {
     return new Response(
       JSON.stringify({ success: false, message: "Invalid or missing user ID" }),
@@ -142,7 +194,6 @@ export async function DELETE(request) {
   }
 
   try {
-    // Attempt to delete the user
     const result = await db
       .collection("users")
       .deleteOne({ _id: new ObjectId(userId) });
@@ -156,9 +207,7 @@ export async function DELETE(request) {
 
     return new Response(
       JSON.stringify({ success: true, message: "User deleted successfully" }),
-      {
-        status: 200,
-      }
+      { status: 200 }
     );
   } catch (error) {
     return new Response(
@@ -175,7 +224,7 @@ export async function PUT(request) {
   const {
     id,
     email,
-    password, // ✅ Handle password update separately
+    password,
     phone_number,
     user_street,
     user_street_number,
@@ -203,7 +252,6 @@ export async function PUT(request) {
     updateData.subscription_expiration = new Date(subscription_expiration);
   if (typeof is_active !== "undefined") updateData.is_active = is_active;
 
-  // ✅ Only update password if a new one is provided
   if (password && password.trim() !== "") {
     updateData.password = await bcrypt.hash(password, 10);
   }
