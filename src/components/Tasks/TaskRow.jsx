@@ -45,6 +45,15 @@ const TaskRow = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
+  const assignedUsers = Array.isArray(task.assignedTo)
+    ? task.assignedTo
+    : task.assignedTo
+    ? [task.assignedTo] // Wrap in array if it's a single object
+    : []; // Ensure it's always an array
+
+  // ✅ Ensure actions only appear for the first assigned user
+  const isFirstOccurrence = assignedUsers.length > 0 && assignedUsers[0]._id;
+
   // Check if this dropdown is open
   const isDropdownOpen = openDropdownId === task._id;
 
@@ -55,7 +64,8 @@ const TaskRow = ({
   };
 
   const handleCheckboxChange = (e) => {
-    onSelectTask(task._id, e.target.checked);
+    const taskUserId = `${task._id}-${task.assignedTo._id}`; // Unique identifier
+    onSelectTask(taskUserId, e.target.checked);
   };
 
   // Open task details when clicking the row (except on action buttons)
@@ -87,8 +97,14 @@ const TaskRow = ({
           updatedTaskData.message || "Failed to fetch updated task"
         );
 
-      // ✅ Update UI with full task data
-      onUpdate(task._id, updatedTaskData.task);
+      // ✅ Instead of `setTasks`, call `onUpdate` to inform the parent
+      onUpdate(task._id, {
+        ...task,
+        ...updatedTaskData.task,
+        assignedTo: updatedTaskData.task.assignedTo
+          ? updatedTaskData.task.assignedTo
+          : task.assignedTo, // Preserve previous assignedTo if missing
+      });
     } catch (error) {
       console.error("❌ Fehler beim Aktualisieren der Aufgabe:", error);
     } finally {
@@ -107,10 +123,12 @@ const TaskRow = ({
 
   // Determine if user can delete the task (only Admins)
   const canDelete = user?.role === "admin";
+  console.log("Task ID:", task._id, "Assigned Users:", task.assignedTo);
 
   return (
     <>
       {/* Task Row */}
+
       <tr
         className="border-b hover:bg-indigo-50 transition text-sm cursor-pointer group"
         onClick={(e) => {
@@ -129,6 +147,7 @@ const TaskRow = ({
             onClick={(e) => e.stopPropagation()}
           />
         </td>
+
         {/* Priority Flag Column (Visible only on hover) */}
         <td className="py-0 px-2 text-center w-6">
           <div className="relative">
@@ -207,97 +226,90 @@ const TaskRow = ({
             : "Unbekannt"}
         </td>
 
-        {/* Actions Column */}
-        <td
-          className="relative py-0 px-4 text-right"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button
-            onClick={toggleDropdown}
-            className="p-2 rounded hover:bg-indigo-300"
+        {/* Actions Column - Only for the first assigned user of a task */}
+        {assignedUsers.length > 0 && assignedUsers[0]?._id && (
+          <td
+            className="relative py-0 px-4 text-right"
+            onClick={(e) => e.stopPropagation()}
           >
-            <FaEllipsisH />
-          </button>
+            <button
+              onClick={toggleDropdown}
+              className="p-2 rounded hover:bg-indigo-300"
+            >
+              <FaEllipsisH />
+            </button>
 
-          {isDropdownOpen && (
-            <ul className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
-              {/* <li>
-                <button
-                  onClick={() => setIsModalOpen(true)}
-                  className="flex items-center px-4 py-2 hover:bg-indigo-50 w-full"
-                >
-                  <FaEye className="mr-2" /> Details
-                </button>
-              </li> */}
+            {isDropdownOpen && (
+              <ul className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
+                {canUpdateStatus && (
+                  <>
+                    <li>
+                      <button
+                        onClick={() => {
+                          setIsEditModalOpen(true);
+                          setOpenDropdownId(null); // ✅ Close dropdown after clicking
+                        }}
+                        className="flex items-center px-4 py-2 hover:bg-indigo-50 w-full"
+                      >
+                        <FaEdit className="mr-2" /> Bearbeiten
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => handleUpdateStatus("in_progress")}
+                        className="flex items-center px-4 py-2 hover:bg-indigo-50 w-full"
+                      >
+                        {isUpdating ? (
+                          <FaSpinner className="animate-spin mr-2" />
+                        ) : (
+                          <FaPlayCircle className="mr-2 text-blue-500" />
+                        )}
+                        In Bearbeitung
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => handleUpdateStatus("done")}
+                        className="flex items-center px-4 py-2 hover:bg-indigo-50 w-full"
+                      >
+                        {isUpdating ? (
+                          <FaSpinner className="animate-spin mr-2" />
+                        ) : (
+                          <FaCheckCircle className="mr-2 text-green-500" />
+                        )}
+                        Erledigt
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        onClick={() => handleUpdateStatus("cannot_complete")}
+                        className="flex items-center px-4 py-2 hover:bg-indigo-50 w-full"
+                      >
+                        {isUpdating ? (
+                          <FaSpinner className="animate-spin mr-2" />
+                        ) : (
+                          <FaTimesCircle className="mr-2 text-red-500" />
+                        )}
+                        Nicht abgeschlossen
+                      </button>
+                    </li>
+                  </>
+                )}
 
-              {canUpdateStatus && (
-                <>
+                {canDelete && (
                   <li>
                     <button
-                      onClick={() => {
-                        setIsEditModalOpen(true);
-                        setOpenDropdownId(null); // ✅ Close dropdown after clicking
-                      }}
-                      className="flex items-center px-4 py-2 hover:bg-indigo-50 w-full"
+                      onClick={() => onDelete(task._id)}
+                      className="flex items-center px-4 py-2 text-red-500 hover:bg-indigo-50 w-full"
                     >
-                      <FaEdit className="mr-2" /> Bearbeiten
+                      <FaTrash className="mr-2" /> Löschen
                     </button>
                   </li>
-                  <li>
-                    <button
-                      onClick={() => handleUpdateStatus("in_progress")}
-                      className="flex items-center px-4 py-2 hover:bg-indigo-50 w-full"
-                    >
-                      {isUpdating ? (
-                        <FaSpinner className="animate-spin mr-2" />
-                      ) : (
-                        <FaPlayCircle className="mr-2 text-blue-500" />
-                      )}
-                      In Bearbeitung
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={() => handleUpdateStatus("done")}
-                      className="flex items-center px-4 py-2 hover:bg-indigo-50 w-full"
-                    >
-                      {isUpdating ? (
-                        <FaSpinner className="animate-spin mr-2" />
-                      ) : (
-                        <FaCheckCircle className="mr-2 text-green-500" />
-                      )}
-                      Erledigt
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      onClick={() => handleUpdateStatus("cannot_complete")}
-                      className="flex items-center px-4 py-2 hover:bg-indigo-50 w-full"
-                    >
-                      {isUpdating ? (
-                        <FaSpinner className="animate-spin mr-2" />
-                      ) : (
-                        <FaTimesCircle className="mr-2 text-red-500" />
-                      )}
-                      Nicht abgeschlossen
-                    </button>
-                  </li>
-                </>
-              )}
-
-              {canDelete && (
-                <li>
-                  <button
-                    onClick={() => onDelete(task._id)}
-                    className="flex items-center px-4 py-2 text-red-500 hover:bg-indigo-50 w-full"
-                  >
-                    <FaTrash className="mr-2" /> Löschen
-                  </button>
-                </li>
-              )}
-            </ul>
-          )}
-        </td>
+                )}
+              </ul>
+            )}
+          </td>
+        )}
       </tr>
 
       {/* ✅ Ensure Modals are rendered */}

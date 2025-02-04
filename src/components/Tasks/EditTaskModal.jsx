@@ -72,7 +72,25 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
         );
       }
 
-      onUpdate(task._id, updatedTaskData.task);
+      console.log("🔄 Before Update - Task:", task);
+      console.log("🔄 API Response - Updated Task:", updatedTaskData.task);
+
+      onUpdate(task._id, {
+        ...task,
+        ...updatedTaskData.task,
+        assignedTo: updatedTaskData.task.assignedTo
+          ? updatedTaskData.task.assignedTo
+          : task.assignedTo, // Preserve previous assignedTo if missing
+      });
+
+      console.log("✅ After Update - Task Updated:", {
+        ...task,
+        ...updatedTaskData.task,
+        assignedTo:
+          updatedTaskData.task.assignedTo && updatedTaskData.task.assignedTo._id
+            ? updatedTaskData.task.assignedTo
+            : task.assignedTo,
+      });
 
       setToastMessage("✅ Aufgabe erfolgreich aktualisiert!");
       setTimeout(() => {

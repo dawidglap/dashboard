@@ -12,30 +12,35 @@ const BulkActions = ({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleBulkDelete = async () => {
-    setIsProcessing(true);
+    if (selectedTasks.length === 0) return;
+
+    const taskIds = selectedTasks.map((taskId) => taskId.split("-")[0]); // ✅ Extract only task._id
 
     try {
       const res = await fetch("/api/tasks/bulk", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ taskIds: selectedTasks }),
+        body: JSON.stringify({ taskIds }),
       });
 
       const responseData = await res.json();
       if (!res.ok)
         throw new Error(responseData.message || "Löschen fehlgeschlagen");
 
+      // ✅ Remove deleted tasks from UI
       setTasks((prevTasks) =>
-        prevTasks.filter((task) => !selectedTasks.includes(task._id))
+        prevTasks.filter((task) => !taskIds.includes(task._id))
       );
-      setSelectedTasks([]);
-      showToast("✅ Aufgaben erfolgreich gelöscht!", "success");
-    } catch (error) {
-      console.error("❌ Fehler:", error);
-      showToast(error.message, "error");
-    } finally {
-      setIsProcessing(false);
+
+      // ✅ Close modal & clear selection
       setIsDeleteModalOpen(false);
+      setSelectedTasks([]);
+
+      // ✅ Show success toast
+      showToast(`✅ ${responseData.message}`, "success");
+    } catch (error) {
+      console.error("❌ Bulk Delete Error:", error);
+      showToast(error.message, "error");
     }
   };
 

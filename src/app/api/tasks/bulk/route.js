@@ -27,9 +27,17 @@ export async function DELETE(request) {
       );
     }
 
-    const objectIds = taskIds.map((id) => new ObjectId(id));
+    const objectIds = taskIds
+      .filter((id) => ObjectId.isValid(id))
+      .map((id) => new ObjectId(id));
 
-    // Only allow Admins to bulk delete
+    if (objectIds.length === 0) {
+      return new Response(
+        JSON.stringify({ success: false, message: "No valid task IDs" }),
+        { status: 400 }
+      );
+    }
+
     const user = await db
       .collection("users")
       .findOne({ email: session.user.email });
@@ -41,10 +49,18 @@ export async function DELETE(request) {
       );
     }
 
-    // Delete tasks
-    const result = await db.collection("tasks").deleteMany({
-      _id: { $in: objectIds },
-    });
+    console.log("🔹 Deleting Task IDs:", objectIds);
+
+    const result = await db
+      .collection("tasks")
+      .deleteMany({ _id: { $in: objectIds } });
+
+    if (result.deletedCount === 0) {
+      return new Response(
+        JSON.stringify({ success: false, message: "No tasks deleted" }),
+        { status: 404 }
+      );
+    }
 
     return new Response(
       JSON.stringify({

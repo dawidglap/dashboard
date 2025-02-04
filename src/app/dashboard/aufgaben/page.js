@@ -327,19 +327,22 @@ const Tasks = () => {
 
           <tbody>
             {displayedTasks
-              .flatMap((task) =>
-                (task.assignedTo?.length > 0 ? task.assignedTo : [null])
-                  .filter(
-                    (assignee) =>
-                      !filters.assignedToFilter ||
-                      assignee?._id === filters.assignedToFilter // ✅ Fix: Use filters.assignedToFilter
-                  )
-                  .map((user) => ({
-                    ...task,
-                    assignedTo: user,
-                  }))
+              .flatMap(
+                (task) =>
+                  Array.isArray(task.assignedTo) && task.assignedTo.length > 0
+                    ? task.assignedTo.map((assignee, index) => ({
+                        ...task,
+                        assignedTo: assignee, // ✅ Assign each user to a task row
+                        isFirstRow: index === 0, // ✅ Mark only the first row for actions
+                      }))
+                    : [{ ...task, assignedTo: null, isFirstRow: true }] // ✅ Handle unassigned tasks
               )
-              .slice(0, 12) // ✅ Apply limit after expansion
+              .filter(
+                (task) =>
+                  !filters.assignedToFilter ||
+                  task.assignedTo?._id === filters.assignedToFilter // ✅ Apply filter condition
+              )
+              .slice((page - 1) * 12, page * 12) // ✅ Apply pagination AFTER expansion
               .map((task) => (
                 <TaskRow
                   key={`${task._id}-${task.assignedTo?._id || "unassigned"}`}
@@ -353,11 +356,14 @@ const Tasks = () => {
                   onDelete={confirmDelete}
                   openDropdownId={openDropdownId}
                   setOpenDropdownId={setOpenDropdownId}
-                  assignedTo={task.assignedTo}
+                  assignedTo={task.assignedTo} // ✅ Pass assigned user separately
                   dueDate={task.dueDate}
                   createdAt={task.createdAt}
                   onSelectTask={handleTaskSelect}
-                  isSelected={selectedTasks.includes(task._id)}
+                  isSelected={selectedTasks.includes(
+                    `${task._id}-${task.assignedTo?._id || "unassigned"}`
+                  )}
+                  showActions={task.isFirstRow} // ✅ Only show actions for the first row
                 />
               ))}
           </tbody>

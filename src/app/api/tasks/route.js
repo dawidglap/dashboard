@@ -6,11 +6,7 @@ import { ObjectId } from "mongodb";
 /**
  * GET /api/tasks
  * Fetches tasks from the database with role-based filtering.
- * Admins: See all tasks.
- * Managers: See their tasks and their team's tasks (Markenbotschafters they manage).
- * Markenbotschafters: See only their tasks.
  */
-
 export async function GET(request) {
   const { db } = await connectToDatabase();
   const session = await getServerSession(authOptions);
@@ -48,6 +44,15 @@ export async function GET(request) {
     const dueDateFilter = searchParams.get("dueDate") || null;
     const searchQuery = searchParams.get("search") || null;
 
+    // ✅ Convert "true"/"false" string values to actual boolean values
+    const lockedFilterParam = searchParams.get("locked");
+    const lockedFilter =
+      lockedFilterParam === "true"
+        ? true
+        : lockedFilterParam === "false"
+        ? false
+        : null;
+
     let query = {};
 
     // ✅ Apply Role-Based Filtering
@@ -57,36 +62,27 @@ export async function GET(request) {
         .find({ managerId: userId })
         .toArray();
       const idsToInclude = [userId, ...markenbotschafters.map((u) => u._id)];
-      query = { "assignedTo._id": { $in: idsToInclude } };
+      query["assignedTo._id"] = { $in: idsToInclude };
     } else if (role === "markenbotschafter") {
-      query = { "assignedTo._id": userId };
+      query["assignedTo._id"] = userId;
     }
 
     // ✅ Apply Filters
     if (statusFilter) query.status = statusFilter;
     if (priorityFilter) query.priority = priorityFilter;
+    if (assignedToFilter)
+      query["assignedTo._id"] = new ObjectId(assignedToFilter);
+    if (dueDateFilter) query.dueDate = { $lte: new Date(dueDateFilter) };
+    if (searchQuery) query.title = { $regex: searchQuery, $options: "i" };
 
-    // if (assignedToFilter) {
-    //   console.log("🔧 Filtering by assignedTo:", assignedToFilter);
-    //   query["assignedTo"] = new ObjectId(assignedToFilter);
-    // }
-
-    if (assignedToFilter) {
-      console.log("🔧 Filtering by assignedTo:", assignedToFilter);
-      query["assignedTo._id"] = new ObjectId(assignedToFilter); // ✅ Use direct match instead of $in
+    // ✅ Apply Locked Filter Properly - Enforcing Unlocked Tasks Only
+    if (lockedFilter !== null) {
+      query.locked = lockedFilter; // Allow explicit filtering if lockedFilter is provided
+    } else {
+      query.locked = { $in: [false, null] }; // Default: Show only unlocked tasks
     }
 
-    if (dueDateFilter) query.dueDate = { $lte: new Date(dueDateFilter) }; // Tasks due *before* this date
-    if (searchQuery) query.title = { $regex: searchQuery, $options: "i" };
-    console.log("🔍 Received Query Params:", searchParams.toString());
-    console.log("🔍 AssignedTo Filter Raw:", assignedToFilter);
-    console.log(
-      "🔍 Converted to ObjectId?:",
-      ObjectId.isValid(assignedToFilter)
-        ? new ObjectId(assignedToFilter)
-        : assignedToFilter
-    );
-    console.log("🔍 Filter Query:", query);
+    console.log("📡 Applying Query to MongoDB:", query);
 
     // ✅ Fetch Total Count After Filtering (for pagination)
     const totalCount = await db.collection("tasks").countDocuments(query);
@@ -96,14 +92,9 @@ export async function GET(request) {
       .aggregate([
         { $match: query },
         {
-          $addFields: {
-            assignedToId: "$assignedTo._id", // ✅ Extract ID from embedded object
-          },
-        },
-        {
           $lookup: {
             from: "users",
-            localField: "assignedToId", // ✅ Now referencing only the ID
+            localField: "assignedTo._id",
             foreignField: "_id",
             as: "assignedUser",
           },
@@ -112,14 +103,14 @@ export async function GET(request) {
           $set: {
             assignedTo: {
               $cond: {
-                if: { $gt: [{ $size: "$assignedUser" }, 0] }, // ✅ If user exists
-                then: "$assignedUser", // ✅ Assign full array instead of only first user
-                else: "$assignedTo", // ✅ If no match, keep existing embedded object
+                if: { $gt: [{ $size: "$assignedUser" }, 0] },
+                then: "$assignedUser",
+                else: "$assignedTo",
               },
             },
           },
         },
-        { $unset: "assignedUser" }, // ✅ Remove temporary field
+        { $unset: "assignedUser" },
         {
           $project: {
             _id: 1,
@@ -127,6 +118,7 @@ export async function GET(request) {
             description: 1,
             priority: 1,
             status: 1,
+            locked: 1, // ✅ Include locked status in response
             dueDate: 1,
             createdAt: 1,
             updatedAt: 1,
@@ -141,19 +133,17 @@ export async function GET(request) {
       .limit(limit)
       .toArray();
 
-    console.log("📡 FETCHED TASKS FROM DB:", JSON.stringify(tasks, null, 2));
-
     return new Response(
       JSON.stringify({
         success: true,
         data: tasks,
-        totalCount, // ✅ Send total count to update frontend pagination
-        hasMore: skip + tasks.length < totalCount, // ✅ Determine if more pages exist
+        totalCount,
+        hasMore: skip + tasks.length < totalCount,
       }),
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error fetching tasks:", error);
+    console.error("❌ Error fetching tasks:", error);
     return new Response(
       JSON.stringify({ success: false, error: error.message }),
       { status: 500 }
@@ -222,23 +212,25 @@ export async function POST(req) {
       );
     }
 
-    const newTask = {
+    // ✅ Create separate tasks for each assigned user
+    const tasksToInsert = assignedUsers.map((assignedUser) => ({
       title,
       description,
       priority,
       status,
-      assignedTo: assignedUsers.map((user) => ({
-        _id: user._id,
-        name: user.name,
-        role: user.role,
-      })), // ✅ Store multiple assigned users
+      assignedTo: {
+        _id: assignedUser._id,
+        name: assignedUser.name,
+        role: assignedUser.role,
+      }, // ✅ Now each task is for a single user
       createdBy: { _id: user._id, name: user.name },
       createdAt: new Date(),
       updatedAt: new Date(),
       dueDate: new Date(dueDate),
-    };
+      locked: false, // Ensure all tasks are unlocked by default
+    }));
 
-    const result = await db.collection("tasks").insertOne(newTask);
+    const result = await db.collection("tasks").insertMany(tasksToInsert);
 
     if (!result.acknowledged) {
       return new Response(
@@ -250,8 +242,8 @@ export async function POST(req) {
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Task created successfully",
-        task: newTask,
+        message: "Tasks created successfully",
+        tasks: tasksToInsert, // ✅ Return all created tasks
       }),
       { status: 201 }
     );

@@ -15,8 +15,8 @@ export async function GET(request, context) {
   }
 
   try {
-    const { params } = context; // ✅ Ensure `params` is awaited properly
-    const taskId = params.id; // ✅ Correctly access `id`
+    const { params } = context;
+    const taskId = params.id;
 
     if (!taskId || !ObjectId.isValid(taskId)) {
       return new Response(
@@ -25,20 +25,51 @@ export async function GET(request, context) {
       );
     }
 
-    // ✅ Fetch task with assigned user details
+    const user = await db
+      .collection("users")
+      .findOne({ email: session.user.email });
+
+    if (!user) {
+      return new Response(
+        JSON.stringify({ success: false, message: "User not found" }),
+        { status: 404 }
+      );
+    }
+
+    const { role, _id: userId } = user;
+
+    // ✅ Role-Based Filtering
+    let query = { _id: new ObjectId(taskId) };
+
+    if (role === "manager") {
+      const managedUsers = await db
+        .collection("users")
+        .find({ managerId: userId })
+        .toArray();
+      const managedUserIds = managedUsers.map((u) => u._id);
+      query["assignedTo"] = { $in: [...managedUserIds, userId] };
+    } else if (role === "markenbotschafter") {
+      query["assignedTo"] = userId;
+    }
+
     const task = await db
       .collection("tasks")
       .aggregate([
-        { $match: { _id: new ObjectId(taskId) } },
+        { $match: query },
         {
           $lookup: {
             from: "users",
             localField: "assignedTo",
             foreignField: "_id",
-            as: "assignedTo",
+            as: "assignedUser",
           },
         },
-        { $unwind: { path: "$assignedTo", preserveNullAndEmptyArrays: true } },
+        {
+          $set: {
+            assignedTo: { $arrayElemAt: ["$assignedUser", 0] }, // ✅ Ensure assignedTo is a single object
+          },
+        },
+        { $unset: "assignedUser" },
       ])
       .toArray();
 
@@ -61,11 +92,8 @@ export async function GET(request, context) {
   }
 }
 
-/**
- * PUT /api/tasks/:id
- * Allows authorized users to update task details (title, description, priority, status).
- */
-
+// ✅ Update Task
+// ✅ Update Task
 export async function PUT(request, context) {
   const { db } = await connectToDatabase();
   const session = await getServerSession(authOptions);
@@ -78,8 +106,8 @@ export async function PUT(request, context) {
   }
 
   try {
-    const { params } = context; // ✅ Fix: Ensure `params` is properly accessed
-    const taskId = params.id; // ✅ Correct usage
+    const { params } = context;
+    const taskId = params.id;
 
     if (!taskId || !ObjectId.isValid(taskId)) {
       return new Response(
@@ -101,11 +129,17 @@ export async function PUT(request, context) {
 
     const { role, _id: userId } = user;
 
-    // ✅ Read request body
     const body = await request.json();
-    const { title, description, priority, status, assignedTo, dueDate } = body;
+    const {
+      title,
+      description,
+      priority,
+      status,
+      assignedTo,
+      dueDate,
+      locked,
+    } = body;
 
-    // ✅ Fetch Task
     const task = await db
       .collection("tasks")
       .findOne({ _id: new ObjectId(taskId) });
@@ -120,7 +154,7 @@ export async function PUT(request, context) {
     // ✅ Authorization Check
     if (
       role === "markenbotschafter" &&
-      task.assignedTo?.toString() !== userId.toString()
+      task.assignedTo?._id.toString() !== userId.toString()
     ) {
       return new Response(
         JSON.stringify({ success: false, message: "Forbidden" }),
@@ -130,7 +164,7 @@ export async function PUT(request, context) {
 
     if (
       role === "manager" &&
-      ![task.assignedTo?.toString(), userId.toString()].includes(
+      ![task.assignedTo?._id.toString(), userId.toString()].includes(
         userId.toString()
       )
     ) {
@@ -140,67 +174,94 @@ export async function PUT(request, context) {
       );
     }
 
+    // ✅ Validate assignedTo (must be a single user)
+    let assignedUserData = task.assignedTo; // Keep the existing user if not updating
+    if (assignedTo) {
+      const assignedUser = await db
+        .collection("users")
+        .findOne({ _id: new ObjectId(assignedTo) });
+
+      if (!assignedUser) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            message: "Assigned user not found",
+          }),
+          { status: 404 }
+        );
+      }
+
+      assignedUserData = {
+        _id: assignedUser._id,
+        name: assignedUser.name,
+        role: assignedUser.role,
+      };
+    }
+
     // ✅ Prepare fields for update
-    const updateFields = { updatedAt: new Date() };
+    const updateFields = {
+      updatedAt: new Date(),
+      assignedTo: assignedUserData, // ✅ Ensure assignedTo is always a single object
+    };
+
     if (title) updateFields.title = title;
     if (description) updateFields.description = description;
     if (priority) updateFields.priority = priority;
     if (status) updateFields.status = status;
-    if (assignedTo) updateFields.assignedTo = new ObjectId(assignedTo);
     if (dueDate) updateFields.dueDate = new Date(dueDate);
 
-    // ✅ Execute Update
+    // ✅ Only update `locked` if explicitly provided
+    if (typeof locked === "boolean") {
+      updateFields.locked = locked;
+    }
+
     const result = await db
       .collection("tasks")
       .updateOne({ _id: new ObjectId(taskId) }, { $set: updateFields });
 
     if (result.modifiedCount === 0) {
       return new Response(
-        JSON.stringify({
-          success: true,
-          message: "No changes made",
-        }),
+        JSON.stringify({ success: true, message: "No changes made" }),
         { status: 200 }
       );
     }
 
-    // ✅ Fetch Updated Task with `assignedTo` details
+    // ✅ Fetch Updated Task
     const updatedTask = await db
       .collection("tasks")
       .aggregate([
         { $match: { _id: new ObjectId(taskId) } },
         {
           $lookup: {
-            from: "users",
-            localField: "assignedTo",
-            foreignField: "_id",
-            as: "assignedTo",
+            from: "users", // Collection to join
+            localField: "assignedTo", // Field in `tasks` collection
+            foreignField: "_id", // Field in `users` collection
+            as: "assignedTo", // Output field
           },
         },
-        { $unwind: { path: "$assignedTo", preserveNullAndEmptyArrays: true } },
-        {
-          $project: {
-            _id: 1,
-            title: 1,
-            description: 1,
-            priority: 1,
-            status: 1,
-            dueDate: 1,
-            createdAt: 1,
-            updatedAt: 1,
-            "assignedTo._id": 1,
-            "assignedTo.name": 1,
-            "assignedTo.role": 1,
-          },
-        },
+        { $unwind: { path: "$assignedTo", preserveNullAndEmptyArrays: true } }, // Ensure assignedTo is an object
       ])
       .toArray();
+
+    if (!updatedTask.length) {
+      console.error("❌ Fehler: Task not found with ID", taskId);
+      return new Response(
+        JSON.stringify({ success: false, message: "Task not found" }),
+        { status: 404 }
+      );
+    }
+
+    // ✅ Debugging: Log full updatedTask before sending response
+    console.log(
+      "✅ Updated Task (API Response):",
+      JSON.stringify(updatedTask[0], null, 2)
+    );
 
     return new Response(
       JSON.stringify({
         success: true,
         message: "Task updated successfully",
-        updatedTask: updatedTask[0], // ✅ Return full updated task
+        task: updatedTask[0],
       }),
       { status: 200 }
     );
@@ -213,16 +274,12 @@ export async function PUT(request, context) {
   }
 }
 
-/**
- * DELETE /api/tasks/:id
- * Allows Admins to delete a task.
- */
+// ✅ Delete Task
 export async function DELETE(request, { params }) {
   const { db } = await connectToDatabase();
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    console.log("🚨 Unauthorized request to delete task");
     return new Response(
       JSON.stringify({ success: false, message: "Unauthorized" }),
       { status: 401 }
@@ -230,57 +287,58 @@ export async function DELETE(request, { params }) {
   }
 
   try {
-    const user = await db
-      .collection("users")
-      .findOne({ email: session.user.email });
-
-    if (!user) {
-      console.log("🚨 User not found:", session.user.email);
-      return new Response(
-        JSON.stringify({ success: false, message: "User not found" }),
-        { status: 404 }
-      );
-    }
-
-    const { role } = user;
     const taskId = params?.id;
 
-    console.log("🔍 Received DELETE request for Task ID:", taskId);
-
-    // Validate Task ID
     if (!taskId || !ObjectId.isValid(taskId)) {
-      console.log("❌ Invalid Task ID:", taskId);
       return new Response(
         JSON.stringify({ success: false, message: "Invalid task ID" }),
         { status: 400 }
       );
     }
 
-    // Only Admins can delete tasks
-    if (role !== "admin") {
-      console.log(
-        "⛔ Forbidden: User does not have permission to delete tasks"
+    const user = await db
+      .collection("users")
+      .findOne({ email: session.user.email });
+
+    if (!user) {
+      return new Response(
+        JSON.stringify({ success: false, message: "User not found" }),
+        { status: 404 }
       );
+    }
+
+    // ✅ Only Admin Can Delete Tasks
+    if (user.role !== "admin") {
       return new Response(
         JSON.stringify({ success: false, message: "Forbidden" }),
         { status: 403 }
       );
     }
 
-    // Delete Task
-    const result = await db
+    // ✅ Check if task exists
+    const task = await db
       .collection("tasks")
-      .deleteOne({ _id: new ObjectId(taskId) });
+      .findOne({ _id: new ObjectId(taskId) });
 
-    if (result.deletedCount === 0) {
-      console.log("🚨 Task not found in database:", taskId);
+    if (!task) {
       return new Response(
         JSON.stringify({ success: false, message: "Task not found" }),
         { status: 404 }
       );
     }
 
-    console.log("✅ Task successfully deleted:", taskId);
+    // ✅ Delete Task
+    const result = await db
+      .collection("tasks")
+      .deleteOne({ _id: new ObjectId(taskId) });
+
+    if (result.deletedCount === 0) {
+      return new Response(
+        JSON.stringify({ success: false, message: "Task not deleted" }),
+        { status: 500 }
+      );
+    }
+
     return new Response(
       JSON.stringify({ success: true, message: "Task deleted successfully" }),
       { status: 200 }
