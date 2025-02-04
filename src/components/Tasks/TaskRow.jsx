@@ -196,12 +196,15 @@ const TaskRow = ({
 
         {/* Assigned To Name */}
         <td className="py-0 px-4 w-40 font-semibold">
-          {task.assignedTo?.name || "Nicht zugewiesen"}
+          {task.assignedTo && typeof task.assignedTo === "object"
+            ? task.assignedTo.name
+            : "Aktualisieren..."}
         </td>
-
         {/* Assigned To Role */}
         <td className="py-0 px-4 w-32 text-[10px] uppercase font-thin">
-          {task.assignedTo?.role || "Unbekannt"}
+          {task.assignedTo && typeof task.assignedTo === "object"
+            ? task.assignedTo.role
+            : "Aktualisieren..."}
         </td>
 
         {/* Due Date */}

@@ -327,15 +327,21 @@ const Tasks = () => {
 
           <tbody>
             {displayedTasks
-              .flatMap(
-                (task) =>
-                  Array.isArray(task.assignedTo) && task.assignedTo.length > 0
-                    ? task.assignedTo.map((assignee, index) => ({
+              .flatMap((task) =>
+                Array.isArray(task.assignedTo) && task.assignedTo.length > 0
+                  ? task.assignedTo.map((assignee, index) => ({
+                      ...task,
+                      assignedTo: assignee, // ✅ Assign each user to a row
+                    }))
+                  : [
+                      {
                         ...task,
-                        assignedTo: assignee, // ✅ Assign each user to a task row
-                        isFirstRow: index === 0, // ✅ Mark only the first row for actions
-                      }))
-                    : [{ ...task, assignedTo: null, isFirstRow: true }] // ✅ Handle unassigned tasks
+                        assignedTo: {
+                          name: "Nicht zugewiesen",
+                          role: "Unbekannt",
+                        },
+                      },
+                    ]
               )
               .filter(
                 (task) =>

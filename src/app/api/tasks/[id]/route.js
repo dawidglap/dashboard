@@ -233,13 +233,18 @@ export async function PUT(request, context) {
         { $match: { _id: new ObjectId(taskId) } },
         {
           $lookup: {
-            from: "users", // Collection to join
-            localField: "assignedTo", // Field in `tasks` collection
-            foreignField: "_id", // Field in `users` collection
-            as: "assignedTo", // Output field
+            from: "users",
+            localField: "assignedTo",
+            foreignField: "_id",
+            as: "assignedUser",
           },
         },
-        { $unwind: { path: "$assignedTo", preserveNullAndEmptyArrays: true } }, // Ensure assignedTo is an object
+        {
+          $set: {
+            assignedTo: { $arrayElemAt: ["$assignedUser", 0] }, // ✅ Ensure assignedTo is always an object
+          },
+        },
+        { $unset: "assignedUser" }, // ✅ Remove extra field
       ])
       .toArray();
 

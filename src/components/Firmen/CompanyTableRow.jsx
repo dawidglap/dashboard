@@ -14,9 +14,9 @@ const CompanyTableRow = ({
 
   // ✅ Define commission values
   const COMMISSIONS = {
-    BASIC: 700,
+    BASIC: 1000,
     PRO: 1000,
-    BUSINESS: 1500,
+    BUSINESS: 1000,
   };
 
   // ✅ Calculate Provisionen
