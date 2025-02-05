@@ -176,7 +176,7 @@ const DemoCalls = () => {
         <button
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1}
-          className="btn btn-xs btn-neutral"
+          className="btn btn-xs px-4 rounded-full btn-neutral"
         >
           ← Zurück
         </button>
@@ -186,7 +186,7 @@ const DemoCalls = () => {
         <button
           onClick={() => setPage((prev) => prev + 1)}
           disabled={!hasMore}
-          className="btn btn-xs btn-neutral"
+          className="btn btn-xs px-4 rounded-full btn-neutral"
         >
           Weiter →
         </button>

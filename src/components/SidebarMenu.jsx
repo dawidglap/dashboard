@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import {
   FaHome,
   FaBuilding,
@@ -12,7 +13,7 @@ import {
   FaSignOutAlt,
   FaQuestionCircle,
   FaMoneyBillWave,
-  FaVideo, // ✅ Added icon for Demo Calls
+  FaVideo,
 } from "react-icons/fa";
 
 const ROLE_COLORS = {
@@ -29,7 +30,7 @@ const SidebarMenu = ({ onLogout }) => {
   const menuItems = [
     { title: "Home", href: "/dashboard", icon: <FaHome /> },
     { title: "Firmen", href: "/dashboard/firmen", icon: <FaBuilding /> },
-    { title: "Demo Calls", href: "/dashboard/demo-calls", icon: <FaVideo /> }, // ✅ Added Demo Calls
+    { title: "Demo Calls", href: "/dashboard/demo-calls", icon: <FaVideo /> },
     { title: "Team", href: "/dashboard/team", icon: <FaUsers /> },
     { title: "Umsatz", href: "/dashboard/umsatz", icon: <FaChartBar /> },
     {
@@ -49,7 +50,7 @@ const SidebarMenu = ({ onLogout }) => {
         const data = await res.json();
         setUser(data.user);
       } catch (error) {
-        console.error("❌ Fehler:", error.message);
+        console.error("Fehler:", error.message);
       } finally {
         setLoading(false);
       }
@@ -58,26 +59,29 @@ const SidebarMenu = ({ onLogout }) => {
   }, []);
 
   return (
-    <div className="min-h-screen w-60 bg-slate-50 dark:bg-gray-900 border-r  border-indigo-200 shadow-lg flex flex-col py-2 px-2">
+    <motion.div
+      initial={{ x: -100, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      className="min-h-screen w-64 bg-base-100 border-r shadow-lg flex flex-col p-4"
+    >
       {/* Logo */}
-      <div className="flex items-center justify-start w-full">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-white ps-2 pt-2">
-          Webomo Business
-        </h2>
+      <div className="flex items-center justify-center">
+        <h2 className="text-xl font-bold text-base-content">Webomo Business</h2>
       </div>
 
       {/* Menu Items */}
       <nav className="mt-6 flex-grow">
-        <ul className="flex flex-col space-y-3">
+        <ul className="flex flex-col space-y-2">
           {menuItems.map((item, index) => (
             <li key={index}>
               <Link
                 href={item.href}
-                className={`flex items-center w-full text-sm font-normal px-4 py-1 rounded-full transition 
+                className={`flex items-center px-4 py-2 rounded-full transition-all text-sm font-medium
                 ${
                   pathname === item.href
-                    ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-900"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    ? "bg-indigo-200 text-indigo-600 dark:bg-indigo-900 dark:text-white shadow"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-800"
                 }`}
               >
                 <span className="text-lg">{item.icon}</span>
@@ -88,7 +92,7 @@ const SidebarMenu = ({ onLogout }) => {
 
           <button
             onClick={onLogout}
-            className="flex items-center w-full px-4 py-1 rounded-full text-red-500 hover:bg-red-100 dark:hover:bg-red-900 transition"
+            className="flex items-center w-full px-4 py-2 mt-4 rounded-full text-error hover:bg-error/20 transition-all"
           >
             <FaSignOutAlt className="text-md" />
             <span className="ml-4 text-sm">Logout</span>
@@ -96,22 +100,19 @@ const SidebarMenu = ({ onLogout }) => {
         </ul>
       </nav>
 
-      {/* Help & Logout */}
-      <div className="mt-auto w-full">
-        {/* User Profile (Avatar, Name, Role) */}
+      {/* User Profile (Avatar, Name, Role) */}
+      <div className="mt-auto flex flex-col items-center">
         <Link
           href="/dashboard/profil"
-          className="flex flex-col items-center mt-4 group mb-4 "
+          className="flex flex-col items-center group mb-4"
         >
           {loading ? (
-            // Skeleton Loader
             <>
               <div className="w-12 h-12 rounded-full bg-gray-300 animate-pulse"></div>
               <p className="mt-2 w-20 h-4 bg-gray-300 animate-pulse"></p>
               <span className="w-16 h-3 bg-gray-300 animate-pulse mt-1"></span>
             </>
           ) : (
-            // Profile Info
             <>
               <div
                 className={`w-12 h-12 flex items-center justify-center text-white text-lg font-bold rounded-full ${
@@ -121,17 +122,17 @@ const SidebarMenu = ({ onLogout }) => {
                 {user?.name?.charAt(0) || "?"}
                 {user?.surname?.charAt(0) || "?"}
               </div>
-              <p className="mt-2 font-semibold text-gray-800 dark:text-gray-100 group-hover:underline">
+              <p className="mt-2 font-semibold text-base-content group-hover:underline">
                 {user?.name || "Unbekannt"} {user?.surname || ""}
               </p>
-              <span className="text-gray-600 text-sm">
+              <span className="text-gray-600 text-sm dark:text-gray-400">
                 {user?.role || "Unbekannt"}
               </span>
             </>
           )}
         </Link>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
