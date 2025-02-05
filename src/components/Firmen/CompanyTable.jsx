@@ -12,6 +12,7 @@ const CompanyTable = ({
   hasMore,
 }) => {
   const [users, setUsers] = useState([]); // Store users
+  const itemsPerPage = 6; // Number of items per page
 
   // ✅ Fetch users when component mounts
   useEffect(() => {
@@ -29,45 +30,88 @@ const CompanyTable = ({
     fetchUsers();
   }, []);
 
-  // ✅ Get user by ID. and adding something else
+  // ✅ Get user by ID
   const getUserById = (userId) => users.find((u) => u._id === userId);
 
   return (
-    <div className="overflow-x-auto rounded-lg shadow-md bg-white">
-      <table className="table table-xs hover w-full rounded-lg border-indigo-300">
-        <thead>
-          <tr className="bg-indigo-100 text-slate-700 text-sm">
-            <th className="py-2 px-3 text-left w-auto">🏢 Firmen-Name</th>
-            <th className="py-2 px-3 text-left w-24">📋 Plan</th>
-            <th className="py-2 px-3 text-left w-32">💰 Plan-Preis</th>
-            <th className="py-2 px-3 text-left w-40">👤 Inhaber</th>
-            <th className="py-2 px-3 text-left w-40">🧑‍💼 Manager</th>
-            <th className="py-2 px-3 text-left w-40">🎤 Markenbotschafter</th>
-            <th className="py-2 px-3 text-left w-[60px]">📅 Ablaufdatum</th>
-            <th className="py-2 px-3 text-left w-32">💸 Provisionen</th>
-            <th className="py-2 px-3 text-center w-18">⚙️ Aktion</th>
-          </tr>
-        </thead>
+    <div className="">
+      <div className="overflow-x-auto rounded-lg shadow-sm">
+        <table className="table table-xs w-full">
+          <thead>
+            <tr className="text-sm md:text-md text-base-content border-b border-indigo-300">
+              <th className="py-3 px-4 text-left">Firmen-Name</th>
+              <th className="py-3 px-4 text-left">Plan</th>
+              <th className="py-3 px-4 text-left hidden md:table-cell">
+                Plan-Preis
+              </th>
+              <th className="py-3 px-4 text-left hidden md:table-cell">
+                Inhaber
+              </th>
+              <th className="py-3 px-4 text-left hidden md:table-cell">
+                Manager
+              </th>
+              <th className="py-3 px-4 text-left hidden md:table-cell">
+                Markenbotschafter
+              </th>
+              <th className="py-3 px-4 text-left "> Ablauf</th>
+              <th className="py-3 px-4 text-left hidden md:table-cell">
+                Provisionen
+              </th>
+              <th className="py-3 px-4 text-center">Aktion</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          {companies.map((company, index) => {
-            const manager = getUserById(company.manager_id);
-            const markenbotschafter = getUserById(company.markenbotschafter_id);
+          <tbody>
+            {companies.length === 0 ? (
+              // ✅ No Data Found
+              <tr>
+                <td colSpan="9" className="py-6 text-center text-gray-500">
+                  Keine Firmen gefunden.
+                </td>
+              </tr>
+            ) : (
+              companies.map((company, index) => {
+                const manager = getUserById(company.manager_id);
+                const markenbotschafter = getUserById(
+                  company.markenbotschafter_id
+                );
 
-            return (
-              <CompanyTableRow
-                key={company._id}
-                company={company}
-                index={index + 1}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                manager={manager}
-                markenbotschafter={markenbotschafter}
-              />
-            );
-          })}
-        </tbody>
-      </table>
+                return (
+                  <CompanyTableRow
+                    key={company._id}
+                    company={company}
+                    index={(page - 1) * itemsPerPage + index + 1}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                    manager={manager}
+                    markenbotschafter={markenbotschafter}
+                  />
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+      {/* ✅ Pagination UI */}
+      <div className="flex justify-between items-center mt-6">
+        <button
+          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+          disabled={page === 1}
+          className="btn btn-xs rounded-full px-4 btn-neutral"
+        >
+          ← Zurück
+        </button>
+
+        <span className="text-gray-700 text-xs">Seite {page}</span>
+
+        <button
+          onClick={() => setPage((prev) => prev + 1)}
+          disabled={!hasMore}
+          className="btn btn-xs rounded-full px-4 btn-neutral"
+        >
+          Weiter →
+        </button>
+      </div>
     </div>
   );
 };

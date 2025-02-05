@@ -9,7 +9,7 @@ import EditCompanyModal from "../../../components/Firmen/EditCompanyModal";
 import ToastNotification from "../../../components/Firmen/ToastNotification";
 
 const Firmen = () => {
-  const [companies, setCompanies] = useState([]);
+  const [companies, setCompanies] = useState(null); // ✅ Prevent SSR issues
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [companyToDelete, setCompanyToDelete] = useState(null);
@@ -20,7 +20,7 @@ const Firmen = () => {
   // ✅ Pagination State
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const companiesPerPage = 10;
+  const companiesPerPage = 6;
 
   // ✅ Fetch Companies with Pagination
   useEffect(() => {
@@ -42,8 +42,9 @@ const Firmen = () => {
     };
 
     fetchCompanies();
-  }, [page]); // ✅ Re-fetch when page changes
+  }, [page]);
 
+  // ✅ Handle Delete Company
   const handleDelete = async () => {
     if (!companyToDelete) return;
     try {
@@ -63,41 +64,7 @@ const Firmen = () => {
     }
   };
 
-  const handleSave = async (updatedCompany) => {
-    console.log("Updating company:", updatedCompany);
-
-    try {
-      const res = await fetch(`/api/companies/${updatedCompany._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedCompany),
-      });
-
-      const responseData = await res.json();
-      console.log("Server Response:", responseData);
-
-      if (!res.ok)
-        throw new Error(
-          responseData.error || "Fehler beim Aktualisieren der Firma."
-        );
-
-      setCompanies((prev) =>
-        prev.map((company) =>
-          company._id === updatedCompany._id
-            ? { ...company, ...updatedCompany }
-            : company
-        )
-      );
-
-      setToastMessage("Firma erfolgreich aktualisiert! ✅");
-    } catch (error) {
-      console.error("Error updating company:", error);
-      setToastMessage("Fehler beim Aktualisieren: " + error.message);
-    }
-  };
-
+  // ✅ Handle New Company Submission
   const handleNewCompanySubmit = async (newCompany) => {
     const companyData = {
       ...newCompany,
@@ -123,48 +90,77 @@ const Firmen = () => {
     }
   };
 
+  // ✅ Handle Editing Company
   const handleEditCompany = async (id, updatedData) => {
     try {
       const res = await fetch(`/api/companies/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedData), // `_id` is NOT included here
+        body: JSON.stringify(updatedData),
       });
 
       if (!res.ok) throw new Error("Fehler beim Aktualisieren der Firma.");
-
-      const updatedCompany = await res.json();
 
       setCompanies((prev) =>
         prev.map((company) =>
           company._id === id ? { ...company, ...updatedData } : company
         )
       );
+      setToastMessage("Firma erfolgreich aktualisiert! ✅");
     } catch (error) {
-      console.error("Error updating company:", error);
-      alert("Fehler beim Aktualisieren: " + error.message);
+      setToastMessage("Fehler beim Aktualisieren: " + error.message);
     }
   };
 
-  if (loading)
+  // ✅ Loading State (Skeleton UI)
+  if (loading || companies === null)
     return (
-      <div className="p-6">
-        <h1 className="text-4xl font-bold mb-8 text-gray-800">Firmen</h1>
-        <div className="overflow-x-auto rounded-lg shadow-md bg-white">
-          <div className="flex justify-center py-10">
-            <progress className="progress w-56"></progress>
-          </div>
+      <div className="px-4 md:px-12">
+        <h1 className="text-3xl mt-8 md:text-4xl font-extrabold text-base-content mb-6">
+          Firmen
+        </h1>
+        <div className="overflow-x-auto rounded-lg shadow-sm">
+          <table className="table table-xs w-full">
+            <thead>
+              <tr className="text-sm md:text-md text-base-content border-b border-indigo-300">
+                <th className="py-3 px-4 text-left">Name</th>
+                <th className="py-3 px-4 text-left">Erstellt am</th>
+                <th className="py-3 px-4 text-left hidden md:table-cell">
+                  Status
+                </th>
+                <th className="py-3 px-4 text-left hidden md:table-cell">
+                  Aktionen
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...Array(10)].map((_, index) => (
+                <tr
+                  key={index}
+                  className="animate-pulse border-b border-gray-200"
+                >
+                  {[...Array(4)].map((_, i) => (
+                    <td key={i} className="py-4 px-4">
+                      <div className="h-4 w-24 bg-gray-300 rounded"></div>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     );
 
   return (
-    <div className="p-6">
+    <div className="px-4 md:px-12">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-800">Firmen</h1>
+        <h1 className=" text-3xl mt-8 md:text-4xl font-extrabold text-base-content">
+          Firmen
+        </h1>
         <button
           onClick={() => setShowModal(true)}
-          className="btn btn-neutral btn-sm flex items-center space-x-2"
+          className=" btn btn-neutral btn-sm flex mt-auto rounded-full items-center space-x-2"
         >
           <FaPlus />
           <span>Neue Firma</span>
@@ -180,26 +176,7 @@ const Firmen = () => {
         hasMore={hasMore}
       />
 
-      <div className="flex justify-between items-center mt-6">
-        <button
-          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-          disabled={page === 1}
-          className="btn btn-xs btn-neutral"
-        >
-          ← Zurück
-        </button>
-
-        <span className="text-gray-700 text-xs">Seite {page}</span>
-
-        <button
-          onClick={() => setPage((prev) => prev + 1)}
-          disabled={!hasMore}
-          className="btn btn-xs btn-neutral"
-        >
-          Weiter →
-        </button>
-      </div>
-
+      {/* ✅ Modals */}
       <DeleteCompanyModal
         company={companyToDelete}
         onDelete={handleDelete}
@@ -212,7 +189,7 @@ const Firmen = () => {
       />
       <EditCompanyModal
         company={companyToEdit}
-        onSave={handleEditCompany} // ✅ Ensure this function exists
+        onSave={handleEditCompany}
         onClose={() => setCompanyToEdit(null)}
       />
       <ToastNotification
