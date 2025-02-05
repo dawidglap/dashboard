@@ -80,13 +80,13 @@ const BulkActions = ({
   };
 
   return (
-    <div className="flex items-center justify-between bg-indigo-50  py-2 px-3">
+    <div className="flex items-center justify-between  py-3  ">
       {/* 🛠️ Bulk Action Buttons */}
       <div className="flex space-x-2">
         <button
           onClick={() => setIsDeleteModalOpen(true)}
           disabled={isProcessing}
-          className="btn btn-outline btn-error btn-sm"
+          className="btn btn-sm bg-red-50 text-red-700 hover:bg-red-200 rounded-full flex items-center px-4"
         >
           🗑️ Löschen ({selectedTasks.length})
         </button>
@@ -94,7 +94,7 @@ const BulkActions = ({
         <button
           onClick={() => handleBulkUpdate("done")}
           disabled={isProcessing}
-          className="btn btn-outline btn-success btn-sm"
+          className="btn btn-sm bg-green-50 text-green-700 hover:bg-green-200 rounded-full flex items-center px-4"
         >
           ✅ Erledigt
         </button>
@@ -102,7 +102,7 @@ const BulkActions = ({
         <button
           onClick={() => handleBulkUpdate("in_progress")}
           disabled={isProcessing}
-          className="btn btn-outline btn-warning btn-sm"
+          className="btn btn-sm bg-yellow-50 text-yellow-700 hover:bg-yellow-200 rounded-full flex items-center px-4"
         >
           🚀 In Bearbeitung
         </button>
@@ -110,29 +110,42 @@ const BulkActions = ({
 
       {/* 🔥 DELETE CONFIRMATION MODAL */}
       {isDeleteModalOpen && (
-        <div className="modal modal-open">
-          <div className="modal-box">
-            <h3 className="font-bold text-lg text-red-600">
-              ⚠️ Bist du sicher?
-            </h3>
-            <p className="py-2 text-gray-700">
+        <div className="modal modal-open flex items-center justify-center backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="modal-box max-w-md w-full bg-white shadow-lg rounded-2xl p-6"
+          >
+            {/* Header */}
+            <div className="flex justify-between items-center border-b pb-3">
+              <h3 className="text-lg font-bold text-red-600 flex items-center gap-2">
+                ⚠️ Bist du sicher?
+              </h3>
+            </div>
+
+            {/* Content */}
+            <p className="py-4 text-gray-700 text-sm">
               Diese Aktion kann nicht rückgängig gemacht werden!
             </p>
-            <div className="modal-action">
+
+            {/* Modal Actions */}
+            <div className="flex justify-between mt-4">
               <button
                 onClick={() => setIsDeleteModalOpen(false)}
-                className="btn btn-sm btn-neutral"
+                className="btn btn-sm btn-outline rounded-full"
               >
                 Abbrechen
               </button>
               <button
                 onClick={handleBulkDelete}
-                className="btn btn-sm btn-error"
+                className="btn btn-sm bg-red-500 text-white hover:bg-red-600 rounded-full px-4"
               >
                 Ja, Löschen
               </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>

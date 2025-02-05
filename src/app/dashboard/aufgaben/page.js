@@ -67,7 +67,7 @@ const Tasks = () => {
 
           const queryParams = new URLSearchParams({
             page: page.toString(), // ✅ Now correctly reset before fetch
-            limit: "12",
+            limit: "8",
           });
 
           if (filters.statusFilter)
@@ -286,7 +286,7 @@ const Tasks = () => {
       </div>
       <FilterTaskBar onFilterChange={handleFilterChange} users={users} />
 
-      <div className="rounded-lg shadow-md bg-white">
+      <div className="rounded-lg  bg-white">
         {/* ✅ Global Toast Notification */}
         <div className="toast toast-top toast-center"></div>
         {selectedTasks.length > 0 && (
@@ -298,7 +298,7 @@ const Tasks = () => {
           />
         )}
 
-        <table className="table w-full rounded-2xl shadow-md border border-gray-200">
+        <table className="table w-full  border-b border-gray-200">
           <thead className=" text-gray-700 text-sm border-b">
             <tr>
               <th className="py-3 px-4 w-6">
@@ -344,7 +344,7 @@ const Tasks = () => {
                   !filters.assignedToFilter ||
                   task.assignedTo?._id === filters.assignedToFilter
               ) // ✅ Apply filter
-              .slice((page - 1) * 12, page * 12) // ✅ Apply pagination AFTER expansion
+              .slice((page - 1) * 8, page * 8) // ✅ Apply pagination AFTER expansion
               .map((task) => (
                 <TaskRow
                   key={`${task._id}-${task.assignedTo?._id || "unassigned"}`}
@@ -377,7 +377,7 @@ const Tasks = () => {
         <button
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1}
-          className="btn btn-xs btn-neutral"
+          className="btn btn-xs px-4 rounded-full btn-neutral"
         >
           ← Zurück
         </button>
@@ -387,7 +387,7 @@ const Tasks = () => {
         <button
           onClick={() => setPage((prev) => prev + 1)}
           disabled={!hasMore}
-          className="btn btn-xs btn-neutral"
+          className="btn btn-xs px-4 rounded-full btn-neutral"
         >
           Weiter →
         </button>

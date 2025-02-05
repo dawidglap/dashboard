@@ -129,7 +129,7 @@ const TaskRow = ({
     <>
       {/* Task Row */}
       <tr
-        className="border-b hover:bg-indigo-50 transition text-sm cursor-pointer group"
+        className="border-b hover:bg-indigo-100 transition text-sm cursor-pointer group"
         onClick={(e) => {
           if (e.target.type !== "checkbox") {
             handleRowClick();
@@ -143,6 +143,7 @@ const TaskRow = ({
             checked={isSelected}
             onChange={handleCheckboxChange}
             onClick={(e) => e.stopPropagation()}
+            className="ms-1 checkbox checkbox-sm"
           />
         </td>
 
@@ -160,48 +161,49 @@ const TaskRow = ({
         </td>
 
         {/* Task Title */}
-        <td className="py-0 px-4">{task.title}</td>
+        <td className="py-2 px-4 font-semibold">{task.title}</td>
 
         {/* Status Column */}
-        <td className="py-2 px-4 flex items-center gap-2">
-          {task.status === "pending" && (
-            <span className="text-gray-500 flex items-center gap-1">
-              ⏳ Ausstehend
-            </span>
-          )}
-          {task.status === "in_progress" && (
-            <span className="text-blue-500 flex items-center gap-1">
-              🚀 In Bearbeitung
-            </span>
-          )}
-          {task.status === "done" && (
-            <span className="text-green-500 flex items-center gap-1">
-              ✅ Erledigt
-            </span>
-          )}
-          {task.status === "cannot_complete" && (
-            <span className="text-red-500 flex items-start gap-1">
-              ❌ Nicht abgeschlossen
-            </span>
-          )}
+        <td className="py-2 px-4">
+          <span
+            className={`text-xs font-medium px-2 py-1 rounded-full ${
+              task.status === "pending"
+                ? " text-gray-500"
+                : task.status === "in_progress"
+                ? " text-blue-500"
+                : task.status === "done"
+                ? " text-green-500"
+                : task.status === "cannot_complete"
+                ? " text-red-500"
+                : " text-gray-500"
+            }`}
+          >
+            {task.status === "pending"
+              ? "Ausstehend"
+              : task.status === "in_progress"
+              ? "In Bearbeitung"
+              : task.status === "done"
+              ? "Erledigt"
+              : "Nicht abgeschlossen"}
+          </span>
         </td>
 
         {/* Assigned To Name */}
-        <td className="py-0 px-4 w-40 font-semibold">
+        <td className="py-2 px-4 w-40 font-semibold">
           {task.assignedTo && typeof task.assignedTo === "object"
             ? task.assignedTo.name
             : "Aktualisieren..."}
         </td>
 
         {/* Assigned To Role */}
-        <td className="py-0 px-4 w-32 text-[10px] uppercase font-thin">
+        <td className="py-2 px-4 w-32 text-[10px] uppercase font-thin">
           {task.assignedTo && typeof task.assignedTo === "object"
             ? task.assignedTo.role
             : "Aktualisieren..."}
         </td>
 
         {/* Due Date */}
-        <td className="py-0 px-4 font-semibold">
+        <td className="py-2 px-4 font-semibold">
           {task.dueDate
             ? new Date(task.dueDate).toLocaleDateString("de-DE", {
                 day: "2-digit",
@@ -212,7 +214,7 @@ const TaskRow = ({
         </td>
 
         {/* Created At */}
-        <td className="py-0 px-4">
+        <td className="py-2 px-4">
           {task.createdAt
             ? new Date(task.createdAt).toLocaleDateString("de-DE", {
                 day: "2-digit",
@@ -230,13 +232,13 @@ const TaskRow = ({
           >
             <button
               onClick={toggleDropdown}
-              className="p-2 rounded hover:bg-indigo-300"
+              className="p-2 rounded-full hover:bg-indigo-200 transition"
             >
               <FaEllipsisH />
             </button>
 
             {isDropdownOpen && (
-              <ul className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
+              <ul className="absolute right-0 mt-2 w-48 bg-white border rounded-2xl shadow-lg z-50">
                 {canUpdateStatus && (
                   <>
                     <li>
@@ -245,7 +247,7 @@ const TaskRow = ({
                           setIsEditModalOpen(true);
                           setOpenDropdownId(null);
                         }}
-                        className="flex items-center px-4 py-2 hover:bg-indigo-50 w-full"
+                        className="flex items-center px-4 py-2 hover:bg-indigo-100 w-full rounded-md"
                       >
                         <FaEdit className="mr-2" /> Bearbeiten
                       </button>
@@ -253,7 +255,7 @@ const TaskRow = ({
                     <li>
                       <button
                         onClick={() => handleUpdateStatus("in_progress")}
-                        className="flex items-center px-4 py-2 hover:bg-indigo-50 w-full"
+                        className="flex items-center px-4 py-2 hover:bg-indigo-100 w-full rounded-md"
                       >
                         {isUpdating ? (
                           <FaSpinner className="animate-spin mr-2" />
@@ -266,7 +268,7 @@ const TaskRow = ({
                     <li>
                       <button
                         onClick={() => handleUpdateStatus("done")}
-                        className="flex items-center px-4 py-2 hover:bg-indigo-50 w-full"
+                        className="flex items-center px-4 py-2 hover:bg-indigo-100 w-full rounded-md"
                       >
                         {isUpdating ? (
                           <FaSpinner className="animate-spin mr-2" />
@@ -279,7 +281,7 @@ const TaskRow = ({
                     <li>
                       <button
                         onClick={() => handleUpdateStatus("cannot_complete")}
-                        className="flex items-center px-4 py-2 hover:bg-indigo-50 w-full"
+                        className="flex items-center px-4 py-2 hover:bg-indigo-100 w-full rounded-md"
                       >
                         {isUpdating ? (
                           <FaSpinner className="animate-spin mr-2" />
@@ -296,7 +298,7 @@ const TaskRow = ({
                   <li>
                     <button
                       onClick={() => onDelete(task._id)}
-                      className="flex items-center px-4 py-2 text-red-500 hover:bg-indigo-50 w-full"
+                      className="flex items-center px-4 py-2 text-red-500 hover:bg-indigo-100 w-full rounded-md"
                     >
                       <FaTrash className="mr-2" /> Löschen
                     </button>
