@@ -19,9 +19,9 @@ const UserTable = ({ users, onEdit, onDelete }) => {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="overflow-x-auto rounded-xl bg-base-100  p-4"
+      className="overflow-x-auto "
     >
-      <table className="table table-xs w-full rounded-lg border-b border-gray-200 dark:border-gray-700">
+      <table className="table table-xs w-full border-b border-gray-200 dark:border-gray-700">
         <thead>
           <tr className=" dark:bg-indigo-800 text-base-content text-sm">
             <th className="py-3 px-4 text-left">Vorname</th>

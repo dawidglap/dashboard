@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
   const [status, setStatus] = useState("pending");
@@ -88,120 +89,108 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
 
   return (
     isOpen && (
-      <div className="modal modal-open flex items-center justify-center">
-        <div className="modal-box max-w-4xl w-full bg-gray-100 p-6 rounded-xl shadow-lg">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">
-            ✨ Neue Aufgabe erstellen
-          </h3>
+      <div className="modal modal-open flex items-center justify-center backdrop-blur-sm ">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="modal-box max-w-5xl w-full bg-base-100 shadow-lg rounded-2xl p-8"
+        >
+          {/* Header */}
+          <div className="flex justify-between items-center border-b pb-4">
+            <h3 className="text-2xl font-bold text-base-content">
+              Neue Aufgabe erstellen
+            </h3>
+          </div>
 
-          <div className="grid grid-cols-2 gap-6">
-            {/* Left Side - Inputs */}
-            <div className="space-y-4">
-              {/* Task Title */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  📌 Titel
-                </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="input input-sm input-bordered w-full rounded-full px-3"
-                  placeholder="Aufgabenname eingeben..."
-                />
-              </div>
-
-              {/* Task Description */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  📝 Beschreibung
-                </label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="textarea textarea-sm textarea-bordered w-full h-24 rounded-lg px-3"
-                  placeholder="Beschreibung eingeben..."
-                ></textarea>
-              </div>
-
-              {/* Task Priority */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  🚀 Priorität
-                </label>
-                <select
-                  value={priority}
-                  onChange={(e) => setPriority(e.target.value)}
-                  className="select select-sm select-bordered w-full rounded-full px-3"
-                >
-                  <option value="high">🔥 Hoch</option>
-                  <option value="medium">⚡ Mittel</option>
-                  <option value="low">🍃 Niedrig</option>
-                </select>
-              </div>
-
-              {/* Task Status */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  ✅ Status
-                </label>
-                <select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  className="select select-sm select-bordered w-full rounded-full px-3"
-                >
-                  <option value="pending">⏳ Ausstehend</option>
-                  <option value="in_progress">🚀 In Bearbeitung</option>
-                  <option value="done">✅ Erledigt</option>
-                  <option value="cannot_complete">
-                    ❌ Nicht abgeschlossen
-                  </option>
-                </select>
-              </div>
-
-              {/* Due Date */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  📅 Fällig am
-                </label>
-                <input
-                  type="date"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  min={today}
-                  className="input input-sm input-bordered w-full rounded-full px-3"
-                />
-              </div>
+          {/* Grid Layout */}
+          <div className="grid grid-cols-4 gap-3 mt-6">
+            {/* Task Title */}
+            <div className="col-span-2">
+              <label className="text-sm font-medium">Titel</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="input input-sm input-bordered w-full rounded-full"
+                placeholder="Aufgabenname eingeben..."
+              />
             </div>
 
-            {/* Right Side - Assigned Users */}
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  👥 Zugewiesen an
-                </label>
-                <div className="border rounded-lg p-3 bg-white">
-                  <button
-                    onClick={handleSelectAll}
-                    className="btn btn-sm  w-full rounded-full mb-2"
-                  >
-                    {selectAll ? "Alle abwählen" : "Alle auswählen"}
-                  </button>
-                  <div className="flex flex-wrap gap-1">
-                    {users.map((user) => (
-                      <button
-                        key={user._id}
-                        onClick={() => handleUserSelect(user._id)}
-                        className={`badge badge-md ${
-                          assignedTo.includes(user._id)
-                            ? "bg-gray-200 "
-                            : "bg-gray-50"
-                        } px-3 py-1 cursor-pointer`}
-                      >
-                        {user.name} ({user.role})
-                      </button>
-                    ))}
-                  </div>
+            {/* Priority & Status */}
+            <div className="col-span-1">
+              <label className="text-sm font-medium">Priorität</label>
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+                className="select select-sm select-bordered w-full rounded-full"
+              >
+                <option value="high">Hoch</option>
+                <option value="medium">Mittel</option>
+                <option value="low">Niedrig</option>
+              </select>
+            </div>
+            <div className="col-span-1">
+              <label className="text-sm font-medium">Status</label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="select select-sm select-bordered w-full rounded-full"
+              >
+                <option value="pending">Ausstehend</option>
+                <option value="in_progress">In Bearbeitung</option>
+                <option value="done">Erledigt</option>
+                <option value="cannot_complete">Nicht abgeschlossen</option>
+              </select>
+            </div>
+            {/* Task Description */}
+            <div className="col-span-3">
+              <label className="text-sm font-medium">Beschreibung</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="textarea textarea-sm textarea-bordered w-full h-20 rounded-2xl px-3"
+                placeholder="Beschreibung eingeben..."
+              ></textarea>
+            </div>
+
+            {/* Due Date */}
+            <div className="col-span-1">
+              <label className="text-sm font-medium">Fällig am</label>
+              <input
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                min={today}
+                className="input input-sm input-bordered w-full rounded-full"
+              />
+            </div>
+
+            {/* Assigned Users */}
+            <div className="col-span-4">
+              <label className="text-sm font-medium">Zugewiesen an</label>
+              <div className="border rounded-2xl p-3 bg-white">
+                <button
+                  onClick={handleSelectAll}
+                  className="btn btn-sm w-full bg-indigo-100 hover:bg-indigo-200 rounded-full mb-2"
+                >
+                  {selectAll ? "Alle abwählen" : "Alle auswählen"}
+                </button>
+                <div className="flex flex-wrap gap-1">
+                  {users.map((user) => (
+                    <button
+                      key={user._id}
+                      onClick={() => handleUserSelect(user._id)}
+                      className={`badge badge-md px-3 py-1 cursor-pointer rounded-full ${
+                        assignedTo.includes(user._id)
+                          ? "bg-indigo-200"
+                          : "bg-indigo-50"
+                      }`}
+                    >
+                      {user.name} ({user.role})
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
@@ -213,22 +202,22 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
           )}
 
           {/* Modal Actions */}
-          <div className="modal-action flex justify-between mt-4">
+          <div className="flex justify-between mt-6">
             <button
               onClick={onClose}
-              className="btn btn-sm bg-red-500 text-white px-5 rounded-full hover:bg-red-600"
+              className="btn btn-sm btn-outline rounded-full"
             >
               Abbrechen
             </button>
             <button
               onClick={handleCreateTask}
-              className="btn btn-sm bg-green-500 text-white px-5 rounded-full hover:bg-green-600"
+              className="btn btn-sm btn-neutral hover:text-white rounded-full flex items-center"
               disabled={isSaving}
             >
               {isSaving ? "Speichern..." : "Speichern"}
             </button>
           </div>
-        </div>
+        </motion.div>
       </div>
     )
   );

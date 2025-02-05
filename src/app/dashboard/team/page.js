@@ -85,10 +85,10 @@ const Team = () => {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="p-6 bg-base-100 "
+      className="bg-base-100 px-4 md:px-12"
     >
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-base-content">
+        <h1 className="text-3xl mt-8 md:text-4xl font-extrabold text-base-content mb-6">
           Teamübersicht
         </h1>
         <button
