@@ -128,12 +128,10 @@ const TaskRow = ({
   return (
     <>
       {/* Task Row */}
-
       <tr
         className="border-b hover:bg-indigo-50 transition text-sm cursor-pointer group"
         onClick={(e) => {
           if (e.target.type !== "checkbox") {
-            // ✅ Open modal only if not clicking a checkbox
             handleRowClick();
           }
         }}
@@ -165,12 +163,6 @@ const TaskRow = ({
         <td className="py-0 px-4">{task.title}</td>
 
         {/* Status Column */}
-        {/* <td className="pt-2 px-4 flex items-center space-x-2">
-          <span className={STATUS_ICONS[task.status]?.color}>
-            {STATUS_ICONS[task.status]?.icon || <FaHourglassHalf />}
-          </span>
-        </td> */}
-        {/* Status Column - Matches Filter UI */}
         <td className="py-2 px-4 flex items-center gap-2">
           {task.status === "pending" && (
             <span className="text-gray-500 flex items-center gap-1">
@@ -188,7 +180,7 @@ const TaskRow = ({
             </span>
           )}
           {task.status === "cannot_complete" && (
-            <span className="text-red-500 flex items-center gap-1">
+            <span className="text-red-500 flex items-start gap-1">
               ❌ Nicht abgeschlossen
             </span>
           )}
@@ -200,6 +192,7 @@ const TaskRow = ({
             ? task.assignedTo.name
             : "Aktualisieren..."}
         </td>
+
         {/* Assigned To Role */}
         <td className="py-0 px-4 w-32 text-[10px] uppercase font-thin">
           {task.assignedTo && typeof task.assignedTo === "object"
@@ -250,7 +243,7 @@ const TaskRow = ({
                       <button
                         onClick={() => {
                           setIsEditModalOpen(true);
-                          setOpenDropdownId(null); // ✅ Close dropdown after clicking
+                          setOpenDropdownId(null);
                         }}
                         className="flex items-center px-4 py-2 hover:bg-indigo-50 w-full"
                       >
