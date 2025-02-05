@@ -67,7 +67,9 @@ const SidebarMenu = ({ onLogout }) => {
     >
       {/* Logo */}
       <div className="flex items-center justify-center">
-        <h2 className="text-xl font-bold text-base-content">Webomo Business</h2>
+        <h2 className="text-xl font-extrabold text-base-content">
+          Webomo Business
+        </h2>
       </div>
 
       {/* Menu Items */}
@@ -77,7 +79,7 @@ const SidebarMenu = ({ onLogout }) => {
             <li key={index}>
               <Link
                 href={item.href}
-                className={`flex items-center px-4 py-2 rounded-full transition-all text-sm font-medium
+                className={`flex items-center px-4 py-2 rounded-full transition-all text-sm 
                 ${
                   pathname === item.href
                     ? "bg-indigo-200 text-indigo-600 dark:bg-indigo-900 dark:text-white shadow"

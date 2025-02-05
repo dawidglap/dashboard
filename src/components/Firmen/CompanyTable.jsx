@@ -35,7 +35,7 @@ const CompanyTable = ({
 
   return (
     <div className="">
-      <div className="overflow-x-auto rounded-lg shadow-sm">
+      <div className="overflow-x-auto">
         <table className="table table-xs w-full">
           <thead>
             <tr className="text-sm md:text-md text-base-content border-b border-indigo-300 dark:text-white">

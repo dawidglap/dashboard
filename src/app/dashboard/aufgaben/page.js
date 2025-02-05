@@ -269,14 +269,16 @@ const Tasks = () => {
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="p-4">
+    <div className="px-4 md:px-12">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Aufgaben</h1>
+        <h1 className="text-3xl mt-8 md:text-4xl font-extrabold text-base-content mb-6">
+          Aufgaben
+        </h1>
 
         {user?.role === "admin" && (
           <button
             onClick={() => setIsModalOpen(true)}
-            className="btn btn-sm btn-neutral"
+            className="btn btn-sm btn-neutral px-4 rounded-full"
           >
             + Neue Aufgabe
           </button>
@@ -296,32 +298,26 @@ const Tasks = () => {
           />
         )}
 
-        <table className="table table-xs hover w-full rounded-lg border-indigo-300">
-          <thead className="">
-            <tr className="bg-indigo-100 text-slate-700 text-sm">
-              <th className="py-2 px-3 w-6">
+        <table className="table w-full rounded-2xl shadow-md border border-gray-200">
+          <thead className=" text-gray-700 text-sm border-b">
+            <tr>
+              <th className="py-3 px-4 w-6">
                 <input
                   type="checkbox"
                   checked={allSelected}
                   onChange={handleSelectAll}
+                  className="checkbox checkbox-sm"
                 />
               </th>
-              <th className="py-2 px-3 text-left w-6">⚠️</th>{" "}
-              {/* Priority column - small */}
-              <th className="py-2 px-3 text-left w-auto">Titel</th>{" "}
-              {/* Title - More space */}
-              <th className="py-2 px-3 text-left w-44">Status</th>{" "}
-              {/* Fixed width */}
-              <th className="py-2 px-3 text-left w-40">Zugewiesen an</th>{" "}
-              {/* Assigned To Name */}
-              <th className="py-2 px-3 text-left w-32">Rolle</th>{" "}
-              {/* Assigned To Role */}
-              <th className="py-2 px-3 text-left w-28">Fällig am</th>{" "}
-              {/* Due Date - Smaller */}
-              <th className="py-2 px-3 text-left w-28">Erstellt am</th>{" "}
-              {/* Created At - Smaller */}
-              <th className="py-2 px-3 text-center w-6">Aktion</th>{" "}
-              {/* Actions - Smallest */}
+              <th className="py-3 px-4 text-left w-6">⚠️</th>{" "}
+              {/* Priority column */}
+              <th className="py-3 px-4 text-left w-auto">Titel</th>
+              <th className="py-3 px-4 text-left w-44">Status</th>
+              <th className="py-3 px-4 text-left w-40">Zugewiesen an</th>
+              <th className="py-3 px-4 text-left w-32">Rolle</th>
+              <th className="py-3 px-4 text-left w-28">Fällig am</th>
+              <th className="py-3 px-4 text-left w-28">Erstellt am</th>
+              <th className="py-3 px-4 text-center w-6">Aktion</th>
             </tr>
           </thead>
 
@@ -329,7 +325,7 @@ const Tasks = () => {
             {displayedTasks
               .flatMap((task) =>
                 Array.isArray(task.assignedTo) && task.assignedTo.length > 0
-                  ? task.assignedTo.map((assignee, index) => ({
+                  ? task.assignedTo.map((assignee) => ({
                       ...task,
                       assignedTo: assignee, // ✅ Assign each user to a row
                     }))
@@ -346,8 +342,8 @@ const Tasks = () => {
               .filter(
                 (task) =>
                   !filters.assignedToFilter ||
-                  task.assignedTo?._id === filters.assignedToFilter // ✅ Apply filter condition
-              )
+                  task.assignedTo?._id === filters.assignedToFilter
+              ) // ✅ Apply filter
               .slice((page - 1) * 12, page * 12) // ✅ Apply pagination AFTER expansion
               .map((task) => (
                 <TaskRow

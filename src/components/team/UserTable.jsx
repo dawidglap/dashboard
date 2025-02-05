@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { FaEdit, FaTrash } from "react-icons/fa";
 
 const UserTable = ({ users, onEdit, onDelete }) => {
   const [page, setPage] = useState(1);
-  const usersPerPage = 10;
+  const usersPerPage = 8;
 
   const totalPages = Math.ceil(users.length / usersPerPage);
   const displayedUsers = users.slice(
@@ -14,33 +15,32 @@ const UserTable = ({ users, onEdit, onDelete }) => {
   );
 
   return (
-    <div className="overflow-x-auto rounded-lg">
-      <table className="table table-xs hover w-full bg-white rounded-lg border-indigo-300">
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      className="overflow-x-auto rounded-xl bg-base-100  p-4"
+    >
+      <table className="table table-xs w-full rounded-lg border-b border-gray-200 dark:border-gray-700">
         <thead>
-          <tr className="bg-indigo-200 text-slate-700 text-sm">
-            {/* <th className="py-2 px-3 w-6">#</th> */}
-            <th className="py-2 px-3 text-left w-auto">👤 Vorname</th>
-
-            <th className="py-2 px-3 text-left w-auto">📧 E-Mail</th>
-            <th className="py-2 px-3 text-left w-32">🎂 Geburtstag</th>
-            <th className="py-2 px-3 text-left w-36">🎭 Rolle</th>
-            <th className="py-2 px-3 text-center w-16">⚙️ Aktion</th>
+          <tr className=" dark:bg-indigo-800 text-base-content text-sm">
+            <th className="py-3 px-4 text-left">Vorname</th>
+            <th className="py-3 px-4 text-left">E-Mail</th>
+            <th className="py-3 px-4 text-left">Geburtstag</th>
+            <th className="py-3 px-4 text-left">Rolle</th>
+            <th className="py-3 px-4 text-center">Aktion</th>
           </tr>
         </thead>
         <tbody>
-          {displayedUsers.map((user, index) => (
+          {displayedUsers.map((user) => (
             <tr
               key={user._id}
-              className="border-b hover:bg-indigo-50 transition text-sm"
+              className="border-b border-gray-200 dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition text-sm"
             >
-              {/* <td className="py-2 px-3">
-                {(page - 1) * usersPerPage + index + 1}
-              </td> */}
+              <td className="py-4 px-4 font-semibold">{user.name || "N/A"}</td>
 
-              <td className="py-2 px-3 font-semibold">{user.name || "N/A"}</td>
-
-              {/* ✅ Clickable Email - Opens Email Client */}
-              <td className="py-2 px-3">
+              {/* ✅ Clickable Email */}
+              <td className="py-4 px-4">
                 {user.email ? (
                   <a
                     href={`mailto:${user.email}`}
@@ -53,22 +53,24 @@ const UserTable = ({ users, onEdit, onDelete }) => {
                 )}
               </td>
 
-              <td className="py-2 px-3">{user.birthday || "N/A"}</td>
-              <td className="py-2 px-3 uppercase text-[10px] font-medium text-gray-600">
+              <td className="py-4 px-4">{user.birthday || "N/A"}</td>
+              <td className="py-4 px-4 uppercase text-xs font-medium text-gray-600 dark:text-gray-300">
                 {user.role}
               </td>
-              <td className="py-2 px-3 flex justify-center space-x-2">
+
+              {/* ✅ Actions */}
+              <td className="py-4 px-4 flex justify-center space-x-2">
                 <button
                   onClick={() => onEdit(user)}
-                  className="p-2 rounded hover:bg-indigo-200 transition"
+                  className="btn btn-xs btn-outline btn-neutral rounded-full"
                 >
-                  <FaEdit className="text-indigo-500" />
+                  <FaEdit />
                 </button>
                 <button
                   onClick={() => onDelete(user)}
-                  className="p-2 rounded hover:bg-red-200 transition"
+                  className="btn btn-xs btn-outline btn-error rounded-full"
                 >
-                  <FaTrash className="text-red-500" />
+                  <FaTrash />
                 </button>
               </td>
             </tr>
@@ -81,24 +83,25 @@ const UserTable = ({ users, onEdit, onDelete }) => {
         <button
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1}
-          className="btn btn-xs btn-neutral"
+          className="btn btn-sm rounded-full btn-neutral transition-all"
         >
           ← Zurück
         </button>
 
-        <span className="text-gray-700 text-xs">
-          Seite {page} von {totalPages}
+        <span className="text-gray-700 text-sm">
+          Seite {page}
+          {/* von {totalPages} */}
         </span>
 
         <button
           onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
           disabled={page === totalPages}
-          className="btn btn-xs btn-neutral"
+          className="btn btn-sm rounded-full btn-neutral transition-all"
         >
           Weiter →
         </button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

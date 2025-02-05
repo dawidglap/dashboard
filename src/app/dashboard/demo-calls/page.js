@@ -104,7 +104,7 @@ const DemoCalls = () => {
       <h1 className="text-3xl md:text-4xl mt-8 mb-8 font-extrabold text-base-content">
         Bevorstehende Demo-Calls
       </h1>
-      <div className="overflow-x-auto rounded-lg shadow-sm">
+      <div className="overflow-x-auto">
         <table className=" table-xs table w-full">
           <thead>
             <tr className="text-sm md:text-md text-base-content border-b border-indigo-300">

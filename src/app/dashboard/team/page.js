@@ -6,6 +6,7 @@ import UserTable from "../../../components/team/UserTable";
 import UserFormModal from "../../../components/team/UserFormModal";
 import DeleteConfirmationModal from "../../../components/team/DeleteConfirmationModal";
 import ToastNotification from "../../../components/team/ToastNotification";
+import { motion } from "framer-motion";
 
 const Team = () => {
   const [users, setUsers] = useState([]);
@@ -80,24 +81,33 @@ const Team = () => {
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="p-6">
+    <motion.div
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      className="p-6 bg-base-100 "
+    >
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-800">Teamübersicht</h1>
+        <h1 className="text-3xl md:text-4xl font-extrabold text-base-content">
+          Teamübersicht
+        </h1>
         <button
           onClick={() => {
             setShowModal(true);
             setIsEditing(false);
             setCurrentUser(null);
           }}
-          className="btn btn-neutral btn-sm flex items-center space-x-2"
+          className="btn btn-neutral btn-sm rounded-full flex items-center space-x-2 transition-all px-4 hover:text-white"
         >
           <FaPlus />
           <span>Neuer Benutzer</span>
         </button>
       </div>
 
+      {/* ✅ User Table */}
       <UserTable users={users} onEdit={handleEdit} onDelete={setUserToDelete} />
 
+      {/* ✅ Delete Confirmation Modal */}
       {userToDelete && (
         <DeleteConfirmationModal
           user={userToDelete}
@@ -106,6 +116,7 @@ const Team = () => {
         />
       )}
 
+      {/* ✅ Toast Notification */}
       {toastMessage && (
         <ToastNotification
           message={toastMessage}
@@ -113,6 +124,7 @@ const Team = () => {
         />
       )}
 
+      {/* ✅ User Form Modal */}
       {showModal && (
         <UserFormModal
           isOpen={showModal}
@@ -121,7 +133,7 @@ const Team = () => {
           user={currentUser}
         />
       )}
-    </div>
+    </motion.div>
   );
 };
 

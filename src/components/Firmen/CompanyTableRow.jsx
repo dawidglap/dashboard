@@ -93,7 +93,7 @@ const CompanyTableRow = ({
               e.stopPropagation(); // ✅ Prevent row click event
               onEdit(company);
             }}
-            className="btn btn-sm btn-outline btn-neutral"
+            className="btn btn-xs rounded-full btn-outline btn-neutral"
           >
             <FaEdit />
           </button>
@@ -102,7 +102,7 @@ const CompanyTableRow = ({
               e.stopPropagation(); // ✅ Prevent row click event
               onDelete(company);
             }}
-            className="btn btn-sm btn-outline btn-error"
+            className="btn btn-xs rounded-full btn-outline btn-error"
           >
             <FaTrash />
           </button>
