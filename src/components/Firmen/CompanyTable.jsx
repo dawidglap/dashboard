@@ -42,7 +42,7 @@ const CompanyTable = ({
               <th className="py-3 px-4 text-left">Firmen-Name</th>
               <th className="py-3 px-4 text-left">Plan</th>
               <th className="py-3 px-4 text-left hidden md:table-cell">
-                Plan-Preis
+                Preis (CHF)
               </th>
               <th className="py-3 px-4 text-left hidden md:table-cell">
                 Inhaber
@@ -55,7 +55,7 @@ const CompanyTable = ({
               </th>
               <th className="py-3 px-4 text-left "> Ablauf</th>
               <th className="py-3 px-4 text-left hidden md:table-cell">
-                Provisionen
+                Provision (CHF)
               </th>
               <th className="py-3 px-4 text-center">Aktion</th>
             </tr>

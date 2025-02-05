@@ -49,10 +49,9 @@ const CompanyTableRow = ({
         <td className="py-3 px-4">{company.plan}</td>
 
         {/* Plan-Preis */}
-        <td className="py-3 px-4">
-          CHF{" "}
+        <td className="py-3 px-4 text-center">
           {company.plan_price
-            ? Number(company.plan_price).toFixed(2)
+            ? Number(company.plan_price).toFixed(0)
             : "Nicht verfügbar"}
         </td>
 
@@ -83,7 +82,9 @@ const CompanyTableRow = ({
         </td>
 
         {/* Provisionen */}
-        <td className="py-3 px-4 ">CHF {calculateCommission().toFixed(2)}</td>
+        <td className="py-3 px-4 text-center">
+          {calculateCommission().toFixed(0)}.-
+        </td>
 
         {/* Aktionen */}
         <td className="py-3 px-4 flex justify-center space-x-2">
