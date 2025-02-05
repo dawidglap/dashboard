@@ -38,7 +38,7 @@ const CompanyTable = ({
       <div className="overflow-x-auto rounded-lg shadow-sm">
         <table className="table table-xs w-full">
           <thead>
-            <tr className="text-sm md:text-md text-base-content border-b border-indigo-300">
+            <tr className="text-sm md:text-md text-base-content border-b border-indigo-300 dark:text-white">
               <th className="py-3 px-4 text-left">Firmen-Name</th>
               <th className="py-3 px-4 text-left">Plan</th>
               <th className="py-3 px-4 text-left hidden md:table-cell">

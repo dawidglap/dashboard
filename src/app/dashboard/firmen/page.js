@@ -155,12 +155,12 @@ const Firmen = () => {
   return (
     <div className="px-4 md:px-12">
       <div className="flex justify-between items-center mb-8">
-        <h1 className=" text-3xl mt-8 md:text-4xl font-extrabold text-base-content">
+        <h1 className=" text-3xl mt-8 md:text-4xl font-extrabold text-base-content dark:text-white">
           Firmen
         </h1>
         <button
           onClick={() => setShowModal(true)}
-          className=" btn btn-neutral btn-sm flex mt-auto rounded-full items-center space-x-2"
+          className=" btn btn-neutral px-4 hover:text-white btn-sm dark:text-white dark:hover:bg-slate-900 flex mt-auto rounded-full items-center space-x-2"
         >
           <FaPlus />
           <span>Neue Firma</span>

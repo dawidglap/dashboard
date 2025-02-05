@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import useCompanyForm from "../../hooks/useCompanyForm";
 import { FaSpinner } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const EditCompanyModal = ({ company, onClose, onSave }) => {
   const { formData, handleChange, setFormData } = useCompanyForm(
@@ -106,123 +107,131 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
 
   return (
     <div className="modal modal-open">
-      <div className="modal-box w-3/4 max-w-5xl space-y-4 bg-indigo-100 shadow-lg rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-700">
-          ✏️ Firma bearbeiten
-        </h3>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="modal-box max-w-5xl bg-base-100 shadow-lg rounded-2xl p-8"
+      >
+        {/* Header */}
+        <div className="flex justify-between items-center border-b pb-4">
+          <h3 className="text-2xl font-bold text-base-content">
+            Firma bearbeiten
+          </h3>
+        </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-4 gap-3 mt-6">
           {/* Firmen-Name */}
-          <div>
-            <label className="text-sm font-medium">🏢 Firmen-Name</label>
+          <div className="col-span-4">
+            <label className="text-sm font-medium">Firmen-Name</label>
             <input
               type="text"
               name="company_name"
               value={formData.company_name}
               onChange={handleChange}
-              className="input input-sm input-bordered w-full"
+              className="input input-sm input-bordered w-full rounded-full"
             />
           </div>
 
-          {/* Firmen-Adresse */}
-          <div>
-            <label className="text-sm font-medium">📍 Straße</label>
+          {/* Straße & Hausnummer */}
+          <div className="col-span-3">
+            <label className="text-sm font-medium">Straße</label>
             <input
               type="text"
               name="company_street"
               value={formData.company_street}
               onChange={handleChange}
-              className="input input-sm input-bordered w-full"
+              className="input input-sm input-bordered w-full rounded-full"
             />
           </div>
-
-          <div>
-            <label className="text-sm font-medium">🏠 Hausnummer</label>
+          <div className="col-span-1">
+            <label className="text-sm font-medium">Hausnummer</label>
             <input
               type="text"
               name="company_street_number"
               value={formData.company_street_number}
               onChange={handleChange}
-              className="input input-sm input-bordered w-full"
+              className="input input-sm input-bordered w-full rounded-full"
             />
           </div>
 
-          <div>
-            <label className="text-sm font-medium">📮 Postleitzahl</label>
+          {/* PLZ & Stadt */}
+          <div className="col-span-1">
+            <label className="text-sm font-medium">PLZ</label>
             <input
               type="text"
               name="company_post_code"
               value={formData.company_post_code}
               onChange={handleChange}
-              className="input input-sm input-bordered w-full"
+              className="input input-sm input-bordered w-full rounded-full"
             />
           </div>
-
-          <div>
-            <label className="text-sm font-medium">🏙️ Stadt</label>
+          <div className="col-span-3">
+            <label className="text-sm font-medium">Stadt</label>
             <input
               type="text"
               name="company_city"
               value={formData.company_city}
               onChange={handleChange}
-              className="input input-sm input-bordered w-full"
+              className="input input-sm input-bordered w-full rounded-full"
             />
           </div>
 
-          {/* Inhaber (Company Owner) */}
-          <div>
-            <label className="text-sm font-medium">👤 Inhaber</label>
+          {/* Inhaber */}
+          <div className="col-span-2">
+            <label className="text-sm font-medium">Inhaber</label>
             <input
               type="text"
               name="company_owner"
               value={formData.company_owner}
               onChange={handleChange}
-              className="input input-sm input-bordered w-full"
+              className="input input-sm input-bordered w-full rounded-full"
             />
           </div>
 
-          {/* Contact Information */}
-          <div>
-            <label className="text-sm font-medium">📧 Firmen-E-Mail</label>
+          {/* Firmen-E-Mail */}
+          <div className="col-span-2">
+            <label className="text-sm font-medium">Firmen-E-Mail</label>
             <input
               type="email"
               name="company_email"
               value={formData.company_email}
               onChange={handleChange}
-              className="input input-sm input-bordered w-full"
+              className="input input-sm input-bordered w-full rounded-full"
             />
           </div>
 
-          <div>
-            <label className="text-sm font-medium">📞 Telefon</label>
+          {/* Telefon & Mobile */}
+          <div className="col-span-2">
+            <label className="text-sm font-medium">Telefon</label>
             <input
               type="text"
               name="telephone"
               value={formData.telephone}
               onChange={handleChange}
-              className="input input-sm input-bordered w-full"
+              className="input input-sm input-bordered w-full rounded-full"
             />
           </div>
-
-          <div>
-            <label className="text-sm font-medium">📱 Mobil</label>
+          <div className="col-span-2">
+            <label className="text-sm font-medium">Mobil</label>
             <input
               type="text"
               name="mobile"
               value={formData.mobile}
               onChange={handleChange}
-              className="input input-sm input-bordered w-full"
+              className="input input-sm input-bordered w-full rounded-full"
             />
           </div>
 
           {/* Manager Selection */}
-          <div>
-            <label className="text-sm font-medium">🧑‍💼 Manager</label>
+          <div className="col-span-2">
+            <label className="text-sm font-medium">Manager</label>
             <select
               name="manager_id"
               value={formData.manager_id}
               onChange={handleChange}
-              className="select select-sm select-bordered w-full"
+              className="select select-sm select-bordered w-full rounded-full"
             >
               <option value="">-- Manager auswählen --</option>
               {users
@@ -238,13 +247,13 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
           </div>
 
           {/* Markenbotschafter Selection */}
-          <div>
-            <label className="text-sm font-medium">🎤 Markenbotschafter</label>
+          <div className="col-span-2">
+            <label className="text-sm font-medium">Markenbotschafter</label>
             <select
               name="markenbotschafter_id"
               value={formData.markenbotschafter_id}
               onChange={handleChange}
-              className="select select-sm select-bordered w-full"
+              className="select select-sm select-bordered w-full rounded-full"
             >
               <option value="">-- Markenbotschafter auswählen --</option>
               {users
@@ -261,22 +270,26 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
           </div>
         </div>
 
-        {/* Modal Actions */}
-        <div className="modal-action flex justify-between">
+        {/* Buttons */}
+        <div className="flex justify-between mt-6">
           <button
             onClick={onClose}
-            className="btn btn-sm bg-red-400 hover:bg-red-500 text-white"
+            className="btn btn-sm btn-outline rounded-full"
           >
-            ❌ Abbrechen
+            Abbrechen
           </button>
           <button
             onClick={handleSubmit}
-            className="btn btn-sm bg-green-500 hover:bg-green-600 text-white"
+            className="btn btn-sm btn-neutral hover:text-white rounded-full flex items-center"
           >
-            {isSaving ? <FaSpinner className="animate-spin" /> : "✅ Speichern"}
+            {isSaving ? (
+              <FaSpinner className="animate-spin mr-2" />
+            ) : (
+              "Speichern"
+            )}
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

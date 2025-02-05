@@ -38,35 +38,35 @@ const CompanyTableRow = ({
     <>
       <tr
         onClick={() => setShowDetails(true)}
-        className="cursor-pointer hover:bg-indigo-50 transition text-sm border-b border-gray-200 dark:border-gray-700"
+        className="cursor-pointer dark:text-slate-100 hover:bg-indigo-50 dark:hover:bg-slate-900 transition text-sm border-b border-gray-200 dark:border-slate-700"
       >
         {/* Firmen-Name */}
-        <td className="py-6 px-4 font-semibold">
+        <td className="py-5 px-4 font-semibold">
           {company.company_name || "N/A"}
         </td>
 
         {/* Plan */}
-        <td className="py-3 px-4">{company.plan}</td>
+        <td className="py-5 px-4">{company.plan}</td>
 
         {/* Plan-Preis */}
-        <td className="py-3 px-4 text-center">
+        <td className="py-5 px-4 text-center">
           {company.plan_price
             ? Number(company.plan_price).toFixed(0)
             : "Nicht verfügbar"}
         </td>
 
         {/* Inhaber */}
-        <td className="py-3 px-4">{company.company_owner || "N/A"}</td>
+        <td className="py-5 px-4">{company.company_owner || "N/A"}</td>
 
         {/* Manager */}
-        <td className="py-3 px-4">
+        <td className="py-5 px-4">
           {manager
             ? `${manager.name || ""} ${manager.surname || ""}`.trim()
             : "N/A"}
         </td>
 
         {/* Markenbotschafter */}
-        <td className="py-3 px-4">
+        <td className="py-5 px-4">
           {markenbotschafter
             ? `${markenbotschafter.name || ""} ${
                 markenbotschafter.surname || ""
@@ -75,19 +75,19 @@ const CompanyTableRow = ({
         </td>
 
         {/* Ablaufdatum */}
-        <td className="py-3 px-4">
+        <td className="py-5 px-4">
           {company.expiration_date
             ? new Date(company.expiration_date).toLocaleDateString("de-DE")
             : "Kein Datum"}
         </td>
 
         {/* Provisionen */}
-        <td className="py-3 px-4 text-center">
-          {calculateCommission().toFixed(0)}.-
+        <td className="py-5  px-4 text-center">
+          {calculateCommission().toFixed(0)}
         </td>
 
         {/* Aktionen */}
-        <td className="py-3 px-4 flex justify-center space-x-2">
+        <td className="py-5 px-4 flex justify-center items-center h-full space-x-2">
           <button
             onClick={(e) => {
               e.stopPropagation(); // ✅ Prevent row click event

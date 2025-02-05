@@ -40,7 +40,7 @@ const DemoCalls = () => {
   if (loading || bookings === null) {
     return (
       <div className="px-4 md:px-12">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-base-content mb-6">
+        <h1 className="text-3xl md:text-4xl mt-8 mb-8 font-extrabold text-base-content">
           Bevorstehende Demo-Calls
         </h1>
         <div className="overflow-x-auto rounded-lg shadow-sm">
