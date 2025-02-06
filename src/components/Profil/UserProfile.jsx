@@ -90,7 +90,7 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto bg-white shadow-md rounded-lg">
+    <div className="p-6 max-w-6xl mx-auto bg-white  rounded-lg">
       <h2 className="text-2xl font-semibold mb-6">Mein Profil</h2>
 
       {isLoading ? (

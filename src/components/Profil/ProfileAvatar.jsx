@@ -19,7 +19,7 @@ const ProfileAvatar = ({ user, isLoading }) => {
   }
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center my-auto ">
       {/* Profile Avatar */}
       <div
         className={`w-24 h-24 flex items-center justify-center text-white text-3xl font-bold rounded-full ${

@@ -20,7 +20,7 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
             value={formData.email}
             onChange={handleChange}
             disabled={!isEditing}
-            className={`input input-bordered rounded-full rounded-full w-full ${
+            className={`input input-bordered rounded-full  w-full ${
               isEditing ? "" : "bg-white"
             }`}
           />
