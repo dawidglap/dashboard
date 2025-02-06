@@ -189,3 +189,4 @@ const Earnings = () => {
 };
 
 export default Earnings;
+// BEFORE REFACTORING EARNINGS
