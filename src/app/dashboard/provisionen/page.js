@@ -5,11 +5,17 @@ import useFetchProvisionen from "@/hooks/useFetchProvisionen";
 import ProvisionenOverview from "@/components/Commissions/ProvisionenOverview";
 import ProvisionenChart from "@/components/Commissions/ProvisionenChart";
 import ProvisionenBreakdown from "@/components/Commissions/ProvisionenBreakdown";
+import ProvisionenGrowth from "@/components/Commissions/ProvisionenGrowth";
+import ProvisionenProjected from "@/components/Commissions/ProvisionenProjected";
 
 const Provisionen = () => {
   const [timeframe, setTimeframe] = useState("monthly"); // Default to monthly
   const { chartData, bruttoProvisionen, commissions, loading, error } =
     useFetchProvisionen(timeframe);
+
+  // Dummy calculations (replace with actual logic)
+  const growthRate = bruttoProvisionen > 0 ? Math.random() * 10 - 5 : 0; // Example: Random % change between -5% and +5%
+  const projectedProvisionen = bruttoProvisionen * 1.1; // Example: +10% growth assumption
 
   if (loading) return <p>Loading commission data...</p>;
   if (error) return <p className="text-red-500">Error: {error}</p>;
@@ -23,16 +29,16 @@ const Provisionen = () => {
 
   return (
     <div className="p-6 grid grid-cols-12 gap-4">
-      {/* ✅ Timeframe Selector */}
-      <div className="col-span-12 flex justify-end">
-        <div className="flex space-x-2 bg-base-200 p-2 rounded-lg shadow">
+      {/* ✅ Modern Timeframe Selector */}
+      <div className="col-span-12 flex justify-end mb-4">
+        <div className="flex space-x-2 bg-base-200 p-2 px-6 rounded-full shadow">
           {["daily", "weekly", "monthly", "yearly"].map((option) => (
             <button
               key={option}
-              className={`px-4 py-2 text-sm font-semibold rounded ${
+              className={`badge px-4 py-2 text-sm font-semibold rounded-full transition-all duration-200 ${
                 timeframe === option
-                  ? "bg-[#8B5CF6] text-white"
-                  : "text-gray-600"
+                  ? "bg-indigo-300 text-black  "
+                  : "text-gray-600 hover:bg-gray-300 hover:text-black"
               }`}
               onClick={() => setTimeframe(option)}
             >
@@ -48,79 +54,30 @@ const Provisionen = () => {
         </div>
       </div>
 
-      {/* ✅ Commission Overview */}
-      <div className="col-span-12 md:col-span-6">
+      {/* ✅ Top Widgets (Balanced 4-4-4 Layout) */}
+      <div className="col-span-12 md:col-span-4">
         <ProvisionenOverview
           bruttoProvisionen={bruttoProvisionen}
           timeframeLabel={timeframeLabel}
         />
       </div>
 
-      {/* ✅ Commission Breakdown (Will be implemented next) */}
-      <div className="col-span-12 md:col-span-6">
-        <ProvisionenBreakdown />
+      <div className="col-span-12 md:col-span-4">
+        <ProvisionenGrowth growthRate={growthRate} />
       </div>
 
-      {/* ✅ Commission Breakdown (Already Implemented) */}
-      <div className="col-span-12 md:col-span-6">
-        <ProvisionenBreakdown />
-      </div>
-
-      {/* 🔍 TEMPORARY DEBUGGING DIV: Display Raw Commissions */}
-      <div className="col-span-12 bg-base-200 p-4 rounded-lg shadow">
-        <h2 className="text-lg font-bold mb-2">
-          🔍 Debugging: Raw Commission Data
-        </h2>
-        <ul className="text-sm text-gray-700">
-          {chartData.length > 0 ? (
-            chartData.map((entry, index) => (
-              <li key={index} className="border-b py-1">
-                <span className="font-semibold">{entry.period}:</span> CHF{" "}
-                {entry.earnings.toLocaleString("de-DE")}
-              </li>
-            ))
-          ) : (
-            <p className="text-gray-500">Keine Provisionen verfügbar.</p>
-          )}
-        </ul>
-      </div>
-      {/* 🔍 TEMPORARY DEBUGGING DIV: Display Commission Details */}
-      <div className="col-span-12 bg-base-100 p-4 rounded-lg shadow">
-        <h2 className="text-lg font-bold mb-2">
-          🔍 Debugging: Einzelne Provisionen
-        </h2>
-        <ul className="text-sm text-gray-700">
-          {commissions.length > 0 ? (
-            commissions.map((commission, index) => (
-              <li key={index} className="border-b py-2">
-                <span className="font-semibold">{commission.userName}</span>{" "}
-                erhielt{" "}
-                <span
-                  className={
-                    commission.amount === 0
-                      ? "text-red-500 font-semibold"
-                      : "text-green-500 font-semibold"
-                  }
-                >
-                  {commission.amount === 0
-                    ? "ADMIN (0 CHF)"
-                    : `CHF ${commission.amount.toLocaleString("de-DE")}`}
-                </span>{" "}
-                für{" "}
-                <span className="font-semibold">{commission.companyName}</span>{" "}
-                am{" "}
-                {new Date(commission.paymentDate).toLocaleDateString("de-DE")}
-              </li>
-            ))
-          ) : (
-            <p className="text-gray-500">Keine Provisionen gefunden.</p>
-          )}
-        </ul>
+      <div className="col-span-12 md:col-span-4">
+        <ProvisionenProjected projectedProvisionen={projectedProvisionen} />
       </div>
 
       {/* ✅ Commission Chart */}
       <div className="col-span-12">
         <ProvisionenChart chartData={chartData} timeframe={timeframe} />
+      </div>
+
+      {/* ✅ Commission Breakdown Table */}
+      <div className="col-span-12">
+        <ProvisionenBreakdown commissions={commissions} />
       </div>
     </div>
   );
