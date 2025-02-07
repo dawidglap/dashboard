@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FaUser } from "react-icons/fa";
 
 const TeamWidget = () => {
   const [teamCount, setTeamCount] = useState(null);
@@ -46,27 +45,40 @@ const TeamWidget = () => {
   }, []);
 
   return (
-    <div className="card p-4 rounded-lg shadow-lg bg-gradient-to-r from-purple-50 to-purple-100 col-span-2">
-      <Link href="/dashboard/team" className="flex items-start space-x-4">
-        <FaUser className="text-purple-500 text-4xl" />
-        <div>
-          <h2 className="text-lg font-bold text-gray-800">Team</h2>
+    <div className="relative bg-gradient-to-r from-purple-500 to-pink-500 p-6 rounded-2xl shadow-lg text-white flex flex-col justify-between h-full">
+      <div>
+        <h2 className="text-lg font-semibold">Team</h2>
+        <p className="text-3xl font-bold">
           {loading ? (
-            <>
-              <p className="skeleton h-6 w-10 bg-gray-300 rounded animate-pulse"></p>
-              <p className="skeleton h-6 w-16 bg-gray-300 rounded animate-pulse mt-2"></p>
-            </>
+            <span className="skeleton h-8 w-10 bg-gray-300 rounded animate-pulse"></span>
+          ) : teamCount !== null ? (
+            teamCount
           ) : (
-            <>
-              <p className="text-gray-600 text-sm">
-                Mitglieder: <strong>{teamCount}</strong>
-              </p>
-              <p className="text-gray-600 text-sm">
-                Neue diesen Monat: <strong>{newMembersThisMonth}</strong>
-              </p>
-            </>
+            "N/A"
           )}
-        </div>
+        </p>
+      </div>
+
+      {/* ✅ New Members This Month */}
+      <div className="mt-4 text-sm opacity-90">
+        {loading ? (
+          <p className="skeleton h-6 w-24 bg-gray-300 rounded animate-pulse"></p>
+        ) : (
+          <p>
+            Neue Mitglieder diesen Monat:{" "}
+            <strong>
+              {newMembersThisMonth !== null ? newMembersThisMonth : "N/A"}
+            </strong>
+          </p>
+        )}
+      </div>
+
+      {/* ✅ CTA Button */}
+      <Link
+        href="/dashboard/team"
+        className="mt-4 inline-block bg-white text-purple-600 px-4 py-2 rounded-full text-center font-semibold hover:bg-gray-200 transition"
+      >
+        Team anzeigen →
       </Link>
     </div>
   );

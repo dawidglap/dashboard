@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FaPhone } from "react-icons/fa";
 
 const DemoCallsWidget = () => {
   const [demoCallsCount, setDemoCallsCount] = useState(null);
@@ -16,10 +15,10 @@ const DemoCallsWidget = () => {
         const data = await response.json();
         const demoCalls = data?.data?.bookings || [];
 
-        // Set total demo calls count
+        // ✅ Set total demo calls count
         setDemoCallsCount(demoCalls.length);
 
-        // Find the next call
+        // ✅ Find the next scheduled call
         const futureCalls = demoCalls
           .filter((call) => new Date(call.startTime) > new Date())
           .sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
@@ -53,34 +52,45 @@ const DemoCallsWidget = () => {
   }, []);
 
   return (
-    <div className="card p-4 rounded-lg shadow-lg bg-gradient-to-r from-indigo-50 to-indigo-100 col-span-4">
-      <Link href="/dashboard/demo-calls" className="flex items-start space-x-4">
-        <FaPhone className="text-indigo-500 text-4xl" />
-        <div>
-          <h2 className="text-lg font-bold text-gray-800">Demo Calls</h2>
+    <div className="relative bg-gradient-to-r from-indigo-500 to-purple-500 p-6 rounded-2xl shadow-lg text-white flex flex-col justify-between h-full">
+      <div>
+        <h2 className="text-lg font-semibold">Demo Calls</h2>
+        <p className="text-3xl font-bold">
           {loading ? (
-            <>
-              <p className="skeleton h-6 w-10 bg-gray-300 rounded animate-pulse"></p>
-              <p className="skeleton h-6 w-16 bg-gray-300 rounded animate-pulse mt-2"></p>
-            </>
+            <span className="skeleton h-8 w-10 bg-gray-300 rounded animate-pulse"></span>
+          ) : demoCallsCount !== null ? (
+            demoCallsCount
           ) : (
-            <>
-              <p className="text-2xl font-extrabold">
-                {demoCallsCount !== null ? demoCallsCount : "N/A"}
-              </p>
-              {nextCall ? (
-                <p className="text-gray-600 text-sm">
-                  Nächster Anruf:{" "}
-                  <strong>
-                    {nextCall.date} Zeit: {nextCall.time}
-                  </strong>
-                </p>
-              ) : (
-                <p className="text-gray-600 text-sm">Kein geplanter Anruf.</p>
-              )}
-            </>
+            "N/A"
           )}
-        </div>
+        </p>
+      </div>
+
+      {/* ✅ Display Next Scheduled Call */}
+      <div className="mt-4 text-sm opacity-90">
+        {loading ? (
+          <>
+            <p className="skeleton h-6 w-24 bg-gray-300 rounded animate-pulse"></p>
+            <p className="skeleton h-6 w-32 bg-gray-300 rounded animate-pulse mt-2"></p>
+          </>
+        ) : nextCall ? (
+          <p>
+            Nächster Anruf:{" "}
+            <strong>
+              {nextCall.date} - {nextCall.time}
+            </strong>
+          </p>
+        ) : (
+          <p>Kein geplanter Anruf.</p>
+        )}
+      </div>
+
+      {/* ✅ CTA Button */}
+      <Link
+        href="/dashboard/demo-calls"
+        className="mt-4 inline-block bg-white text-indigo-600 px-4 py-2 rounded-full text-center font-semibold hover:bg-gray-200 transition"
+      >
+        Anrufe anzeigen →
       </Link>
     </div>
   );
