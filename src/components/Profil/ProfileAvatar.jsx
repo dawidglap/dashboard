@@ -42,18 +42,18 @@ const ProfileAvatar = ({ user, isLoading }) => {
 
       {/* Account Status Toggle (Only for Admins) */}
       {user.role === "admin" && (
-        <div className="mt-4">
-          <label className="label cursor-pointer">
-            <span className="text-gray-700 text-sm font-medium mr-2">
-              🟢 Konto aktiv
-            </span>
-            <input
-              type="checkbox"
-              className="toggle"
-              checked={user.is_active ?? true} // Default to true if undefined
-              readOnly
-            />
-          </label>
+        <div className="mt-4 flex items-center justify-between p-3 rounded-2xl ">
+          <span className="text-sm font-bold text-gray-700 me-3">
+            Konto Status
+          </span>
+          <input
+            type="checkbox"
+            className={`toggle ${
+              user.is_active ? "toggle-success" : "toggle-error"
+            }`}
+            checked={user.is_active ?? true} // ✅ Default to true if undefined
+            readOnly
+          />
         </div>
       )}
     </div>

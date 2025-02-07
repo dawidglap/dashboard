@@ -7,7 +7,7 @@ const ProfileActions = ({
   isSaving,
 }) => {
   return (
-    <div className="flex justify-end mt-6">
+    <div className="flex justify-start mt-6">
       {isEditing ? (
         <div className="flex gap-3">
           {/* Cancel Button */}
