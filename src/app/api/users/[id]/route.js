@@ -1,17 +1,48 @@
-// Fetch a team member's details and their assigned companies
-const fetchTeamMemberData = async (userId) => {
+import { connectToDatabase } from "@/lib/mongodb";
+import { NextResponse } from "next/server";
+import { ObjectId } from "mongodb";
+
+export async function GET(req, { params }) {
   try {
-    const userRes = await fetch(`/api/users/${userId}`);
-    if (!userRes.ok) throw new Error("Failed to fetch user details");
-    const userData = await userRes.json();
+    const { db } = await connectToDatabase();
+    const { id } = params;
 
-    const companiesRes = await fetch(`/api/companies?userId=${userId}`);
-    if (!companiesRes.ok) throw new Error("Failed to fetch assigned companies");
-    const companiesData = await companiesRes.json();
+    if (!id || !ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { error: "Invalid or missing User ID" },
+        { status: 400 }
+      );
+    }
 
-    return { user: userData.user, companies: companiesData.companies };
+    // ✅ Fetch user details from the `users` collection
+    const user = await db.collection("users").findOne(
+      { _id: new ObjectId(id) },
+      {
+        projection: {
+          _id: 1,
+          name: 1,
+          surname: 1,
+          email: 1,
+          phone_number: 1,
+          user_street: 1,
+          user_street_number: 1,
+          user_postcode: 1,
+          user_city: 1,
+          subscription_expiration: 1,
+        },
+      }
+    );
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, user }, { status: 200 });
   } catch (error) {
-    console.error("Error fetching team member data:", error);
-    return { user: null, companies: [] };
+    console.error("❌ Error fetching user:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
-};
+}
