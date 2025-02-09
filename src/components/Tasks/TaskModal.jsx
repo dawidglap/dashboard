@@ -82,7 +82,7 @@ const TaskModal = ({ task, onClose }) => {
           </div>
 
           {/* Assigned To */}
-          <div className="col-span-2 p-3 border-l-2 border-b-2 border-indigo-400 bg-indigo- rounded-xl">
+          {/* <div className="col-span-2 p-3 border-l-2 border-b-2 border-indigo-400 bg-indigo- rounded-xl">
             <span className="text-sm font-medium flex items-center gap-2 text-gray-700">
               Zugewiesen an:
             </span>
@@ -92,9 +92,9 @@ const TaskModal = ({ task, onClose }) => {
                 {task.assignedTo?.role || "Unbekannt"}
               </span>
             </p>
-          </div>
+          </div> */}
 
-          <div className="col-span-1 p-3 border-l-2 border-b-2  rounded-2xl">
+          {/* <div className="col-span-1 p-3 border-l-2 border-b-2  rounded-2xl">
             <span className="text-sm font-medium flex items-center gap-2 text-gray-700">
               Priorität:
             </span>
@@ -105,10 +105,10 @@ const TaskModal = ({ task, onClose }) => {
             >
               {PRIORITY_ICONS[task.priority]?.label || "Unbekannt"}
             </p>
-          </div>
+          </div> */}
 
           {/* Status & Priority */}
-          <div className="col-span-1 p-3 border-l-2 border-b-2  rounded-2xl">
+          {/* <div className="col-span-1 p-3 border-l-2 border-b-2  rounded-2xl">
             <span className="text-sm font-medium flex items-center gap-2 text-gray-700">
               {STATUS_ICONS[task.status]?.icon} Status:
             </span>
@@ -119,9 +119,9 @@ const TaskModal = ({ task, onClose }) => {
             >
               {STATUS_ICONS[task.status]?.label || "Unbekannt"}
             </p>
-          </div>
+          </div> */}
           {/* Created At */}
-          <div className="col-span-1 p-3 border-l-2 border-b-2 border-lime-200 mt-3 rounded-2xl shadow-sm">
+          {/* <div className="col-span-1 p-3 border-l-2 border-b-2 border-lime-200 mt-3 rounded-2xl shadow-sm">
             <span className="text-sm font-medium flex items-center gap-2 text-gray-700">
               Erstellt am:
             </span>
@@ -134,9 +134,9 @@ const TaskModal = ({ task, onClose }) => {
                   })
                 : "Unbekannt"}
             </p>
-          </div>
+          </div> */}
           {/* Due Date */}
-          <div className="col-span-1 p-3 border-l-2 border-b-2 mt-3 border-red-200  rounded-2xl">
+          {/* <div className="col-span-1 p-3 border-l-2 border-b-2 mt-3 border-red-200  rounded-2xl">
             <span className="text-sm font-medium flex items-center gap-2 text-gray-700">
               Fällig am:
             </span>
@@ -149,7 +149,7 @@ const TaskModal = ({ task, onClose }) => {
                   })
                 : "Kein Datum"}
             </p>
-          </div>
+          </div> */}
         </div>
 
         {/* Actions */}

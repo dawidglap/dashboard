@@ -306,7 +306,7 @@ const Tasks = () => {
                   type="checkbox"
                   checked={allSelected}
                   onChange={handleSelectAll}
-                  className="checkbox checkbox-sm"
+                  className="checkbox checkbox-sm rounded-full"
                 />
               </th>
               <th className="py-3 px-4 text-left w-6">⚠️</th>{" "}

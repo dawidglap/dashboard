@@ -9,7 +9,13 @@ const UserTable = ({ users, onEdit, onDelete }) => {
   const [page, setPage] = useState(1);
   const usersPerPage = 8;
 
+  // ✅ Calculate total users & roles (excluding admins)
   const totalUsers = users.length;
+  const managersCount = users.filter((user) => user.role === "manager").length;
+  const markenbotschafterCount = users.filter(
+    (user) => user.role === "markenbotschafter"
+  ).length;
+
   const totalPages = Math.ceil(users.length / usersPerPage);
   const displayedUsers = users.slice(
     (page - 1) * usersPerPage,
@@ -26,13 +32,22 @@ const UserTable = ({ users, onEdit, onDelete }) => {
       <table className="table table-xs w-full border-b border-gray-200 dark:border-gray-700">
         <thead>
           <tr className="dark:bg-indigo-800 text-base-content text-sm">
-            {/* ✅ Total Members Count Inside "Vorname" Column */}
+            {/* ✅ Total Users Count */}
             <th className="py-3 px-4 text-left">
               Vorname <span className="text-gray-400">({totalUsers})</span>
             </th>
             <th className="py-3 px-4 text-left">E-Mail</th>
             <th className="py-3 px-4 text-left">Geburtstag</th>
-            <th className="py-3 px-4 text-left">Rolle</th>
+
+            {/* ✅ Role Counts (excluding Admin) */}
+            <th className="py-3 px-4 text-left">
+              Rolle{" "}
+              <span className="text-gray-400 text-xs">
+                (Manager: {managersCount} | Markenbotschafter:{" "}
+                {markenbotschafterCount})
+              </span>
+            </th>
+
             <th className="py-3 px-4 text-center">Aktion</th>
           </tr>
         </thead>

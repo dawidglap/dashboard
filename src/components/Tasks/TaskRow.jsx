@@ -143,7 +143,7 @@ const TaskRow = ({
             checked={isSelected}
             onChange={handleCheckboxChange}
             onClick={(e) => e.stopPropagation()}
-            className="ms-1 checkbox checkbox-sm"
+            className="ms-1 checkbox checkbox-sm rounded-full"
           />
         </td>
 

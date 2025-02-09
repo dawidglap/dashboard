@@ -9,9 +9,20 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
   const adminId = "679396cd375db32de1bbfd01"; // Default Admin ID
   const today = new Date().toISOString().split("T")[0]; // ✅ Ensure only future dates can be selected
 
+  // ✅ Function to calculate price based on the selected plan
+  function calculatePlanPrice(plan) {
+    const PREDEFINED_PRICES = {
+      BASIC: 799 * 12 * 1.081,
+      PRO: 899 * 12 * 1.081,
+      BUSINESS: "", // Empty for manual input
+    };
+    return PREDEFINED_PRICES[plan] || "";
+  }
+
   const { formData, handleChange, setFormData } = useCompanyForm({
     company_name: "",
     company_street: "",
+    company_owner: "",
     company_street_number: "",
     company_post_code: "",
     company_city: "",
@@ -20,7 +31,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
     mobile: "",
     plan: "BASIC",
     company_owner: "",
-    plan_price: "",
+    plan_price: calculatePlanPrice("BASIC"),
     expiration_date: today, // ✅ Default to today
     manager_id: adminId, // Default to Admin
     markenbotschafter_id: adminId, // Default to Admin
@@ -61,6 +72,18 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
     }
   }, [isOpen]);
 
+  // ✅ Handle Plan Change
+  const handlePlanChange = (e) => {
+    const selectedPlan = e.target.value;
+    const price = calculatePlanPrice(selectedPlan);
+
+    setFormData((prev) => ({
+      ...prev,
+      plan: selectedPlan,
+      plan_price: price, // Auto-set price (empty for BUSINESS)
+    }));
+  };
+
   const handleSubmit = async () => {
     try {
       setIsSaving(true);
@@ -68,6 +91,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
       // ✅ Ensure default values are set if no selection is made
       const finalData = {
         ...formData,
+        company_owner: formData.company_owner || "Unbekannt", // ✅ Ensure owner is set
         manager_id: formData.manager_id || adminId,
         markenbotschafter_id: formData.markenbotschafter_id || adminId,
       };
@@ -127,9 +151,9 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
         ) : error ? (
           <p className="text-red-500 text-center">{error}</p>
         ) : (
-          <div className="grid grid-cols-4 gap-3 mt-6">
+          <div className="grid grid-cols-6 gap-3 mt-6">
             {/* Firmen-Name */}
-            <div className="col-span-4">
+            <div className="col-span-3">
               <label className="text-sm font-medium"> Firmen-Name</label>
               <input
                 type="text"
@@ -140,8 +164,22 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
               />
             </div>
 
-            {/* Straße & Hausnummer */}
+            {/* Company Owner */}
             <div className="col-span-3">
+              <label className="text-sm font-medium">
+                Inhaber (Firmenbesitzer)
+              </label>
+              <input
+                type="text"
+                name="company_owner"
+                value={formData.company_owner}
+                onChange={handleChange}
+                className="input input-sm input-bordered w-full rounded-full"
+              />
+            </div>
+
+            {/* Straße & Hausnummer */}
+            <div className="col-span-4">
               <label className="text-sm font-medium"> Straße</label>
               <input
                 type="text"
@@ -173,7 +211,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
                 className="input input-sm input-bordered w-full rounded-full"
               />
             </div>
-            <div className="col-span-3">
+            <div className="col-span-2">
               <label className="text-sm font-medium"> Stadt</label>
               <input
                 type="text"
@@ -185,7 +223,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
 
             {/* Ablaufdatum */}
-            <div className="col-span-2">
+            <div className="col-span-1">
               <label className="text-sm font-medium"> Ablaufdatum</label>
               <input
                 type="date"
@@ -198,7 +236,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
 
             {/* Firmen-E-Mail */}
-            <div className="col-span-2">
+            <div className="col-span-3">
               <label className="text-sm font-medium"> Firmen-E-Mail</label>
               <input
                 type="email"
@@ -228,6 +266,34 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
                 value={formData.mobile}
                 onChange={handleChange}
                 className="input input-sm input-bordered w-full rounded-full"
+              />
+            </div>
+
+            {/* Plan Selection */}
+            <div className="col-span-1">
+              <label className="text-sm font-medium">Plan</label>
+              <select
+                name="plan"
+                value={formData.plan}
+                onChange={handlePlanChange}
+                className="select select-sm select-bordered w-full rounded-full"
+              >
+                <option value="BASIC">BASIC</option>
+                <option value="PRO">PRO</option>
+                <option value="BUSINESS">BUSINESS</option>
+              </select>
+            </div>
+
+            {/* Plan Price */}
+            <div className="col-span-1">
+              <label className="text-sm font-medium">Plan Preis (CHF)</label>
+              <input
+                type="number"
+                name="plan_price"
+                value={formData.plan_price}
+                onChange={handleChange}
+                className="input input-sm input-bordered w-full rounded-full"
+                disabled={formData.plan !== "BUSINESS"} // ✅ Lock for BASIC/PRO
               />
             </div>
 

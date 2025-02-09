@@ -1,151 +1,180 @@
 "use client";
 
-import {
-  FaTimes,
-  FaBuilding,
-  FaMapMarkerAlt,
-  FaEnvelope,
-  FaPhone,
-  FaUser,
-  FaCalendar,
-  FaClipboardList,
-  FaDollarSign,
-  FaUsers,
-} from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const CompanyDetailsModal = ({ company, onClose }) => {
   if (!company) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
-      <div className="bg-base-100 shadow-xl rounded-lg p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+    <div className="modal modal-open">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="modal-box max-w-5xl bg-base-100 shadow-lg rounded-2xl p-8"
+      >
         {/* Header */}
-        <div className="flex justify-between items-center border-b border-indigo-200 pb-3">
-          <h2 className="text-xl font-extrabold text-base-content flex items-center gap-2">
-            {company.company_name}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition"
-          >
-            <FaTimes size={20} />
-          </button>
+        <div className="flex justify-between items-center border-b pb-4">
+          <h3 className="text-2xl font-bold text-base-content">
+            🏢 {company.company_name}
+          </h3>
         </div>
 
-        {/* Content Sections */}
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          {/* 📍 Address Section */}
-          <div className="border p-3 rounded-lg bg-base-200">
-            <span className="font-bold flex items-center gap-2">
-              <FaMapMarkerAlt className=" text-indigo-500" /> Adresse:
-            </span>
-            <p>
-              {company.company_street} {company.company_street_number}
-            </p>
-            <p>
-              {company.company_post_code}, {company.company_city}
-            </p>
+        {/* Company Details Form (Read-Only) */}
+        <div className="grid grid-cols-4 gap-3 mt-6">
+          {/* Firmen-Name */}
+          <div className="col-span-4">
+            <label className="text-sm font-medium"> Firmen-Name</label>
+            <input
+              type="text"
+              value={company.company_name}
+              className="input input-sm input-bordered w-full rounded-full"
+              readOnly
+            />
           </div>
 
-          {/* 📞 Contact Information */}
-          <div className="border p-3 rounded-lg bg-base-200">
-            <span className="font-bold flex items-center gap-2">
-              <FaEnvelope className=" text-indigo-500" /> E-Mail:
-            </span>
-            <a
-              href={`mailto:${company.company_email}`}
-              className="text-primary hover:underline"
-            >
-              {company.company_email || "Nicht verfügbar"}
-            </a>
+          {/* Straße & Hausnummer */}
+          <div className="col-span-3">
+            <label className="text-sm font-medium"> Straße</label>
+            <input
+              type="text"
+              value={company.company_street}
+              className="input input-sm input-bordered w-full rounded-full"
+              readOnly
+            />
+          </div>
+          <div className="col-span-1">
+            <label className="text-sm font-medium"> Hausnummer</label>
+            <input
+              type="text"
+              value={company.company_street_number}
+              className="input input-sm input-bordered w-full rounded-full"
+              readOnly
+            />
           </div>
 
-          <div className="border p-3 rounded-lg bg-base-200">
-            <span className="font-bold flex items-center gap-2">
-              <FaPhone className=" text-blue-500" /> Telefon:
-            </span>
-            <a
-              href={`tel:${company.telephone}`}
-              className="text-primary hover:underline"
-            >
-              {company.telephone || "Nicht verfügbar"}
-            </a>
+          {/* PLZ & Stadt */}
+          <div className="col-span-1">
+            <label className="text-sm font-medium"> PLZ</label>
+            <input
+              type="text"
+              value={company.company_post_code}
+              className="input input-sm input-bordered w-full rounded-full"
+              readOnly
+            />
+          </div>
+          <div className="col-span-3">
+            <label className="text-sm font-medium"> Stadt</label>
+            <input
+              type="text"
+              value={company.company_city}
+              className="input input-sm input-bordered w-full rounded-full"
+              readOnly
+            />
           </div>
 
-          <div className="border p-3 rounded-lg bg-base-200">
-            <span className="font-bold flex items-center gap-2">
-              <FaPhone className=" text-green-500" /> Mobile:
-            </span>
-            <a
-              href={`tel:${company.mobile}`}
-              className="text-primary hover:underline"
-            >
-              {company.mobile || "Nicht verfügbar"}
-            </a>
+          {/* Ablaufdatum */}
+          <div className="col-span-2">
+            <label className="text-sm font-medium"> Ablaufdatum</label>
+            <input
+              type="text"
+              value={
+                company.expiration_date
+                  ? new Date(company.expiration_date).toLocaleDateString(
+                      "de-DE"
+                    )
+                  : "Kein Datum"
+              }
+              className="input input-sm input-bordered w-full rounded-full"
+              readOnly
+            />
           </div>
 
-          {/* 💰 Subscription & Plan */}
-          <div className="border p-3 rounded-lg bg-base-200">
-            <span className="font-bold flex items-center gap-2">
-              <FaClipboardList className=" text-gray-500" /> Plan:
-            </span>
-            <p className="text-base-content">{company.plan}</p>
+          {/* Firmen-E-Mail */}
+          <div className="col-span-2">
+            <label className="text-sm font-medium"> Firmen-E-Mail</label>
+            <input
+              type="email"
+              value={company.company_email}
+              className="input input-sm input-bordered w-full rounded-full"
+              readOnly
+            />
           </div>
 
-          <div className="border p-3 rounded-lg bg-base-200">
-            <span className="font-bold flex items-center gap-2">
-              <FaDollarSign className=" text-gray-500" /> Plan-Preis:
-            </span>
-            <p className="text-base-content">
-              CHF{" "}
-              {company.plan_price
-                ? Number(company.plan_price).toFixed(2)
-                : "Nicht verfügbar"}
-            </p>
+          {/* Telefon & Mobile */}
+          <div className="col-span-2">
+            <label className="text-sm font-medium"> Telefon</label>
+            <input
+              type="text"
+              value={company.telephone || "Nicht verfügbar"}
+              className="input input-sm input-bordered w-full rounded-full"
+              readOnly
+            />
+          </div>
+          <div className="col-span-2">
+            <label className="text-sm font-medium"> Mobil</label>
+            <input
+              type="text"
+              value={company.mobile || "Nicht verfügbar"}
+              className="input input-sm input-bordered w-full rounded-full"
+              readOnly
+            />
           </div>
 
-          {/* 📅 Subscription Expiry */}
-          <div className="border p-3 rounded-lg bg-base-200">
-            <span className="font-bold flex items-center gap-2">
-              <FaCalendar className=" text-red-500" /> Ablaufdatum:
-            </span>
-            <p className="text-base-content">
-              {company.expiration_date
-                ? new Date(company.expiration_date).toLocaleDateString("de-DE")
-                : "Kein Datum"}
-            </p>
+          {/* Plan & Plan-Preis */}
+          <div className="col-span-2">
+            <label className="text-sm font-medium"> Plan</label>
+            <input
+              type="text"
+              value={company.plan}
+              className="input input-sm input-bordered w-full rounded-full"
+              readOnly
+            />
+          </div>
+          <div className="col-span-2">
+            <label className="text-sm font-medium"> Plan-Preis</label>
+            <input
+              type="text"
+              value={`CHF ${Number(company.plan_price || 0).toLocaleString(
+                "de-DE"
+              )}`}
+              className="input input-sm input-bordered w-full rounded-full"
+              readOnly
+            />
           </div>
 
-          {/* 🧑‍💼 Assigned Users */}
-          <div className="border p-3 rounded-lg bg-base-200">
-            <span className="font-bold flex items-center gap-2">
-              <FaUsers className=" text-indigo-500" /> Manager:
-            </span>
-            <p className="text-base-content">
-              {company.manager_name || "Nicht zugewiesen"}
-            </p>
+          {/* Manager & Markenbotschafter */}
+          <div className="col-span-2">
+            <label className="text-sm font-medium"> Manager</label>
+            <input
+              type="text"
+              value={company.manager_name || "Nicht zugewiesen"}
+              className="input input-sm input-bordered w-full rounded-full"
+              readOnly
+            />
           </div>
-
-          <div className="border p-3 rounded-lg bg-base-200">
-            <span className="font-bold flex items-center gap-2">
-              <FaUsers className=" text-indigo-500" /> Markenbotschafter:
-            </span>
-            <p className="text-base-content">
-              {company.markenbotschafter_name || "Nicht zugewiesen"}
-            </p>
+          <div className="col-span-2">
+            <label className="text-sm font-medium"> Markenbotschafter</label>
+            <input
+              type="text"
+              value={company.markenbotschafter_name || "Nicht zugewiesen"}
+              className="input input-sm input-bordered w-full rounded-full"
+              readOnly
+            />
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="mt-6 flex justify-end">
+        {/* Close Button */}
+        <div className="flex justify-end mt-6">
           <button
             onClick={onClose}
-            className="btn btn-neutral px-6 py-1 text-sm rounded-full"
+            className="btn btn-sm btn-neutral rounded-full"
           >
             Schließen
           </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
