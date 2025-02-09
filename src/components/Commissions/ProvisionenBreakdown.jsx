@@ -20,11 +20,9 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
     : commissions;
 
   return (
-    <div className="bg-base-100 rounded-2xl   w-full">
+    <div className="bg-base-100 rounded-2xl w-full">
       {/* Header with filter */}
       <div className="flex justify-between items-center mb-4">
-        {/* <h2 className="text-xl font-bold">Detaillierte Provisionsübersicht</h2> */}
-
         {/* ✅ User Filter Dropdown */}
         <select
           className="p-2 px-4 rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300"
@@ -48,6 +46,8 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
               <th className="py-3 px-4 text-left">Rolle</th>
               <th className="py-3 px-4 text-left">Firma</th>
               <th className="py-3 px-4 text-left">Provision</th>
+              <th className="py-3 px-4 text-left">Startdatum</th>{" "}
+              {/* ✅ New Column */}
               <th className="py-3 px-4 text-left">Zahlungsdatum</th>
             </tr>
           </thead>
@@ -56,9 +56,14 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
               const createdAt = new Date(commission.paymentDate);
               const payDate = new Date(
                 createdAt.getFullYear(),
-                createdAt.getMonth() - 1, // ✅ Fixed to next month
+                createdAt.getMonth() - 1,
                 25
               );
+
+              // ✅ Parse "createdAt" for the "Startdatum" column
+              const startDatum = commission.createdAt
+                ? new Date(commission.createdAt).toLocaleDateString("de-DE")
+                : "Kein Datum";
 
               return (
                 <tr
@@ -73,6 +78,15 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
                   <td className="py-4 px-4 text-green-500 font-semibold">
                     CHF {commission.amount.toLocaleString("de-DE")}
                   </td>
+                  <td className="py-4 px-4">
+                    {commission.created_at
+                      ? new Date(commission.created_at).toLocaleDateString(
+                          "de-DE"
+                        )
+                      : "Kein Datum"}
+                  </td>
+
+                  {/* ✅ New Column */}
                   <td className="py-4 px-4">
                     {payDate.toLocaleDateString("de-DE")}
                   </td>

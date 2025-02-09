@@ -33,8 +33,8 @@ const SidebarMenu = ({ onLogout }) => {
     { title: "Firmen", href: "/dashboard/firmen", icon: <FaBuilding /> },
     { title: "Demo Calls", href: "/dashboard/demo-calls", icon: <FaVideo /> },
     { title: "Team", href: "/dashboard/team", icon: <FaUsers /> },
-    { title: "Umsatz", href: "/dashboard/umsatz", icon: <FaChartBar /> },
     { title: "Aufgaben", href: "/dashboard/aufgaben", icon: <FaTasks /> },
+    { title: "Umsatz", href: "/dashboard/umsatz", icon: <FaChartBar /> },
   ];
 
   useEffect(() => {

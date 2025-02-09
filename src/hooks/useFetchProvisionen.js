@@ -59,11 +59,11 @@ const useFetchProvisionen = (timeframe = "monthly") => {
           dailyCommissions[formattedDate] =
             (dailyCommissions[formattedDate] || 0) + companyCommission;
 
-          // ✅ Store commission details
+          // ✅ Store commission details with `created_at`
           if (managerCommission > 0) {
             commissionsDetails.push({
               userName: manager.name,
-              role: "Manager", // ✅ ADD THIS LINE
+              role: "Manager",
               companyName: company.company_name,
               amount: managerCommission,
               paymentDate: new Date(
@@ -71,12 +71,13 @@ const useFetchProvisionen = (timeframe = "monthly") => {
                 date.getMonth() + 2,
                 25
               ),
+              created_at: company.created_at, // ✅ Add Startdatum
             });
           }
           if (markenbotschafterCommission > 0) {
             commissionsDetails.push({
               userName: markenbotschafter.name,
-              role: "Markenbotschafter", // ✅ ADD THIS LINE
+              role: "Markenbotschafter",
               companyName: company.company_name,
               amount: markenbotschafterCommission,
               paymentDate: new Date(
@@ -84,6 +85,7 @@ const useFetchProvisionen = (timeframe = "monthly") => {
                 date.getMonth() + 2,
                 25
               ),
+              created_at: company.created_at, // ✅ Add Startdatum
             });
           }
         });
