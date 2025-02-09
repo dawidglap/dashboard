@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import Link from "next/link";
 
 const UserTable = ({ users, onEdit, onDelete }) => {
   const [page, setPage] = useState(1);
@@ -37,7 +38,15 @@ const UserTable = ({ users, onEdit, onDelete }) => {
               key={user._id}
               className="border-b border-gray-200 dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition text-sm"
             >
-              <td className="py-4 px-4 font-semibold">{user.name || "N/A"}</td>
+              {/* ✅ Clickable Name */}
+              <td className="py-4 px-4 font-semibold">
+                <Link
+                  href={`/dashboard/team/${user._id}`}
+                  className="text-indigo-600 hover:underline"
+                >
+                  {user.name || "N/A"}
+                </Link>
+              </td>
 
               {/* ✅ Clickable Email */}
               <td className="py-4 px-4">
@@ -88,10 +97,7 @@ const UserTable = ({ users, onEdit, onDelete }) => {
           ← Zurück
         </button>
 
-        <span className="text-gray-700 text-sm">
-          Seite {page}
-          {/* von {totalPages} */}
-        </span>
+        <span className="text-gray-700 text-sm">Seite {page}</span>
 
         <button
           onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}

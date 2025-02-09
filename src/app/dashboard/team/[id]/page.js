@@ -69,7 +69,7 @@ const TeamMemberProfile = () => {
 
         {/* Right Side - Assigned Companies */}
         <div>
-          <h3 className="text-xl font-semibold mb-4">
+          <h3 className="text-sm font-medium pb-1 ps-4">
             Zugewiesene Unternehmen
           </h3>
           <MemberCompanies companies={companies} />
