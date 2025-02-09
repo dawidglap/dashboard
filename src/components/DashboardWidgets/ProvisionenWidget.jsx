@@ -31,7 +31,7 @@ const ProvisionenWidget = () => {
   if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
   return (
-    <div className="bg-base-100 p-4 rounded-xl shadow-lg border-l-4 border-indigo-400 flex flex-col h-full">
+    <div className="bg-base-100 p-4 rounded-xl shadow-xl  flex flex-col h-full">
       <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
         Provisionen
       </h2>

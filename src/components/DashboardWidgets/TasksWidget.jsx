@@ -65,7 +65,7 @@ const TasksWidget = () => {
   }, []);
 
   return (
-    <div className="relative bg-white p-6 rounded-2xl shadow-lg border-l-4 border-yellow-500 flex flex-col justify-between h-full">
+    <div className="relative bg-white p-6 rounded-2xl shadow-xl flex flex-col justify-between h-full">
       {/* ✅ Header */}
       <div>
         <h2 className="text-lg font-semibold text-gray-800">Aufgaben</h2>
