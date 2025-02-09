@@ -12,6 +12,7 @@ const CompanyTable = ({
   hasMore,
 }) => {
   const [users, setUsers] = useState([]); // Store users
+  const [totalCompanies, setTotalCompanies] = useState(0); // ✅ Store the total count of companies
   const itemsPerPage = 6; // Number of items per page
 
   // ✅ Fetch users when component mounts
@@ -30,6 +31,22 @@ const CompanyTable = ({
     fetchUsers();
   }, []);
 
+  // ✅ Fetch total number of companies (independent of pagination)
+  useEffect(() => {
+    const fetchTotalCompanies = async () => {
+      try {
+        const res = await fetch("/api/companies/all");
+        if (!res.ok) throw new Error("Fehler beim Laden der Firmenanzahl");
+        const data = await res.json();
+        setTotalCompanies(data.data.length || 0);
+      } catch (error) {
+        console.error("Fehler beim Laden der Firmenanzahl:", error);
+      }
+    };
+
+    fetchTotalCompanies();
+  }, []);
+
   // ✅ Get user by ID
   const getUserById = (userId) => users.find((u) => u._id === userId);
 
@@ -39,7 +56,11 @@ const CompanyTable = ({
         <table className="table table-xs w-full">
           <thead>
             <tr className="text-sm md:text-md text-base-content border-b border-indigo-300 dark:text-white">
-              <th className="py-3 px-4 text-left">Firmen-Name</th>
+              {/* ✅ Show Total Companies in Header */}
+              <th className="py-3 px-4 text-left">
+                Firmen-Name{" "}
+                <span className="text-gray-400">({totalCompanies})</span>
+              </th>
               <th className="py-3 px-4 text-left">Plan</th>
               <th className="py-3 px-4 text-left hidden md:table-cell">
                 Preis (CHF)
@@ -53,7 +74,7 @@ const CompanyTable = ({
               <th className="py-3 px-4 text-left hidden md:table-cell">
                 Markenbotschafter
               </th>
-              <th className="py-3 px-4 text-left "> Ablauf</th>
+              <th className="py-3 px-4 text-left">Ablauf</th>
               <th className="py-3 px-4 text-left hidden md:table-cell">
                 Provision (CHF)
               </th>

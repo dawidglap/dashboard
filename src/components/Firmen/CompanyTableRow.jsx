@@ -34,6 +34,14 @@ const CompanyTableRow = ({
     return managerCommission + markenbotschafterCommission;
   };
 
+  // ✅ Format Number (Swiss Style)
+  const formatNumber = (value) => {
+    return new Intl.NumberFormat("de-CH", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
   return (
     <>
       <tr
@@ -48,10 +56,10 @@ const CompanyTableRow = ({
         {/* Plan */}
         <td className="py-5 px-4">{company.plan}</td>
 
-        {/* Plan-Preis */}
+        {/* ✅ Formatted Plan-Preis */}
         <td className="py-5 px-4 text-center">
           {company.plan_price
-            ? Number(company.plan_price).toFixed(0)
+            ? formatNumber(company.plan_price)
             : "Nicht verfügbar"}
         </td>
 
@@ -81,9 +89,9 @@ const CompanyTableRow = ({
             : "Kein Datum"}
         </td>
 
-        {/* Provisionen */}
-        <td className="py-5  px-4 text-center">
-          {calculateCommission().toFixed(0)}
+        {/* ✅ Formatted Provisionen */}
+        <td className="py-5 px-4 text-center">
+          {formatNumber(calculateCommission())}
         </td>
 
         {/* Aktionen */}

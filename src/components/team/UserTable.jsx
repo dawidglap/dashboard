@@ -9,6 +9,7 @@ const UserTable = ({ users, onEdit, onDelete }) => {
   const [page, setPage] = useState(1);
   const usersPerPage = 8;
 
+  const totalUsers = users.length;
   const totalPages = Math.ceil(users.length / usersPerPage);
   const displayedUsers = users.slice(
     (page - 1) * usersPerPage,
@@ -20,12 +21,15 @@ const UserTable = ({ users, onEdit, onDelete }) => {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="overflow-x-auto "
+      className="overflow-x-auto"
     >
       <table className="table table-xs w-full border-b border-gray-200 dark:border-gray-700">
         <thead>
-          <tr className=" dark:bg-indigo-800 text-base-content text-sm">
-            <th className="py-3 px-4 text-left">Vorname</th>
+          <tr className="dark:bg-indigo-800 text-base-content text-sm">
+            {/* ✅ Total Members Count Inside "Vorname" Column */}
+            <th className="py-3 px-4 text-left">
+              Vorname <span className="text-gray-400">({totalUsers})</span>
+            </th>
             <th className="py-3 px-4 text-left">E-Mail</th>
             <th className="py-3 px-4 text-left">Geburtstag</th>
             <th className="py-3 px-4 text-left">Rolle</th>
