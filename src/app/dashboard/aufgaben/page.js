@@ -252,14 +252,17 @@ const Tasks = () => {
     );
   };
 
-  // ✅ Handle "Select All" checkbox
   const handleSelectAll = (e) => {
     if (e.target.checked) {
-      setSelectedTasks(tasks.map((task) => task._id)); // Select all tasks
+      setSelectedTasks(tasks.map((task) => task._id)); // ✅ Restore old logic
     } else {
-      setSelectedTasks([]); // Deselect all
+      setSelectedTasks([]);
     }
   };
+
+  useEffect(() => {
+    console.log("🔄 UI Updated with selectedTasks:", selectedTasks);
+  }, [selectedTasks]);
 
   // ✅ Check if all tasks are selected
   const allSelected = tasks.length > 0 && selectedTasks.length === tasks.length;
@@ -362,9 +365,7 @@ const Tasks = () => {
                   dueDate={task.dueDate}
                   createdAt={task.createdAt}
                   onSelectTask={handleTaskSelect}
-                  isSelected={selectedTasks.includes(
-                    `${task._id}-${task.assignedTo?._id || "unassigned"}`
-                  )}
+                  isSelected={selectedTasks.includes(task._id)}
                   showActions={task.isFirstRow} // ✅ Only show actions for the first row
                 />
               ))}

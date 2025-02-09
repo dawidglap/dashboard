@@ -125,6 +125,8 @@ const TaskRow = ({
   const canDelete = user?.role === "admin";
   console.log("Task ID:", task._id, "Assigned Users:", task.assignedTo);
 
+  console.log(`🔄 Task ${task._id} checked state:`, isSelected);
+
   return (
     <>
       {/* Task Row */}
@@ -141,7 +143,7 @@ const TaskRow = ({
           <input
             type="checkbox"
             checked={isSelected}
-            onChange={handleCheckboxChange}
+            onChange={(e) => onSelectTask(task._id, e.target.checked)}
             onClick={(e) => e.stopPropagation()}
             className="ms-1 checkbox checkbox-sm rounded-full"
           />

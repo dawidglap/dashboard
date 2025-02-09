@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 const BulkActions = ({
   selectedTasks,
@@ -88,7 +89,7 @@ const BulkActions = ({
           disabled={isProcessing}
           className="btn btn-sm bg-red-50 text-red-700 hover:bg-red-200 rounded-full flex items-center px-4"
         >
-          🗑️ Löschen ({selectedTasks.length})
+          Löschen ({selectedTasks.length})
         </button>
 
         <button
@@ -96,7 +97,7 @@ const BulkActions = ({
           disabled={isProcessing}
           className="btn btn-sm bg-green-50 text-green-700 hover:bg-green-200 rounded-full flex items-center px-4"
         >
-          ✅ Erledigt
+          Erledigt
         </button>
 
         <button
@@ -104,13 +105,13 @@ const BulkActions = ({
           disabled={isProcessing}
           className="btn btn-sm bg-yellow-50 text-yellow-700 hover:bg-yellow-200 rounded-full flex items-center px-4"
         >
-          🚀 In Bearbeitung
+          In Bearbeitung
         </button>
       </div>
 
       {/* 🔥 DELETE CONFIRMATION MODAL */}
       {isDeleteModalOpen && (
-        <div className="modal modal-open flex items-center justify-center backdrop-blur-sm">
+        <div className="modal modal-open flex items-center justify-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
