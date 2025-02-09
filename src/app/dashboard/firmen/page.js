@@ -93,6 +93,8 @@ const Firmen = () => {
   // ✅ Handle Editing Company
   const handleEditCompany = async (id, updatedData) => {
     try {
+      console.log("🔍 Sending updated data:", updatedData); // ✅ Debugging log
+
       const res = await fetch(`/api/companies/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -108,6 +110,7 @@ const Firmen = () => {
       );
       setToastMessage("Firma erfolgreich aktualisiert! ✅");
     } catch (error) {
+      console.error("❌ Fehler beim Aktualisieren:", error);
       setToastMessage("Fehler beim Aktualisieren: " + error.message);
     }
   };

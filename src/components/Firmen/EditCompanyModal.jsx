@@ -16,10 +16,12 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
       company_email: "",
       telephone: "",
       mobile: "",
-      plan: "BASIC",
       company_owner: "",
-      plan_price: "",
-      expiration_date: "",
+      plan: company?.plan ?? "BASIC",
+      plan_price: company?.plan_price ?? "", // ✅ Prevents errors if company is null
+      expiration_date: company?.expiration_date
+        ? new Date(company.expiration_date).toISOString().split("T")[0]
+        : "",
       manager_id: "",
       markenbotschafter_id: "",
     },
@@ -59,7 +61,12 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
         company_email: company.company_email || "",
         telephone: company.telephone || "",
         mobile: company.mobile || "",
-        plan: company.plan || "BASIC",
+        plan_price:
+          company.plan === "BUSINESS"
+            ? company.plan_price || ""
+            : company.plan === "PRO"
+            ? 899 * 12 * 1.081
+            : 799 * 12 * 1.081,
         company_owner: company.company_owner || "", // ✅ Added Inhaber
         plan_price: company.plan_price || "",
         expiration_date: company.expiration_date
@@ -82,15 +89,23 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
 
     const { _id, ...updatedData } = {
       ...formData,
-      plan_price: formData.plan_price || null,
+      plan_price:
+        formData.plan === "BUSINESS"
+          ? formData.plan_price || null
+          : formData.plan === "PRO"
+          ? 899 * 12 * 1.081
+          : 799 * 12 * 1.081,
     };
+
+    // ✅ Update UI State Immediately
+    onSave(company._id, updatedData);
 
     console.log("Submitting update with data:", updatedData);
 
     try {
       setIsSaving(true);
       await onSave(company._id, updatedData);
-      setToastMessage("✅ Firma erfolgreich aktualisiert!");
+      setToastMessage("Firma erfolgreich aktualisiert!");
 
       setTimeout(() => {
         setToastMessage(null);
@@ -99,7 +114,7 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
     } catch (error) {
       setIsSaving(false);
       console.error("Update error:", error);
-      setToastMessage("❌ Fehler beim Aktualisieren!");
+      setToastMessage("Fehler beim Aktualisieren!");
     }
   };
 
@@ -201,6 +216,17 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
               className="input input-sm input-bordered w-full rounded-full"
             />
           </div>
+          {/* Ablaufdatum */}
+          <div className="col-span-2">
+            <label className="text-sm font-medium">Ablaufdatum</label>
+            <input
+              type="date"
+              name="expiration_date"
+              value={formData.expiration_date}
+              onChange={handleChange}
+              className="input input-sm input-bordered w-full rounded-full"
+            />
+          </div>
 
           {/* Telefon & Mobile */}
           <div className="col-span-2">
@@ -245,6 +271,33 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
                 ))}
             </select>
           </div>
+          {/* Plan Auswahl */}
+          <div className="col-span-2">
+            <label className="text-sm font-medium">Plan</label>
+            <select
+              name="plan"
+              value={formData.plan}
+              onChange={handleChange}
+              className="select select-sm select-bordered w-full rounded-full"
+            >
+              <option value="BASIC">BASIC</option>
+              <option value="PRO">PRO</option>
+              <option value="BUSINESS">BUSINESS</option>
+            </select>
+          </div>
+          {/* Plan Preis (Nur für BUSINESS) */}
+          {formData.plan === "BUSINESS" && (
+            <div className="col-span-2">
+              <label className="text-sm font-medium">Plan Preis (CHF)</label>
+              <input
+                type="number"
+                name="plan_price"
+                value={formData.plan_price}
+                onChange={handleChange}
+                className="input input-sm input-bordered w-full rounded-full"
+              />
+            </div>
+          )}
 
           {/* Markenbotschafter Selection */}
           <div className="col-span-2">

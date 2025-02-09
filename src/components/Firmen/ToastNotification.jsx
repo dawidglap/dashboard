@@ -16,11 +16,11 @@ const ToastNotification = ({ message, onClose }) => {
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
-      <div className="alert alert-success shadow-lg">
+      <div className="badge badge-success shadow-lg">
         <span>{message}</span>
-        <button className="btn btn-sm btn-ghost" onClick={onClose}>
+        {/* <button className="btn btn-sm btn-ghost" onClick={onClose}>
           ✕
-        </button>
+        </button> */}
       </div>
     </div>
   );
