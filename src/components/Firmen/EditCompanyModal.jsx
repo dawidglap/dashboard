@@ -81,6 +81,27 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
   }, [company, setFormData]);
 
   const handleSubmit = async () => {
+    // ✅ Validate required fields before submitting
+    const requiredFields = [
+      { name: "company_name", label: "Firmen-Name" },
+      { name: "company_street", label: "Straße" },
+      { name: "company_post_code", label: "PLZ" },
+      { name: "company_city", label: "Stadt" },
+      { name: "company_email", label: "Firmen-E-Mail" },
+    ];
+
+    const missingFields = requiredFields.filter(
+      (field) => !formData[field.name]
+    );
+
+    if (missingFields.length > 0) {
+      const missingLabels = missingFields
+        .map((field) => field.label)
+        .join(", ");
+      setToastMessage(`❌ Fehlende Pflichtfelder: ${missingLabels}`);
+      return;
+    }
+
     if (!company || !company._id) {
       console.error("Error: Company ID is missing!");
       setToastMessage("❌ Fehler: Firmen-ID fehlt!");
@@ -96,9 +117,6 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
           ? 899 * 12 * 1.081
           : 799 * 12 * 1.081,
     };
-
-    // ✅ Update UI State Immediately
-    onSave(company._id, updatedData);
 
     console.log("Submitting update with data:", updatedData);
 

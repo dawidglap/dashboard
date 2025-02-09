@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
   const adminId = "679396cd375db32de1bbfd01"; // Default Admin ID
   const today = new Date().toISOString().split("T")[0]; // ✅ Ensure only future dates can be selected
+  const [fieldErrors, setFieldErrors] = useState({});
 
   // ✅ Function to calculate price based on the selected plan
   function calculatePlanPrice(plan) {
@@ -85,13 +86,33 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
   };
 
   const handleSubmit = async () => {
+    const requiredFields = [
+      { name: "company_name", label: "Firmen-Name" },
+      { name: "company_street", label: "Straße" },
+      { name: "company_post_code", label: "PLZ" },
+      { name: "company_city", label: "Stadt" },
+      { name: "company_email", label: "Firmen-E-Mail" },
+    ];
+
+    const newErrors = {};
+    requiredFields.forEach((field) => {
+      if (!formData[field.name]) {
+        newErrors[field.name] = `${field.label} ist erforderlich`;
+      }
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setFieldErrors(newErrors);
+      return;
+    }
+
     try {
       setIsSaving(true);
+      setFieldErrors({}); // Clear previous errors
 
-      // ✅ Ensure default values are set if no selection is made
       const finalData = {
         ...formData,
-        company_owner: formData.company_owner || "Unbekannt", // ✅ Ensure owner is set
+        company_owner: formData.company_owner || "Unbekannt",
         manager_id: formData.manager_id || adminId,
         markenbotschafter_id: formData.markenbotschafter_id || adminId,
       };
@@ -102,6 +123,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
       // Reset form & close after success
       setTimeout(() => {
         setToastMessage(null);
+        setFieldErrors({});
         setFormData({
           company_name: "",
           company_street: "",
@@ -114,7 +136,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
           plan: "BASIC",
           company_owner: "",
           plan_price: "",
-          expiration_date: today, // ✅ Reset to today's date
+          expiration_date: today,
           manager_id: adminId,
           markenbotschafter_id: adminId,
         });
@@ -162,6 +184,11 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
                 onChange={handleChange}
                 className="input input-sm input-bordered w-full rounded-full"
               />
+              {fieldErrors.company_name && (
+                <p className="text-red-500 text-xs mt-1">
+                  {fieldErrors.company_name}
+                </p>
+              )}
             </div>
 
             {/* Company Owner */}
@@ -188,6 +215,11 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
                 onChange={handleChange}
                 className="input input-sm input-bordered w-full rounded-full"
               />
+              {fieldErrors.company_name && (
+                <p className="text-red-500 text-xs mt-1">
+                  {fieldErrors.company_street}
+                </p>
+              )}
             </div>
             <div className="col-span-1">
               <label className="text-sm font-medium"> Hausnummer</label>
@@ -210,6 +242,11 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
                 onChange={handleChange}
                 className="input input-sm input-bordered w-full rounded-full"
               />
+              {fieldErrors.company_name && (
+                <p className="text-red-500 text-xs mt-1">
+                  {fieldErrors.company_post_code}
+                </p>
+              )}
             </div>
             <div className="col-span-2">
               <label className="text-sm font-medium"> Stadt</label>
@@ -220,6 +257,11 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
                 onChange={handleChange}
                 className="input input-sm input-bordered w-full rounded-full"
               />
+              {fieldErrors.company_name && (
+                <p className="text-red-500 text-xs mt-1">
+                  {fieldErrors.company_city}
+                </p>
+              )}
             </div>
 
             {/* Ablaufdatum */}
@@ -245,6 +287,11 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
                 onChange={handleChange}
                 className="input input-sm input-bordered w-full rounded-full"
               />
+              {fieldErrors.company_name && (
+                <p className="text-red-500 text-xs mt-1">
+                  {fieldErrors.company_email}
+                </p>
+              )}
             </div>
 
             {/* Telefon & Mobile */}
