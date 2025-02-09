@@ -53,7 +53,7 @@ const Earnings = () => {
       </div>
 
       {/* ✅ Brutto Umsatz, Steuer, Netto Umsatz (Now Displays Selected Timeframe) */}
-      <div className="col-span-12 md:col-span-4">
+      <div className="col-span-12 md:col-span-5">
         <EarningsOverview
           bruttoUmsatz={bruttoUmsatz}
           timeframeLabel={timeframeLabel}
@@ -61,7 +61,7 @@ const Earnings = () => {
       </div>
 
       {/* Earnings Breakdown */}
-      <div className="col-span-12 md:col-span-4">
+      <div className="col-span-12 md:col-span-5">
         <EarningsBreakdown />
       </div>
 
@@ -74,9 +74,9 @@ const Earnings = () => {
       </div>
 
       {/* Projected Revenue Widget */}
-      <div className="col-span-12 md:col-span-2">
+      {/* <div className="col-span-12 md:col-span-2">
         <ProjectedRevenueWidget bruttoUmsatz={bruttoUmsatz} />
-      </div>
+      </div> */}
 
       {/* Earnings Chart */}
       <div className="col-span-12">
