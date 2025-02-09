@@ -85,7 +85,7 @@ const UmsatzWidget = () => {
   }, []);
 
   return (
-    <div className="bg-base-100 p-4 rounded-xl shadow-lg border-l-4 border-green-400 flex flex-col h-full">
+    <div className="bg-base-100 p-6 rounded-xl shadow-xl flex flex-col h-full">
       <Link href="/dashboard/earnings" className="flex flex-col space-y-4">
         {/* ✅ Umsatz Title */}
         <div>
@@ -110,7 +110,7 @@ const UmsatzWidget = () => {
             )}
           </p>
 
-          <p className="text-sm text-gray-600 flex items-center">
+          {/* <p className="text-sm text-gray-600 flex items-center">
             Vergleich:{" "}
             {comparisonToLastMonth > 0 ? (
               <FaArrowUp className="text-green-500 ml-1" />
@@ -120,7 +120,7 @@ const UmsatzWidget = () => {
               <FaEquals className="text-gray-500 ml-1" />
             )}
             {comparisonToLastMonth}%
-          </p>
+          </p> */}
         </div>
 
         {/* ✅ Umsatz Mini Chart or "Not Enough Data" Message */}

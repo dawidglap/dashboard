@@ -26,6 +26,7 @@ const SidebarMenu = ({ onLogout }) => {
   const pathname = usePathname();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [openDropdown, setOpenDropdown] = useState(null); // Track open dropdown
 
   const menuItems = [
     { title: "Home", href: "/dashboard", icon: <FaHome /> },
@@ -33,13 +34,7 @@ const SidebarMenu = ({ onLogout }) => {
     { title: "Demo Calls", href: "/dashboard/demo-calls", icon: <FaVideo /> },
     { title: "Team", href: "/dashboard/team", icon: <FaUsers /> },
     { title: "Umsatz", href: "/dashboard/umsatz", icon: <FaChartBar /> },
-    {
-      title: "Provisionen",
-      href: "/dashboard/provisionen",
-      icon: <FaMoneyBillWave />,
-    },
     { title: "Aufgaben", href: "/dashboard/aufgaben", icon: <FaTasks /> },
-    { title: "Hilfe", href: "/dashboard/support", icon: <FaQuestionCircle /> },
   ];
 
   useEffect(() => {
@@ -79,6 +74,7 @@ const SidebarMenu = ({ onLogout }) => {
             <li key={index}>
               <Link
                 href={item.href}
+                onClick={() => setOpenDropdown(null)} // Close dropdown when clicking another item
                 className={`flex items-center px-4 py-2 rounded-full transition-all text-sm 
                 ${
                   pathname === item.href
@@ -92,6 +88,76 @@ const SidebarMenu = ({ onLogout }) => {
             </li>
           ))}
 
+          {/* Provisionen Dropdown */}
+          <li>
+            <button
+              onClick={() =>
+                setOpenDropdown(
+                  openDropdown === "provisionen" ? null : "provisionen"
+                )
+              }
+              className={`flex items-center justify-between w-full px-4 py-2 rounded-full transition-all text-sm 
+                ${
+                  pathname.includes("/dashboard/provisionen")
+                    ? "bg-indigo-200 text-indigo-600 dark:bg-indigo-900 dark:text-white shadow"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-800"
+                }`}
+            >
+              <div className="flex items-center">
+                <FaMoneyBillWave className="text-lg" />
+                <span className="ml-4">Provisionen</span>
+              </div>
+              <span>{openDropdown === "provisionen" ? "" : ""}</span>
+            </button>
+
+            {openDropdown === "provisionen" && (
+              <ul className="ml-8 mt-2 space-y-1">
+                <li>
+                  <Link
+                    href="/dashboard/provisionen"
+                    className={`block px-4 py-2 rounded-full transition-all text-sm ${
+                      pathname === "/dashboard/provisionen"
+                        ? "bg-indigo-200 text-indigo-600 dark:bg-indigo-900 dark:text-white"
+                        : "text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-800"
+                    }`}
+                  >
+                    Übersicht
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/dashboard/provisionen/details"
+                    className={`block px-4 py-2 rounded-full transition-all text-sm ${
+                      pathname === "/dashboard/provisionen/details"
+                        ? "bg-indigo-200 text-indigo-600 dark:bg-indigo-900 dark:text-white"
+                        : "text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-800"
+                    }`}
+                  >
+                    Details
+                  </Link>
+                </li>
+              </ul>
+            )}
+          </li>
+
+          {/* Hilfe (Support) */}
+          <li>
+            <Link
+              href="/dashboard/support"
+              onClick={() => setOpenDropdown(null)}
+              className={`flex items-center px-4 py-2 rounded-full transition-all text-sm 
+              ${
+                pathname === "/dashboard/support"
+                  ? "bg-indigo-200 text-indigo-600 dark:bg-indigo-900 dark:text-white shadow"
+                  : "text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-800"
+              }`}
+            >
+              <FaQuestionCircle className="text-lg" />
+              <span className="ml-4">Hilfe</span>
+            </Link>
+          </li>
+
+          {/* Logout Button */}
           <button
             onClick={onLogout}
             className="flex items-center w-full px-4 py-2 mt-4 rounded-full text-error hover:bg-error/20 transition-all"

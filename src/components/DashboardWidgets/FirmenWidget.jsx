@@ -5,17 +5,19 @@ import Link from "next/link";
 
 const FirmenWidget = () => {
   const [companyCount, setCompanyCount] = useState(null);
-  const [newCompaniesCount, setNewCompaniesCount] = useState(0);
+  const [newCompaniesCount, setNewCompaniesCount] = useState(null);
   const [topPlan, setTopPlan] = useState(null);
-  const [bruttoUmsatz, setBruttoUmsatz] = useState(0);
-  const [nettoUmsatz, setNettoUmsatz] = useState(0);
+  const [bruttoUmsatz, setBruttoUmsatz] = useState(null);
+  const [nettoUmsatz, setNettoUmsatz] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await fetch("/api/companies");
+        const response = await fetch("/api/companies/all"); // ✅ Fetch all companies
         const data = await response.json();
         const companies = data?.data || [];
+
         setCompanyCount(companies.length);
 
         const currentDate = new Date();
@@ -45,7 +47,7 @@ const FirmenWidget = () => {
           ["None", 0]
         )[0];
 
-        // ✅ Calculate Brutto & Netto Umsatz (SAME AS UmsatzWidget)
+        // ✅ Calculate Brutto & Netto Umsatz
         let totalEarnings = 0;
         let totalNetEarnings = 0;
 
@@ -78,6 +80,8 @@ const FirmenWidget = () => {
         setNettoUmsatz(totalNetEarnings);
       } catch (error) {
         console.error("Error fetching companies:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -89,10 +93,10 @@ const FirmenWidget = () => {
       <div>
         <h2 className="text-lg font-semibold">Firmen</h2>
         <p className="text-3xl font-bold">
-          {companyCount !== null ? (
-            companyCount
+          {loading ? (
+            <span className="skeleton h-8 w-24 bg-gray-300 rounded"></span>
           ) : (
-            <span className="skeleton h-8 w-24 bg-gray-200 rounded animate-pulse"></span>
+            companyCount
           )}
         </p>
       </div>
@@ -100,35 +104,35 @@ const FirmenWidget = () => {
       {/* ✅ Updated Revenue Calculation */}
       <div className="mt-4 space-y-2 text-sm opacity-90">
         <p>
-          {newCompaniesCount !== null ? (
+          {loading ? (
+            <span className="skeleton h-6 w-32 bg-gray-300 rounded"></span>
+          ) : (
             `Neue Firmen: ${newCompaniesCount}`
-          ) : (
-            <span className="skeleton h-6 w-32 bg-gray-200 rounded animate-pulse"></span>
           )}
         </p>
         <p>
-          {topPlan ? (
+          {loading ? (
+            <span className="skeleton h-6 w-32 bg-gray-300 rounded"></span>
+          ) : (
             `Beliebtester Plan: ${topPlan}`
-          ) : (
-            <span className="skeleton h-6 w-32 bg-gray-200 rounded animate-pulse"></span>
           )}
         </p>
         <p>
-          {bruttoUmsatz > 0 ? (
+          {loading ? (
+            <span className="skeleton h-6 w-32 bg-gray-300 rounded"></span>
+          ) : (
             `Gesamtumsatz: CHF ${Math.round(bruttoUmsatz).toLocaleString(
               "de-DE"
             )}`
-          ) : (
-            <span className="skeleton h-6 w-32 bg-gray-200 rounded animate-pulse"></span>
           )}
         </p>
         <p>
-          {nettoUmsatz > 0 ? (
+          {loading ? (
+            <span className="skeleton h-6 w-32 bg-gray-300 rounded"></span>
+          ) : (
             `Netto Umsatz: CHF ${Math.round(nettoUmsatz).toLocaleString(
               "de-DE"
             )}`
-          ) : (
-            <span className="skeleton h-6 w-32 bg-gray-200 rounded animate-pulse"></span>
           )}
         </p>
       </div>

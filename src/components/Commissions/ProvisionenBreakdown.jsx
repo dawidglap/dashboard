@@ -20,10 +20,10 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
     : commissions;
 
   return (
-    <div className="bg-base-100 p-6 rounded-2xl shadow-lg border-b-2 border-indigo-300 w-full">
+    <div className="bg-base-100 rounded-2xl   w-full">
       {/* Header with filter */}
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Detaillierte Provisionsübersicht</h2>
+        {/* <h2 className="text-xl font-bold">Detaillierte Provisionsübersicht</h2> */}
 
         {/* ✅ User Filter Dropdown */}
         <select
@@ -40,7 +40,7 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
       </div>
 
       {/* ✅ Commission Table */}
-      <div className="overflow-x-auto rounded-lg shadow-sm">
+      <div className="overflow-x-auto rounded-2xl">
         <table className="table table-xs w-full text-left">
           <thead>
             <tr className="text-sm text-base-content border-b border-indigo-300">
