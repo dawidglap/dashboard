@@ -30,7 +30,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className="ml-[-16rem] flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-700 via-purple-800 to-indigo-900">
+    <div className="ml-[-16rem] flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-500 via-pink-300 to-indigo-300">
       {/* Background Overlay */}
       <div className="absolute inset-0 bg-black bg-opacity-30 backdrop-blur-xl"></div>
 
@@ -90,9 +90,7 @@ const SignIn = () => {
           <button
             type="submit"
             className={`btn w-full rounded-full text-white text-lg font-bold transition-all ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-indigo-500 hover:bg-indigo-600"
+              loading ? "bg-gray-400 cursor-not-allowed" : "btn-neutral "
             }`}
             disabled={loading}
           >
