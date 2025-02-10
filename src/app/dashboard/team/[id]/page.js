@@ -1,12 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-// import ProfileDetails from "@/components/Team/ProfileDetails";
 import { useParams } from "next/navigation";
-import { generateStaticParams } from "./static-params";
-import ProfileDetails from "../../../../components/Team/ProfileDetails";
-import MemberCompanies from "../../../../components/Team/MemberCompanies"; // ✅ Using `MemberCompanies`
+import ProfileDetails from "@/components/Team/ProfileDetails";
+import MemberCompanies from "@/components/Team/MemberCompanies";
 
 const TeamMemberProfile = () => {
   const { id } = useParams(); // ✅ Correctly get the `id`
@@ -82,5 +79,4 @@ const TeamMemberProfile = () => {
   );
 };
 
-export { generateStaticParams };
 export default TeamMemberProfile;
