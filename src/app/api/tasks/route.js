@@ -104,12 +104,13 @@ export async function GET(request) {
             assignedTo: {
               $cond: {
                 if: { $gt: [{ $size: "$assignedUser" }, 0] },
-                then: "$assignedUser",
+                then: { $arrayElemAt: ["$assignedUser", 0] }, // ✅ Pick the first user
                 else: "$assignedTo",
               },
             },
           },
         },
+
         { $unset: "assignedUser" },
         {
           $project: {
@@ -170,37 +171,16 @@ export async function POST(req) {
     const { title, description, priority, status, assignedTo, dueDate } =
       await req.json();
 
-    if (
-      !title ||
-      !description ||
-      !priority ||
-      !status ||
-      !Array.isArray(assignedTo) || // ✅ Ensure it's an array
-      assignedTo.length === 0 ||
-      !dueDate
-    ) {
-      return new Response(
-        JSON.stringify({ success: false, message: "All fields are required" }),
-        { status: 400 }
-      );
-    }
+    console.log("📥 Received Task Data:", {
+      title,
+      description,
+      priority,
+      status,
+      assignedTo,
+      dueDate,
+    });
 
-    // ✅ Convert assignedTo array to ObjectIds
-    const assignedUserIds = assignedTo.map((id) => new ObjectId(id));
-
-    // ✅ Fetch all assigned users from DB
-    const assignedUsers = await db
-      .collection("users")
-      .find({ _id: { $in: assignedUserIds } })
-      .toArray();
-
-    if (assignedUsers.length === 0) {
-      return new Response(
-        JSON.stringify({ success: false, message: "Assigned users not found" }),
-        { status: 404 }
-      );
-    }
-
+    // ✅ Fetch the user from the database
     const user = await db
       .collection("users")
       .findOne({ email: session.user.email });
@@ -212,25 +192,58 @@ export async function POST(req) {
       );
     }
 
-    // ✅ Create separate tasks for each assigned user
-    const tasksToInsert = assignedUsers.map((assignedUser) => ({
+    // ✅ Ensure only an admin can create tasks
+    if (user.role !== "admin") {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "Only admins can create tasks",
+        }),
+        { status: 403 }
+      );
+    }
+
+    // ✅ Validate required fields
+    if (!title || !status || !assignedTo || !assignedTo._id) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "Title, status, and assigned user are required",
+        }),
+        { status: 400 }
+      );
+    }
+
+    // ✅ Assign Admin as `createdBy` (hardcoded)
+    const adminUser = {
+      _id: user._id,
+      name: user.name,
+      role: user.role,
+    };
+
+    // ✅ Ensure `assignedTo` is a single user object
+    const assignedUser = {
+      _id: new ObjectId(assignedTo._id),
+      name: assignedTo.name,
+      role: assignedTo.role,
+    };
+
+    // ✅ Construct the new task object
+    const newTask = {
       title,
-      description,
-      priority,
+      description: description?.trim() || null, // Allow empty description
+      priority: priority || "medium", // Default to medium if not provided
       status,
-      assignedTo: {
-        _id: assignedUser._id,
-        name: assignedUser.name,
-        role: assignedUser.role,
-      }, // ✅ Now each task is for a single user
-      createdBy: { _id: user._id, name: user.name },
+      assignedTo: assignedUser, // ✅ Ensure it's always an object
+      createdBy: adminUser, // ✅ Admin is the creator
       createdAt: new Date(),
       updatedAt: new Date(),
-      dueDate: new Date(dueDate),
-      locked: false, // Ensure all tasks are unlocked by default
-    }));
+      dueDate: dueDate ? new Date(dueDate) : null, // Optional dueDate
+      locked: false, // ✅ Default locked to false
+    };
 
-    const result = await db.collection("tasks").insertMany(tasksToInsert);
+    // ✅ Insert into the database
+    const result = await db.collection("tasks").insertOne(newTask);
 
     if (!result.acknowledged) {
       return new Response(
@@ -242,8 +255,8 @@ export async function POST(req) {
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Tasks created successfully",
-        tasks: tasksToInsert, // ✅ Return all created tasks
+        message: "Task created successfully",
+        task: newTask,
       }),
       { status: 201 }
     );

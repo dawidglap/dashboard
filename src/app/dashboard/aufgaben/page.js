@@ -60,13 +60,9 @@ const Tasks = () => {
       const fetchTasks = async () => {
         setLoading(true);
         try {
-          console.log(
-            `⚡ Fetching tasks for page ${page} with filters`,
-            filters
-          );
-
+          // ✅ Move queryParams UP before fetch
           const queryParams = new URLSearchParams({
-            page: page.toString(), // ✅ Now correctly reset before fetch
+            page: page.toString(),
             limit: "8",
           });
 
@@ -81,11 +77,17 @@ const Tasks = () => {
           if (filters.searchQuery)
             queryParams.append("search", filters.searchQuery);
 
+          console.log(
+            `📡 Fetching tasks from API: /api/tasks?${queryParams.toString()}`
+          ); // ✅ Debug API Call
+
           const res = await fetch(`/api/tasks?${queryParams.toString()}`);
-          if (!res.ok) throw new Error("Fehler beim Abrufen der Aufgaben.");
           const data = await res.json();
 
-          console.log("📡 API Response:", data);
+          console.log("📡 API Response Data:", data); // ✅ Debug Response
+
+          if (!res.ok) throw new Error("Fehler beim Abrufen der Aufgaben.");
+
           setTasks(data.data || []);
           setHasMore(data.hasMore || false);
         } catch (err) {
@@ -98,7 +100,7 @@ const Tasks = () => {
 
       fetchTasks();
     }
-  }, [page, user, filters]); // ✅ Page is now properly updated first before fetching tasks
+  }, [page, user, filters]);
 
   useEffect(() => {
     if (Object.values(filters).some((filter) => filter !== "")) {
@@ -326,22 +328,6 @@ const Tasks = () => {
 
           <tbody>
             {displayedTasks
-              .flatMap((task) =>
-                Array.isArray(task.assignedTo) && task.assignedTo.length > 0
-                  ? task.assignedTo.map((assignee) => ({
-                      ...task,
-                      assignedTo: assignee, // ✅ Assign each user to a row
-                    }))
-                  : [
-                      {
-                        ...task,
-                        assignedTo: {
-                          name: "Nicht zugewiesen",
-                          role: "Unbekannt",
-                        },
-                      },
-                    ]
-              )
               .filter(
                 (task) =>
                   !filters.assignedToFilter ||
@@ -350,7 +336,7 @@ const Tasks = () => {
               .slice((page - 1) * 8, page * 8) // ✅ Apply pagination AFTER expansion
               .map((task) => (
                 <TaskRow
-                  key={`${task._id}-${task.assignedTo?._id || "unassigned"}`}
+                  key={task._id}
                   task={task}
                   user={user}
                   onUpdate={(taskId, updatedTask) => {
@@ -361,12 +347,22 @@ const Tasks = () => {
                   onDelete={confirmDelete}
                   openDropdownId={openDropdownId}
                   setOpenDropdownId={setOpenDropdownId}
-                  assignedTo={task.assignedTo} // ✅ Pass assigned user separately
-                  dueDate={task.dueDate}
-                  createdAt={task.createdAt}
+                  assignedTo={
+                    typeof task?.assignedTo === "object" &&
+                    task?.assignedTo !== null
+                      ? task.assignedTo
+                      : {
+                          _id: "unassigned",
+                          name: "Nicht zugewiesen",
+                          role: "Unbekannt",
+                        }
+                  }
+                  dueDate={task?.dueDate ?? "Kein Datum"}
+                  createdAt={task?.createdAt ?? "Unbekannt"}
                   onSelectTask={handleTaskSelect}
-                  isSelected={selectedTasks.includes(task._id)}
-                  showActions={task.isFirstRow} // ✅ Only show actions for the first row
+                  isSelected={
+                    task?._id ? selectedTasks.includes(task._id) : false
+                  }
                 />
               ))}
           </tbody>

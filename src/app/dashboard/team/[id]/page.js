@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation"; // ✅ Import useParams
-import ProfileDetails from "@/components/Team/ProfileDetails";
-import MemberCompanies from "@/components/Team/MemberCompanies"; // ✅ Using `MemberCompanies`
+// import ProfileDetails from "@/components/Team/ProfileDetails";
+import ProfileDetails from "../../../../components/Team/ProfileDetails";
+import MemberCompanies from "../../../../Team/MemberCompanies"; // ✅ Using `MemberCompanies`
 
 const TeamMemberProfile = () => {
   const { id } = useParams(); // ✅ Correctly get the `id`

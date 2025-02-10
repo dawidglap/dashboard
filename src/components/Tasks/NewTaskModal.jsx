@@ -8,7 +8,7 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("medium");
-  const [assignedTo, setAssignedTo] = useState([]);
+  const [assignedTo, setAssignedTo] = useState(null);
   const [selectAll, setSelectAll] = useState(false);
   const [dueDate, setDueDate] = useState("");
   const [users, setUsers] = useState([]);
@@ -31,12 +31,13 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
     if (isOpen) fetchUsers();
   }, [isOpen]);
 
-  const handleUserSelect = (userId) => {
-    setAssignedTo((prev) =>
-      prev.includes(userId)
-        ? prev.filter((id) => id !== userId)
-        : [...prev, userId]
-    );
+  const handleUserSelect = (user) => {
+    setAssignedTo((prev) => {
+      if (!prev) return [user]; // If empty, add first user
+
+      const exists = prev.find((u) => u._id === user._id);
+      return exists ? prev.filter((u) => u._id !== user._id) : [...prev, user];
+    });
   };
 
   const handleSelectAll = () => {
@@ -47,8 +48,19 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
   const today = new Date().toISOString().split("T")[0];
 
   const handleCreateTask = async () => {
-    if (assignedTo.length === 0) {
-      setError("Mindestens ein Benutzer muss ausgewählt werden.");
+    console.log("📤 Sending Task Data:", {
+      title,
+      description,
+      priority,
+      status,
+      assignedTo: assignedTo
+        ? { _id: assignedTo._id, name: assignedTo.name, role: assignedTo.role }
+        : null,
+      dueDate,
+    });
+
+    if (!assignedTo || !assignedTo._id) {
+      setError("Ein Benutzer muss zugewiesen werden.");
       return;
     }
 
@@ -56,17 +68,30 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
     setError(null);
 
     try {
+      // ✅ Build the task data dynamically
+      const taskData = {
+        assignedTo: assignedTo
+          ? {
+              _id: assignedTo._id,
+              name: assignedTo.name,
+              role: assignedTo.role,
+            }
+          : null, // ✅ Ensures assignedTo is always an object
+      };
+
+      // ✅ Only add optional fields if they have values
+      if (title?.trim()) taskData.title = title.trim();
+      if (description?.trim()) taskData.description = description.trim();
+      if (priority) taskData.priority = priority;
+      if (status) taskData.status = status;
+      if (dueDate) taskData.dueDate = dueDate;
+
+      console.log("📤 Sending Task Data:", taskData); // ✅ Debugging
+
       const res = await fetch("/api/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          description,
-          priority,
-          status,
-          assignedTo,
-          dueDate,
-        }),
+        body: JSON.stringify(taskData),
       });
 
       if (!res.ok) {
@@ -89,7 +114,7 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
 
   return (
     isOpen && (
-      <div className="modal modal-open flex items-center justify-center backdrop-blur-sm ">
+      <div className="modal modal-open flex items-center justify-center ">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -181,9 +206,9 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
                   {users.map((user) => (
                     <button
                       key={user._id}
-                      onClick={() => handleUserSelect(user._id)}
+                      onClick={() => handleUserSelect(user)} // ✅ Pass the entire user object
                       className={`badge badge-md px-3 py-1 cursor-pointer rounded-full ${
-                        assignedTo.includes(user._id)
+                        assignedTo?._id === user._id
                           ? "bg-indigo-200"
                           : "bg-indigo-50"
                       }`}
