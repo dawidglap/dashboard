@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import TaskModal from "./TaskModal";
 import EditTaskModal from "./EditTaskModal";
 import {
@@ -44,6 +44,8 @@ const TaskRow = ({
   const [isUpdating, setIsUpdating] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const dropdownRef = useRef(null); // ✅ Create a ref for the dropdown
 
   const assignedUsers = Array.isArray(task.assignedTo)
     ? task.assignedTo
@@ -120,6 +122,22 @@ const TaskRow = ({
       task.assignedTo?.toString() === user._id?.toString()) ||
     (user?.role === "markenbotschafter" &&
       task.assignedTo?.toString() === user._id?.toString());
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpenDropdownId(null); // ✅ Close dropdown when clicking outside
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   // Determine if user can delete the task (only Admins)
   const canDelete = user?.role === "admin";
@@ -240,7 +258,10 @@ const TaskRow = ({
             </button>
 
             {isDropdownOpen && (
-              <ul className="absolute right-0 mt-2 w-48 bg-white border rounded-2xl shadow-lg z-50">
+              <ul
+                ref={dropdownRef}
+                className="absolute right-0 mt-2 w-56 bg-white border rounded-2xl shadow-lg z-50"
+              >
                 {canUpdateStatus && (
                   <>
                     <li>
