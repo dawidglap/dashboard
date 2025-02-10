@@ -107,7 +107,7 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
   };
 
   return (
-    <div className="modal modal-open flex items-center justify-center backdrop-blur-sm">
+    <div className="modal modal-open flex items-center justify-center ">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
