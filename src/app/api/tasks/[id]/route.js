@@ -66,7 +66,13 @@ export async function GET(request, context) {
         },
         {
           $set: {
-            assignedTo: { $arrayElemAt: ["$assignedUser", 0] }, // ✅ Ensure assignedTo is a single object
+            assignedTo: {
+              $cond: {
+                if: { $gt: [{ $size: "$assignedUser" }, 0] },
+                then: { $arrayElemAt: ["$assignedUser", 0] },
+                else: "$assignedTo", // ✅ Keep previous assignedTo if lookup fails
+              },
+            },
           },
         },
         { $unset: "assignedUser" },
@@ -234,17 +240,33 @@ export async function PUT(request, context) {
         {
           $lookup: {
             from: "users",
-            localField: "assignedTo",
+            localField: "assignedTo._id",
             foreignField: "_id",
             as: "assignedUser",
           },
         },
         {
           $set: {
-            assignedTo: { $arrayElemAt: ["$assignedUser", 0] }, // ✅ Ensure assignedTo is always an object
+            assignedTo: {
+              _id: {
+                $ifNull: [{ $arrayElemAt: ["$assignedUser._id", 0] }, null],
+              },
+              name: {
+                $ifNull: [
+                  { $arrayElemAt: ["$assignedUser.name", 0] },
+                  "Unbekannt",
+                ],
+              },
+              role: {
+                $ifNull: [
+                  { $arrayElemAt: ["$assignedUser.role", 0] },
+                  "Unbekannt",
+                ],
+              },
+            },
           },
         },
-        { $unset: "assignedUser" }, // ✅ Remove extra field
+        { $unset: "assignedUser" }, // ✅ Remove extra lookup data
       ])
       .toArray();
 

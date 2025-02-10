@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import TaskModal from "./TaskModal";
 import EditTaskModal from "./EditTaskModal";
 import {
@@ -47,11 +47,13 @@ const TaskRow = ({
 
   const dropdownRef = useRef(null); // ✅ Create a ref for the dropdown
 
-  const assignedUsers = Array.isArray(task.assignedTo)
-    ? task.assignedTo
-    : task.assignedTo
-    ? [task.assignedTo] // Wrap in array if it's a single object
-    : []; // Ensure it's always an array
+  const assignedUsers = useMemo(() => {
+    return Array.isArray(task.assignedTo)
+      ? task.assignedTo
+      : task.assignedTo
+      ? [task.assignedTo]
+      : [];
+  }, [task.assignedTo]);
 
   // ✅ Ensure actions only appear for the first assigned user
   const isFirstOccurrence = assignedUsers.length > 0 && assignedUsers[0]._id;
@@ -99,14 +101,8 @@ const TaskRow = ({
           updatedTaskData.message || "Failed to fetch updated task"
         );
 
-      // ✅ Instead of `setTasks`, call `onUpdate` to inform the parent
-      onUpdate(task._id, {
-        ...task,
-        ...updatedTaskData.task,
-        assignedTo: updatedTaskData.task.assignedTo
-          ? updatedTaskData.task.assignedTo
-          : task.assignedTo, // Preserve previous assignedTo if missing
-      });
+      // ✅ Ensure `assignedTo` is updated in UI
+      onUpdate(task._id, updatedTaskData.task); // ✅ Fully replace old task with fresh data
     } catch (error) {
       console.error("❌ Fehler beim Aktualisieren der Aufgabe:", error);
     } finally {
@@ -144,6 +140,8 @@ const TaskRow = ({
   console.log("Task ID:", task._id, "Assigned Users:", task.assignedTo);
 
   console.log(`🔄 Task ${task._id} checked state:`, isSelected);
+  console.log("🔄 TaskRow - Task Data:", task);
+  console.log("🔄 TaskRow - Assigned To:", task.assignedTo);
 
   return (
     <>
@@ -210,16 +208,12 @@ const TaskRow = ({
 
         {/* Assigned To Name */}
         <td className="py-2 px-4 w-40 font-semibold">
-          {task.assignedTo && typeof task.assignedTo === "object"
-            ? task.assignedTo.name
-            : "Aktualisieren..."}
+          {task.assignedTo?.name || "Kein Benutzer"}
         </td>
+        {/* Assigned To Role*/}
 
-        {/* Assigned To Role */}
         <td className="py-2 px-4 w-32 text-[10px] uppercase font-thin">
-          {task.assignedTo && typeof task.assignedTo === "object"
-            ? task.assignedTo.role
-            : "Aktualisieren..."}
+          {task.assignedTo?.role || "Unbekannt"}
         </td>
 
         {/* Due Date */}

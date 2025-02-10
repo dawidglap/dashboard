@@ -50,7 +50,7 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
           description,
           priority,
           status,
-          assignedTo,
+          assignedTo, // ✅ Ensure assignedTo is included in the request
           dueDate,
         }),
       });
@@ -63,35 +63,21 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
         );
       }
 
-      // ✅ Fetch latest data
-      const updatedRes = await fetch(`/api/tasks/${task._id}`);
-      const updatedTaskData = await updatedRes.json();
-
-      if (!updatedRes.ok) {
-        throw new Error(
-          updatedTaskData.message || "Failed to fetch updated task"
-        );
-      }
-
-      console.log("🔄 Before Update - Task:", task);
-      console.log("🔄 API Response - Updated Task:", updatedTaskData.task);
-
-      onUpdate(task._id, {
+      // ✅ Merge updated fields with the current task
+      const updatedTask = {
         ...task,
-        ...updatedTaskData.task,
-        assignedTo: updatedTaskData.task.assignedTo
-          ? updatedTaskData.task.assignedTo
-          : task.assignedTo, // Preserve previous assignedTo if missing
-      });
+        title,
+        description,
+        priority,
+        status,
+        assignedTo: users.find((user) => user._id === assignedTo), // ✅ Update assigned user
+        dueDate,
+      };
 
-      console.log("✅ After Update - Task Updated:", {
-        ...task,
-        ...updatedTaskData.task,
-        assignedTo:
-          updatedTaskData.task.assignedTo && updatedTaskData.task.assignedTo._id
-            ? updatedTaskData.task.assignedTo
-            : task.assignedTo,
-      });
+      console.log("🔄 Updated Task:", updatedTask);
+
+      // ✅ Call `onUpdate` to refresh the UI immediately
+      onUpdate(task._id, updatedTask);
 
       setToastMessage("✅ Aufgabe erfolgreich aktualisiert!");
       setTimeout(() => {
