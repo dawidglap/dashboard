@@ -58,7 +58,7 @@ const SidebarMenu = ({ onLogout }) => {
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="min-h-screen w-64 bg-base-100 border-r shadow-lg flex flex-col p-4"
+      className="fixed top-0 left-0 bg-white h-screen w-64 z-[100] border-r shadow-lg flex flex-col p-4 overflow-y-auto"
     >
       {/* Logo */}
       <div className="flex items-center justify-center">

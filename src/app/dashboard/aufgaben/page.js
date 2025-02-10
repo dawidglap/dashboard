@@ -352,7 +352,7 @@ const Tasks = () => {
           />
         )}
 
-        <table className="table w-full  border-b border-gray-200">
+        <table className="table w-full  border-b border-gray-200 ">
           <thead className=" text-gray-700 text-sm border-b">
             <tr>
               <th className="py-3 px-4 w-6">

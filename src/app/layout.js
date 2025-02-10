@@ -1,5 +1,6 @@
 import { Montserrat } from "next/font/google";
 import "./globals.css";
+import DesktopOnly from "@/components/DesktopOnly"; // ✅ Import the new component
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -15,7 +16,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={montserrat.variable}>
-      <body className={`font-montserrat antialiased `}>{children}</body>
+      <body className={`font-montserrat antialiased ml-64 flex-grow`}>
+        <DesktopOnly />{" "}
+        {/* ✅ This will ensure the check is applied globally */}
+        {children}
+      </body>
     </html>
   );
 }
