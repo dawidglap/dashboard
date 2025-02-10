@@ -363,7 +363,7 @@ const Tasks = () => {
                   className="checkbox checkbox-sm rounded-full"
                 />
               </th>
-              <th className="py-3 px-4 text-left w-6">⚠️</th>{" "}
+              <th className="py-3 px-4 text-left text-lg font-bold w-6">!</th>{" "}
               {/* Priority column */}
               <th className="py-3 px-4 text-left w-auto">Titel</th>
               <th className="py-3 px-4 text-left w-44">Status</th>

@@ -76,7 +76,9 @@ const FilterTaskBar = ({ onFilterChange }) => {
         onChange={(e) => setPriorityFilter(e.target.value)}
         className=" select select-sm select-bordered border-indigo-200 w-full md:w-[6vw] rounded-full"
       >
-        <option value="">⚠️</option>
+        <option value="">
+          <span className="font-bold">!</span>
+        </option>
         <option value="high">Hoch</option>
         <option value="medium">Mittel</option>
         <option value="low">Niedrig</option>
