@@ -33,11 +33,18 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
 
   const handleUserSelect = (user) => {
     setAssignedTo((prev) => {
-      if (!prev) return [user]; // If empty, add first user
+      if (!Array.isArray(prev)) prev = []; // Ensure it's an array
 
-      const exists = prev.find((u) => u._id === user._id);
-      return exists ? prev.filter((u) => u._id !== user._id) : [...prev, user];
+      if (prev.some((u) => u._id === user._id)) {
+        console.log(`❌ Removing user: ${user.name}`);
+        return prev.filter((u) => u._id !== user._id); // Remove user
+      } else {
+        console.log(`✅ Adding user: ${user.name}`);
+        return [...prev, user]; // Add user
+      }
     });
+
+    console.log("🟢 Selected Users:", assignedTo);
   };
 
   const handleSelectAll = () => {
@@ -48,51 +55,59 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
   const today = new Date().toISOString().split("T")[0];
 
   const handleCreateTask = async () => {
-    console.log("📤 Sending Task Data:", {
-      title,
-      description,
-      priority,
-      status,
-      assignedTo: assignedTo
-        ? { _id: assignedTo._id, name: assignedTo.name, role: assignedTo.role }
-        : null,
-      dueDate,
-    });
-
-    if (!assignedTo || !assignedTo._id) {
-      setError("Ein Benutzer muss zugewiesen werden.");
-      return;
-    }
+    console.log(
+      "📤 Sending Task Data:",
+      assignedTo.length > 1 ? "Bulk Create" : "Single Create"
+    );
 
     setIsSaving(true);
     setError(null);
 
     try {
-      // ✅ Build the task data dynamically
-      const taskData = {
-        assignedTo: assignedTo
-          ? {
-              _id: assignedTo._id,
-              name: assignedTo.name,
-              role: assignedTo.role,
-            }
-          : null, // ✅ Ensures assignedTo is always an object
-      };
+      let res;
+      let createdTasks = [];
 
-      // ✅ Only add optional fields if they have values
-      if (title?.trim()) taskData.title = title.trim();
-      if (description?.trim()) taskData.description = description.trim();
-      if (priority) taskData.priority = priority;
-      if (status) taskData.status = status;
-      if (dueDate) taskData.dueDate = dueDate;
+      if (assignedTo.length > 1) {
+        const taskData = {
+          tasks: assignedTo.map((user) => ({
+            title,
+            description,
+            priority,
+            status,
+            assignedTo: {
+              _id: user._id,
+              name: user.name,
+              role: user.role,
+            },
+            dueDate,
+          })),
+        };
 
-      console.log("📤 Sending Task Data:", taskData); // ✅ Debugging
+        console.log("📤 Bulk Task Data Sent:", taskData);
 
-      const res = await fetch("/api/tasks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(taskData),
-      });
+        res = await fetch("/api/tasks/bulk-create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(taskData),
+        });
+      } else {
+        const taskData = {
+          title,
+          description,
+          priority,
+          status,
+          assignedTo: assignedTo[0],
+          dueDate,
+        };
+
+        console.log("📤 Single Task Data Sent:", taskData);
+
+        res = await fetch("/api/tasks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(taskData),
+        });
+      }
 
       if (!res.ok) {
         const errorData = await res.json();
@@ -101,8 +116,14 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
         );
       }
 
-      const createdTask = await res.json();
-      onTaskCreated(createdTask.task);
+      const responseData = await res.json();
+      createdTasks = responseData.tasks || [responseData.task];
+
+      console.log("✅ Tasks Created:", createdTasks);
+
+      // Update frontend task list
+      onTaskCreated(createdTasks);
+
       onClose();
     } catch (error) {
       console.error("❌ Fehler:", error.message);
@@ -208,7 +229,7 @@ const NewTaskModal = ({ isOpen, onClose, onTaskCreated }) => {
                       key={user._id}
                       onClick={() => handleUserSelect(user)} // ✅ Pass the entire user object
                       className={`badge badge-md px-3 py-1 cursor-pointer rounded-full ${
-                        assignedTo?._id === user._id
+                        assignedTo?.some((u) => u._id === user._id)
                           ? "bg-indigo-200"
                           : "bg-indigo-50"
                       }`}

@@ -331,40 +331,46 @@ const Tasks = () => {
               .filter(
                 (task) =>
                   !filters.assignedToFilter ||
-                  task.assignedTo?._id === filters.assignedToFilter
+                  task?.assignedTo?._id === filters.assignedToFilter
               ) // ✅ Apply filter
-              .slice((page - 1) * 8, page * 8) // ✅ Apply pagination AFTER expansion
-              .map((task) => (
-                <TaskRow
-                  key={task._id}
-                  task={task}
-                  user={user}
-                  onUpdate={(taskId, updatedTask) => {
-                    setTasks((prevTasks) =>
-                      prevTasks.map((t) => (t._id === taskId ? updatedTask : t))
-                    );
-                  }}
-                  onDelete={confirmDelete}
-                  openDropdownId={openDropdownId}
-                  setOpenDropdownId={setOpenDropdownId}
-                  assignedTo={
-                    typeof task?.assignedTo === "object" &&
-                    task?.assignedTo !== null
-                      ? task.assignedTo
-                      : {
-                          _id: "unassigned",
-                          name: "Nicht zugewiesen",
-                          role: "Unbekannt",
-                        }
-                  }
-                  dueDate={task?.dueDate ?? "Kein Datum"}
-                  createdAt={task?.createdAt ?? "Unbekannt"}
-                  onSelectTask={handleTaskSelect}
-                  isSelected={
-                    task?._id ? selectedTasks.includes(task._id) : false
-                  }
-                />
-              ))}
+              .slice((page - 1) * 8, page * 8) // ✅ Apply pagination AFTER filtering
+              .map((task, index) => {
+                if (!task?._id) {
+                  console.warn("⚠️ Skipping task with missing _id:", task);
+                  return null; // ✅ Skip rendering if _id is missing
+                }
+
+                return (
+                  <TaskRow
+                    key={task._id || `temp-${index}`}
+                    task={task}
+                    user={user}
+                    onUpdate={(taskId, updatedTask) => {
+                      setTasks((prevTasks) =>
+                        prevTasks.map((t) =>
+                          t._id === taskId ? updatedTask : t
+                        )
+                      );
+                    }}
+                    onDelete={confirmDelete}
+                    openDropdownId={openDropdownId}
+                    setOpenDropdownId={setOpenDropdownId}
+                    assignedTo={
+                      task?.assignedTo && typeof task.assignedTo === "object"
+                        ? task.assignedTo
+                        : {
+                            _id: "unassigned",
+                            name: "Nicht zugewiesen",
+                            role: "Unbekannt",
+                          }
+                    }
+                    dueDate={task?.dueDate ?? "Kein Datum"}
+                    createdAt={task?.createdAt ?? "Unbekannt"}
+                    onSelectTask={handleTaskSelect}
+                    isSelected={selectedTasks.includes(task._id)}
+                  />
+                );
+              })}
           </tbody>
         </table>
       </div>
