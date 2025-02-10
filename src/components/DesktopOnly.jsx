@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 const DesktopOnly = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 1024); // ✅ Change breakpoint if needed
+      setIsMobile(window.innerWidth < 1280); // ✅ Adjust breakpoint as needed
     };
 
     checkScreenSize(); // ✅ Run once on mount
@@ -16,18 +17,36 @@ const DesktopOnly = () => {
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
-  if (!isMobile) return null; // ✅ Only show if screen is too small
+  if (!isMobile) return null; // ✅ Only render on small screens
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex flex-col justify-center items-center text-white text-center px-6 z-[9999] backdrop-blur-lg">
-      <h1 className="text-3xl font-bold">
-        🚀 Webomo Dashboard ist nur auf dem Desktop verfügbar
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="fixed inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-xl text-white text-center px-8 z-[9999]"
+    >
+      <h1 className="text-4xl font-extrabold text-white drop-shadow-lg">
+        Webomo Dashboard
       </h1>
-      <p className="mt-4 text-lg">
-        Bitte besuche das Dashboard von einem Computer aus, um auf alle
-        Funktionen zugreifen zu können.
+      <p className="max-w-xl mt-4 text-lg text-gray-200 drop-shadow">
+        Dieses Dashboard ist nur für{" "}
+        <span className="font-bold">
+          Desktop-Geräte oder den Vollbildmodus{" "}
+        </span>
+        optimiert. Bitte verwende einen Computer oder wechsle in den
+        Vollbildmodus, um alle Funktionen zu nutzen.
       </p>
-    </div>
+
+      <div className="mt-8">
+        {/* <button
+          className="px-6 py-3 text-lg font-bold text-white bg-indigo-500 rounded-full shadow-xl hover:bg-indigo-600 transition-all"
+          onClick={() => window.location.reload()}
+        >
+          Erneut überprüfen 🔄
+        </button> */}
+      </div>
+    </motion.div>
   );
 };
 
