@@ -74,8 +74,6 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
         dueDate,
       };
 
-      console.log("🔄 Updated Task:", updatedTask);
-
       // ✅ Call `onUpdate` to refresh the UI immediately
       onUpdate(task._id, updatedTask);
 

@@ -79,14 +79,8 @@ const Tasks = () => {
           if (filters.searchQuery)
             queryParams.append("search", filters.searchQuery);
 
-          console.log(
-            `📡 Fetching tasks: /api/tasks?${queryParams.toString()}`
-          );
-
           const res = await fetch(`/api/tasks?${queryParams.toString()}`);
           const data = await res.json();
-
-          console.log("📡 API Response Data:", data);
 
           if (!res.ok) throw new Error("Fehler beim Abrufen der Aufgaben.");
 

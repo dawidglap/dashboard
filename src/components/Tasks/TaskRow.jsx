@@ -90,8 +90,6 @@ const TaskRow = ({
       const responseData = await res.json();
       if (!res.ok) throw new Error(responseData.message || "Update failed");
 
-      console.log("✅ Updated Task Response:", responseData.task);
-
       // ✅ Fetch full task data to update UI properly
       const updatedRes = await fetch(`/api/tasks/${task._id}`);
       const updatedTaskData = await updatedRes.json();
@@ -137,11 +135,6 @@ const TaskRow = ({
 
   // Determine if user can delete the task (only Admins)
   const canDelete = user?.role === "admin";
-  console.log("Task ID:", task._id, "Assigned Users:", task.assignedTo);
-
-  console.log(`🔄 Task ${task._id} checked state:`, isSelected);
-  console.log("🔄 TaskRow - Task Data:", task);
-  console.log("🔄 TaskRow - Assigned To:", task.assignedTo);
 
   return (
     <>

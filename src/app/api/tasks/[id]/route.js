@@ -278,12 +278,6 @@ export async function PUT(request, context) {
       );
     }
 
-    // ✅ Debugging: Log full updatedTask before sending response
-    console.log(
-      "✅ Updated Task (API Response):",
-      JSON.stringify(updatedTask[0], null, 2)
-    );
-
     return new Response(
       JSON.stringify({
         success: true,
