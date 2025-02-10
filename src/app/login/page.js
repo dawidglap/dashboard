@@ -2,14 +2,15 @@
 
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 const SignIn = () => {
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Set loading to true when submitting
+    setLoading(true);
     const email = e.target.email.value;
     const password = e.target.password.value;
 
@@ -24,57 +25,63 @@ const SignIn = () => {
       setError(
         "Ungültige E-Mail oder Passwort. Bitte versuchen Sie es erneut."
       );
-      setLoading(false); // Set loading to false if there's an error
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 flex flex-col items-center justify-center">
-      {/* Logo */}
-      <div className="absolute top-6 left-8">
-        <h1 className="text-3xl font-bold text-white">
-          Webomo <br /> Business{" "}
-        </h1>
-      </div>
+    <div className="ml-[-16rem] flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-700 via-purple-800 to-indigo-900">
+      {/* Background Overlay */}
+      <div className="absolute inset-0 bg-black bg-opacity-30 backdrop-blur-xl"></div>
 
-      {/* Login Form */}
-      <div className="w-full max-w-xl bg-white rounded-xl shadow-lg p-8">
-        <h1 className="text-3xl font-bold text-center mb-4">Anmeldung</h1>
-        <p className="text-lg text-gray-600 text-center mb-6">
-          Melden Sie sich an, um auf Ihr Dashboard zuzugreifen.
-        </p>
+      {/* Animated Login Card */}
+      <motion.div
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="relative z-10 w-full max-w-lg rounded-3xl bg-white/10 p-10 shadow-2xl backdrop-blur-lg border border-white/20"
+      >
+        {/* Logo */}
+        <div className="text-center mb-6">
+          <h1 className="text-4xl font-extrabold text-white tracking-wide">
+            Webomo Business
+          </h1>
+          <p className="text-sm text-gray-300 mt-2">
+            Willkommen zurück! Melden Sie sich an, um fortzufahren.
+          </p>
+        </div>
 
+        {/* Error Message */}
         {error && (
-          <div className="mb-4 rounded-lg bg-red-600 text-white p-3 text-sm">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 text-center rounded-full bg-red-600 text-white py-3 text-sm"
+          >
             {error}
-          </div>
+          </motion.div>
         )}
 
+        {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Email Input */}
           <div className="form-control">
-            <label className="label">
-              <span className="label-text text-gray-700">E-Mail</span>
-            </label>
             <input
               type="email"
               name="email"
-              placeholder="E-Mail-Adresse eingeben"
-              className="input input-bordered w-full rounded-lg"
+              placeholder="E-Mail-Adresse"
+              className="input input-bordered w-full rounded-full bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-indigo-500"
               required
             />
           </div>
 
           {/* Password Input */}
           <div className="form-control">
-            <label className="label">
-              <span className="label-text text-gray-700">Passwort</span>
-            </label>
             <input
               type="password"
               name="password"
-              placeholder="Passwort eingeben"
-              className="input input-bordered w-full rounded-lg"
+              placeholder="Passwort"
+              className="input input-bordered w-full rounded-full bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-indigo-500"
               required
             />
           </div>
@@ -82,14 +89,16 @@ const SignIn = () => {
           {/* Sign In Button */}
           <button
             type="submit"
-            className={`btn btn-primary w-full rounded-lg flex justify-center items-center ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
+            className={`btn w-full rounded-full text-white text-lg font-bold transition-all ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-indigo-500 hover:bg-indigo-600"
             }`}
-            disabled={loading} // Disable button when loading
+            disabled={loading}
           >
             {loading ? (
               <svg
-                className="animate-spin h-5 w-5 mr-2 text-white"
+                className="animate-spin h-6 w-6 mx-auto"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -116,17 +125,17 @@ const SignIn = () => {
 
         {/* Contact Admin */}
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            Sie benötigen Hilfe? Kontaktieren Sie den Administrator unter{" "}
+          <p className="text-sm text-gray-300">
+            Probleme bei der Anmeldung?{" "}
             <a
               href="mailto:kontakt@webomo.ch"
-              className="text-blue-500 hover:underline"
+              className="text-indigo-300 hover:underline"
             >
               kontakt@webomo.ch
             </a>
           </p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
