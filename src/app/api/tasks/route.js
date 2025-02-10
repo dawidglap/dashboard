@@ -34,9 +34,8 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
 
     // ✅ Extract Filters from Query Params
-    const page = parseInt(searchParams.get("page")) || 1;
-    const limit = parseInt(searchParams.get("limit")) || 15;
-    const skip = (page - 1) * limit;
+    const limit = parseInt(searchParams.get("limit")) || 16; // Load 16 tasks at a time
+    const offset = parseInt(searchParams.get("offset")) || 0; // Start from the last fetched task
 
     const statusFilter = searchParams.get("status") || null;
     const priorityFilter = searchParams.get("priority") || null;
@@ -130,7 +129,7 @@ export async function GET(request) {
         },
       ])
       .sort({ dueDate: 1 })
-      .skip(skip)
+      .skip(offset)
       .limit(limit)
       .toArray();
 
@@ -139,7 +138,7 @@ export async function GET(request) {
         success: true,
         data: tasks,
         totalCount,
-        hasMore: skip + tasks.length < totalCount,
+        hasMore: offset + tasks.length < totalCount,
       }),
       { status: 200 }
     );

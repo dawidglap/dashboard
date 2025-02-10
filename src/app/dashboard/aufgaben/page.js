@@ -58,14 +58,16 @@ const Tasks = () => {
   useEffect(() => {
     if (user && session?.user) {
       const fetchTasks = async () => {
+        if (loading || !hasMore) return; // ✅ Prevent multiple fetches
+
         setLoading(true);
         try {
-          // ✅ Move queryParams UP before fetch
           const queryParams = new URLSearchParams({
-            page: page.toString(),
-            limit: "8",
+            limit: "16",
+            offset: tasks.length.toString(),
           });
 
+          // ✅ Include active filters in the query
           if (filters.statusFilter)
             queryParams.append("status", filters.statusFilter);
           if (filters.priorityFilter)
@@ -78,18 +80,18 @@ const Tasks = () => {
             queryParams.append("search", filters.searchQuery);
 
           console.log(
-            `📡 Fetching tasks from API: /api/tasks?${queryParams.toString()}`
-          ); // ✅ Debug API Call
+            `📡 Fetching tasks: /api/tasks?${queryParams.toString()}`
+          );
 
           const res = await fetch(`/api/tasks?${queryParams.toString()}`);
           const data = await res.json();
 
-          console.log("📡 API Response Data:", data); // ✅ Debug Response
+          console.log("📡 API Response Data:", data);
 
           if (!res.ok) throw new Error("Fehler beim Abrufen der Aufgaben.");
 
-          setTasks(data.data || []);
-          setHasMore(data.hasMore || false);
+          setTasks((prevTasks) => [...prevTasks, ...data.data]); // ✅ Append new tasks
+          setHasMore(data.hasMore); // ✅ Stop fetching when no more tasks are left
         } catch (err) {
           console.error("⚠️ Fehler beim Abrufen der Aufgaben:", err);
           setError("Fehler beim Abrufen der Aufgaben.");
@@ -100,7 +102,60 @@ const Tasks = () => {
 
       fetchTasks();
     }
-  }, [page, user, filters]);
+  }, [user, session, filters]); // ✅ Now refetches when filters change
+
+  const fetchTasks = async () => {
+    if (loading || !hasMore) return; // Prevent multiple fetches
+    setLoading(true);
+
+    try {
+      const queryParams = new URLSearchParams({
+        limit: "16",
+        offset: tasks.length.toString(), // Start from the last fetched task
+      });
+
+      const res = await fetch(`/api/tasks?${queryParams.toString()}`);
+      const data = await res.json();
+
+      if (!res.ok) throw new Error("Fehler beim Abrufen der Aufgaben.");
+
+      setTasks((prevTasks) => {
+        const taskMap = new Map();
+
+        // ✅ Add previous tasks to the map
+        prevTasks.forEach((task) => taskMap.set(task._id, task));
+
+        // ✅ Add new tasks (overwrite duplicates)
+        data.data.forEach((task) => taskMap.set(task._id, task));
+
+        return Array.from(taskMap.values()); // ✅ Convert back to an array
+      });
+
+      setHasMore(data.hasMore); // Stop fetching when no more tasks are left
+    } catch (err) {
+      console.error("⚠️ Fehler beim Abrufen der Aufgaben:", err);
+      setError("Fehler beim Abrufen der Aufgaben.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ Call this function inside `useEffect` for scrolling:
+  useEffect(() => {
+    const handleScroll = () => {
+      if (loading || !hasMore) return;
+      const scrollPosition =
+        window.innerHeight + document.documentElement.scrollTop;
+      const pageHeight = document.documentElement.offsetHeight;
+
+      if (scrollPosition >= pageHeight - 100) {
+        fetchTasks(); // ✅ Now it correctly calls the function
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [loading, hasMore]);
 
   useEffect(() => {
     if (Object.values(filters).some((filter) => filter !== "")) {
@@ -229,8 +284,8 @@ const Tasks = () => {
 
   // ✅ Function to create a new task
   const handleTaskCreated = (newTask) => {
-    setTasks((prevTasks) => [newTask, ...prevTasks]);
-    showToast("Neue Aufgabe erfolgreich erstellt!", "success");
+    setTasks([]); // ✅ Clear existing tasks
+    fetchTasks(); // ✅ Re-fetch tasks from API
   };
 
   // ✅ Function to show toast & auto-dismiss after 2 seconds
@@ -333,7 +388,7 @@ const Tasks = () => {
                   !filters.assignedToFilter ||
                   task?.assignedTo?._id === filters.assignedToFilter
               ) // ✅ Apply filter
-              .slice((page - 1) * 8, page * 8) // ✅ Apply pagination AFTER filtering
+
               .map((task, index) => {
                 if (!task?._id) {
                   console.warn("⚠️ Skipping task with missing _id:", task);
@@ -376,7 +431,7 @@ const Tasks = () => {
       </div>
 
       {/* ✅ Pagination Controls (Minimalistic & Functional) */}
-      <div className="flex justify-between items-center mt-6">
+      {/* <div className="flex justify-between items-center mt-6">
         <button
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           disabled={page === 1}
@@ -388,13 +443,17 @@ const Tasks = () => {
         <span className="text-gray-700 text-xs">Seite {page}</span>
 
         <button
-          onClick={() => setPage((prev) => prev + 1)}
-          disabled={!hasMore}
+          onClick={() => {
+            if (hasMore) {
+              setPage((prev) => prev + 1);
+            }
+          }}
+          disabled={!hasMore || loading} // ✅ Prevent clicking when no more pages
           className="btn btn-xs px-4 rounded-full btn-neutral"
         >
           Weiter →
         </button>
-      </div>
+      </div> */}
 
       {loading && (
         <div className="flex justify-center py-4">
