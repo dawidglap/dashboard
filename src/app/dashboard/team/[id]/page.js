@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import ProfileDetails from "@/components/Team/ProfileDetails";
-import MemberCompanies from "@/components/Team/MemberCompanies";
+// import ProfileDetails from "@/components/Team/ProfileDetails";
+// import MemberCompanies from "@/components/Team/MemberCompanies";
 
 const TeamMemberProfile = () => {
   const { id } = useParams(); // ✅ Correctly get the `id`
@@ -65,14 +65,14 @@ const TeamMemberProfile = () => {
       {/* ✅ Two-column layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left Side - User Details */}
-        <ProfileDetails user={user} />
+        {/* <ProfileDetails user={user} /> */}
 
         {/* Right Side - Assigned Companies */}
         <div>
           <h3 className="text-sm font-medium pb-1 ps-4">
             Zugewiesene Unternehmen
           </h3>
-          <MemberCompanies companies={companies} />
+          {/* <MemberCompanies companies={companies} /> */}
         </div>
       </div>
     </div>
