@@ -39,23 +39,35 @@ const SidebarMenu = () => {
   const isAdmin = user?.role === "admin";
 
   const menuItems = [
-    { title: "Home", href: "/dashboard", icon: <FaHome /> },
+    { title: "Home", href: "/dashboard", icon: <FaHome />, disabled: !isAdmin },
 
-    // Admin-only pages
-    ...(isAdmin
-      ? [
-          { title: "Firmen", href: "/dashboard/firmen", icon: <FaBuilding /> },
-          {
-            title: "Demo Calls",
-            href: "/dashboard/demo-calls",
-            icon: <FaVideo />,
-          },
-          { title: "Umsatz", href: "/dashboard/umsatz", icon: <FaChartBar /> },
-          { title: "Team", href: "/dashboard/team", icon: <FaUsers /> }, // ✅ Only Admins
-        ]
-      : []),
+    // Admin-only pages (Disabled for non-admins)
+    {
+      title: "Firmen",
+      href: "/dashboard/firmen",
+      icon: <FaBuilding />,
+      disabled: !isAdmin, // Disable for non-admins
+    },
+    {
+      title: "Demo Calls",
+      href: "/dashboard/demo-calls",
+      icon: <FaVideo />,
+      disabled: !isAdmin, // Disable for non-admins
+    },
+    {
+      title: "Umsatz",
+      href: "/dashboard/umsatz",
+      icon: <FaChartBar />,
+      disabled: !isAdmin, // Disable for non-admins
+    },
+    {
+      title: "Team",
+      href: "/dashboard/team",
+      icon: <FaUsers />,
+      disabled: !isAdmin, // Disable for non-admins
+    },
 
-    // Visible to Everyone
+    // Always visible
     { title: "Aufgaben", href: "/dashboard/aufgaben", icon: <FaTasks /> },
     { title: "Support", href: "/dashboard/hilfe", icon: <FaQuestionCircle /> },
   ];
