@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import UserFormModal from "./UserFormModal"; // ✅ Import modal
+import TeamMemberModal from "./TeamMemberModal";
 
 const UserTable = ({ users, onDelete }) => {
   const [page, setPage] = useState(1);
@@ -11,6 +12,7 @@ const UserTable = ({ users, onDelete }) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const usersPerPage = 8;
+  const [selectedTeamMember, setSelectedTeamMember] = useState(null);
 
   // ✅ Fetch updated users after an edit
   const fetchUsers = async () => {
@@ -31,9 +33,10 @@ const UserTable = ({ users, onDelete }) => {
 
   // ✅ Handle Edit Click (Opens Modal)
   const handleEdit = (user) => {
-    console.log("🟢 Editing user:", user);
+    console.log("🟢 Editing user:", user); // ✅ Debugging Log
     setSelectedUser(user);
     setIsEditModalOpen(true);
+    console.log("🟢 isEditModalOpen:", isEditModalOpen); // ✅ Check if the state updates
   };
 
   const totalPages = Math.ceil(userList.length / usersPerPage);
@@ -66,9 +69,13 @@ const UserTable = ({ users, onDelete }) => {
                 key={user._id}
                 className="border-b border-gray-200 dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition text-sm"
               >
-                <td className="py-4 px-4 font-semibold text-indigo-600 hover:underline cursor-pointer">
+                <td
+                  className="py-4 px-4 font-semibold text-indigo-600 hover:underline cursor-pointer"
+                  onClick={() => setSelectedTeamMember(user._id)} // ✅ Open TeamMemberModal
+                >
                   {user.name || "N/A"}
                 </td>
+
                 <td className="py-4 px-4">
                   {user.email ? (
                     <a
@@ -129,18 +136,27 @@ const UserTable = ({ users, onDelete }) => {
       {/* ✅ Fullscreen Modal for Editing User */}
       <AnimatePresence>
         {isEditModalOpen && (
-          <UserFormModal
-            isOpen={isEditModalOpen}
-            onClose={() => setIsEditModalOpen(false)}
-            onSave={(updatedUser) => {
-              console.log("✅ User saved:", updatedUser);
-              fetchUsers(); // ✅ Refresh list after edit
-              setIsEditModalOpen(false);
-            }}
-            user={selectedUser}
-          />
+          <>
+            {console.log("🟢 Rendering UserFormModal")} {/* ✅ Debug Log */}
+            <UserFormModal
+              isOpen={isEditModalOpen}
+              onClose={() => setIsEditModalOpen(false)}
+              onSave={(updatedUser) => {
+                console.log("✅ User saved:", updatedUser);
+                fetchUsers(); // ✅ Refresh list after edit
+                setIsEditModalOpen(false);
+              }}
+              user={selectedUser}
+            />
+          </>
         )}
       </AnimatePresence>
+      {selectedTeamMember && (
+        <TeamMemberModal
+          userId={selectedTeamMember}
+          onClose={() => setSelectedTeamMember(null)} // ✅ Close when done
+        />
+      )}
     </>
   );
 };
