@@ -101,7 +101,7 @@ const Tasks = () => {
   const fetchTasks = async () => {
     setLoading(true);
     try {
-      const queryParams = new URLSearchParams({ limit: "16", offset: "0" });
+      const queryParams = new URLSearchParams({ limit: "10000", offset: "0" });
 
       // ✅ Include active filters in the API request
       if (filters.statusFilter)
