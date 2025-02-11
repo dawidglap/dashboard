@@ -8,6 +8,7 @@ const BulkActions = ({
   setSelectedTasks,
   setTasks,
   showToast,
+  user,
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -84,13 +85,24 @@ const BulkActions = ({
     <div className="flex items-center justify-between  py-3  ">
       {/* 🛠️ Bulk Action Buttons */}
       <div className="flex space-x-2">
-        <button
-          onClick={() => setIsDeleteModalOpen(true)}
-          disabled={isProcessing}
-          className="btn btn-sm bg-red-50 text-red-700 hover:bg-red-200 rounded-full flex items-center px-4"
-        >
-          Löschen ({selectedTasks.length})
-        </button>
+        {user?.role === "admin" ? (
+          <button
+            onClick={() => setIsDeleteModalOpen(true)}
+            disabled={isProcessing}
+            className="btn btn-sm bg-red-50 text-red-700 hover:bg-red-200 rounded-full flex items-center px-4"
+          >
+            Löschen ({selectedTasks.length})
+          </button>
+        ) : (
+          <div className="tooltip tooltip-top" data-tip="Nur Admin">
+            <button
+              disabled
+              className="btn btn-sm bg-gray-200 text-gray-500 cursor-not-allowed rounded-full flex items-center px-4"
+            >
+              Löschen ({selectedTasks.length})
+            </button>
+          </div>
+        )}
 
         <button
           onClick={() => handleBulkUpdate("done")}
@@ -103,7 +115,7 @@ const BulkActions = ({
         <button
           onClick={() => handleBulkUpdate("in_progress")}
           disabled={isProcessing}
-          className="btn btn-sm bg-yellow-50 text-yellow-700 hover:bg-yellow-200 rounded-full flex items-center px-4"
+          className="btn btn-sm bg-blue-50 text-blue-700 hover:bg-blue-200 rounded-full flex items-center px-4"
         >
           In Bearbeitung
         </button>

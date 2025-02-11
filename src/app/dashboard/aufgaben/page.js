@@ -388,7 +388,8 @@ const Tasks = () => {
             selectedTasks={selectedTasks}
             setSelectedTasks={setSelectedTasks}
             setTasks={setTasks}
-            showToast={showToast} // ✅ Pass showToast function
+            showToast={showToast}
+            user={user} // ✅ Pass showToast function
           />
         )}
 
