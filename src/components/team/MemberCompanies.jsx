@@ -56,14 +56,14 @@ const MemberCompanies = ({ companies }) => {
       </div>
 
       {/* ✅ Button - Fixed at Bottom Right */}
-      <div className="flex justify-end">
+      {/* <div className="flex justify-end">
         <button
           onClick={() => router.push("/dashboard/team")}
           className="btn btn-sm btn-neutral rounded-full px-6 mt-[-60px]"
         >
           ← Zurück zum Team
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
