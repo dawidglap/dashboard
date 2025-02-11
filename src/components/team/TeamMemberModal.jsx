@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { motion } from "framer-motion";
-import TeamMemberProfile from "../../components/Team/TeamMemberProfile";
+import TeamMemberProfile from "./TeamMemberProfile";
 
 const TeamMemberModal = ({ userId, onClose }) => {
   if (!userId) return null; // Do not render if no user is selected
