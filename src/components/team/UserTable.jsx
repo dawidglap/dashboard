@@ -1,18 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEdit, FaTrash } from "react-icons/fa";
-import TeamMemberModal from "./TeamMemberModal"; // Import the modal
+import UserFormModal from "./UserFormModal"; // ✅ Import modal
 
-const UserTable = ({ users, onEdit, onDelete }) => {
+const UserTable = ({ users, onDelete }) => {
   const [page, setPage] = useState(1);
-  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [userList, setUserList] = useState(users);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const usersPerPage = 8;
 
-  // ✅ Pagination logic
-  const totalPages = Math.ceil(users.length / usersPerPage);
-  const displayedUsers = users.slice(
+  // ✅ Fetch updated users after an edit
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("/api/users");
+      const data = await response.json();
+      if (data.success) {
+        setUserList(data.users);
+      }
+    } catch (error) {
+      console.error("❌ Error fetching users:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers(); // ✅ Fetch users when the component mounts
+  }, []);
+
+  // ✅ Handle Edit Click (Opens Modal)
+  const handleEdit = (user) => {
+    console.log("🟢 Editing user:", user);
+    setSelectedUser(user);
+    setIsEditModalOpen(true);
+  };
+
+  const totalPages = Math.ceil(userList.length / usersPerPage);
+  const displayedUsers = userList.slice(
     (page - 1) * usersPerPage,
     page * usersPerPage
   );
@@ -41,14 +66,9 @@ const UserTable = ({ users, onEdit, onDelete }) => {
                 key={user._id}
                 className="border-b border-gray-200 dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition text-sm"
               >
-                {/* ✅ Open modal when clicking the name */}
-                <td
-                  className="py-4 px-4 font-semibold text-indigo-600 hover:underline cursor-pointer"
-                  onClick={() => setSelectedUserId(user._id)}
-                >
+                <td className="py-4 px-4 font-semibold text-indigo-600 hover:underline cursor-pointer">
                   {user.name || "N/A"}
                 </td>
-
                 <td className="py-4 px-4">
                   {user.email ? (
                     <a
@@ -61,15 +81,13 @@ const UserTable = ({ users, onEdit, onDelete }) => {
                     "N/A"
                   )}
                 </td>
-
                 <td className="py-4 px-4">{user.birthday || "N/A"}</td>
                 <td className="py-4 px-4 uppercase text-xs font-medium text-gray-600 dark:text-gray-300">
                   {user.role}
                 </td>
-
                 <td className="py-4 px-4 flex justify-center space-x-2">
                   <button
-                    onClick={() => onEdit(user)}
+                    onClick={() => handleEdit(user)} // ✅ Open Edit Modal
                     className="btn btn-xs btn-outline btn-neutral rounded-full"
                   >
                     <FaEdit />
@@ -108,12 +126,18 @@ const UserTable = ({ users, onEdit, onDelete }) => {
         </div>
       </motion.div>
 
-      {/* ✅ Fullscreen Modal for User Details */}
+      {/* ✅ Fullscreen Modal for Editing User */}
       <AnimatePresence>
-        {selectedUserId && (
-          <TeamMemberModal
-            userId={selectedUserId}
-            onClose={() => setSelectedUserId(null)}
+        {isEditModalOpen && (
+          <UserFormModal
+            isOpen={isEditModalOpen}
+            onClose={() => setIsEditModalOpen(false)}
+            onSave={(updatedUser) => {
+              console.log("✅ User saved:", updatedUser);
+              fetchUsers(); // ✅ Refresh list after edit
+              setIsEditModalOpen(false);
+            }}
+            user={selectedUser}
           />
         )}
       </AnimatePresence>

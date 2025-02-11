@@ -14,10 +14,18 @@ export async function GET(request) {
           projection: {
             _id: 1,
             name: 1,
+            surname: 1, // ✅ Include surname
             role: 1,
             email: 1,
             birthday: 1,
             createdAt: 1,
+            phone_number: 1, // ✅ Include phone number
+            user_street: 1, // ✅ Include user address fields
+            user_street_number: 1,
+            user_postcode: 1,
+            user_city: 1,
+            subscription_expiration: 1, // ✅ Include subscription expiration
+            is_active: 1, // ✅ Include account status
           },
         }
       )
@@ -221,58 +229,64 @@ export async function PUT(request) {
   const { db } = await connectToDatabase();
   const body = await request.json();
 
-  const {
-    id,
-    email,
-    password,
-    phone_number,
-    user_street,
-    user_street_number,
-    user_postcode,
-    user_city,
-    subscription_expiration,
-    is_active,
-  } = body;
+  console.log("🔄 Incoming Update Request:", body); // Debugging
 
-  if (!id || !ObjectId.isValid(id)) {
+  // ✅ Ensure we extract the correct user ID
+  const userId = body.id || body._id;
+
+  if (!userId || !ObjectId.isValid(userId)) {
+    console.error("❌ Invalid or missing user ID:", userId);
     return new Response(
       JSON.stringify({ success: false, message: "Invalid or missing user ID" }),
       { status: 400 }
     );
   }
 
-  const updateData = {};
-  if (email) updateData.email = email;
-  if (phone_number) updateData.phone_number = phone_number;
-  if (user_street) updateData.user_street = user_street;
-  if (user_street_number) updateData.user_street_number = user_street_number;
-  if (user_postcode) updateData.user_postcode = user_postcode;
-  if (user_city) updateData.user_city = user_city;
-  if (subscription_expiration)
-    updateData.subscription_expiration = new Date(subscription_expiration);
-  if (typeof is_active !== "undefined") updateData.is_active = is_active;
+  const updateData = {
+    ...(body.email && { email: body.email }),
+    ...(body.name && { name: body.name }),
+    ...(body.surname && { surname: body.surname }),
+    ...(body.birthday && { birthday: body.birthday }),
+    ...(body.role && { role: body.role }),
+    ...(body.phone_number && { phone_number: body.phone_number }),
+    ...(body.user_street && { user_street: body.user_street }),
+    ...(body.user_street_number && {
+      user_street_number: body.user_street_number,
+    }),
+    ...(body.user_postcode && { user_postcode: body.user_postcode }),
+    ...(body.user_city && { user_city: body.user_city }),
+    ...(body.subscription_expiration && {
+      subscription_expiration: new Date(body.subscription_expiration),
+    }),
+    is_active: body.is_active ?? true, // Ensure boolean values
+  };
 
-  if (password && password.trim() !== "") {
-    updateData.password = await bcrypt.hash(password, 10);
+  if (body.password && body.password.trim() !== "") {
+    updateData.password = await bcrypt.hash(body.password, 10);
   }
 
   try {
+    console.log("🛠 Updating User in DB:", updateData);
+
     const result = await db
       .collection("users")
-      .updateOne({ _id: new ObjectId(id) }, { $set: updateData });
+      .updateOne({ _id: new ObjectId(userId) }, { $set: updateData });
 
     if (result.matchedCount === 0) {
+      console.error("❌ User not found in database");
       return new Response(
         JSON.stringify({ success: false, message: "User not found" }),
         { status: 404 }
       );
     }
 
+    console.log("✅ User updated successfully in DB:", result);
     return new Response(
       JSON.stringify({ success: true, message: "User updated successfully" }),
       { status: 200 }
     );
   } catch (error) {
+    console.error("❌ Database Update Error:", error);
     return new Response(
       JSON.stringify({ success: false, error: error.message }),
       { status: 500 }
