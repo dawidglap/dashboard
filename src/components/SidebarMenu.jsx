@@ -150,7 +150,7 @@ const SidebarMenu = () => {
           {/* Hilfe (Support) */}
           <li>
             <Link
-              href="/dashboard/support"
+              href="/dashboard/hilfe"
               onClick={() => setOpenDropdown(null)}
               className={`flex items-center px-4 py-2 rounded-full transition-all text-sm 
               ${
