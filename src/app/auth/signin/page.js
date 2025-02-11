@@ -10,22 +10,37 @@ const SignIn = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true); // Set loading to true when submitting
+    setError(null); // Clear previous errors
+
     const email = e.target.email.value;
     const password = e.target.password.value;
 
+    // Sign in using NextAuth credentials
     const res = await signIn("credentials", {
       email,
       password,
-      redirect: true,
-      callbackUrl: "/dashboard",
+      redirect: false, // ✅ Prevent automatic redirection
     });
 
-    if (!res.ok) {
+    if (res?.error) {
       setError(
         "Ungültige E-Mail oder Passwort. Bitte versuchen Sie es erneut."
       );
-      setLoading(false); // Set loading to false if there's an error
+      setLoading(false);
+      return;
     }
+
+    // ✅ Fetch the user session after login
+    const session = await fetch("/api/auth/session").then((res) => res.json());
+
+    // ✅ Redirect based on user role
+    const role = session?.user?.role;
+    const redirectUrl =
+      role === "manager" || role === "markenbotschafter"
+        ? "/dashboard/aufgaben"
+        : "/dashboard";
+
+    window.location.href = redirectUrl; // ✅ Redirect manually
   };
 
   return (

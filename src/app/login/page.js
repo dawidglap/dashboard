@@ -17,9 +17,29 @@ const SignIn = () => {
     const res = await signIn("credentials", {
       email,
       password,
-      redirect: true,
-      callbackUrl: "/dashboard",
+      redirect: false, // ✅ Prevent auto redirection
     });
+
+    if (res?.error) {
+      setError(
+        "Ungültige E-Mail oder Passwort. Bitte versuchen Sie es erneut."
+      );
+      setLoading(false);
+      return;
+    }
+
+    // ✅ Fetch the user session after login
+    const sessionRes = await fetch("/api/auth/session");
+    const session = await sessionRes.json();
+
+    // ✅ Redirect based on role
+    const role = session?.user?.role;
+    const redirectUrl =
+      role === "manager" || role === "markenbotschafter"
+        ? "/dashboard/aufgaben"
+        : "/dashboard";
+
+    window.location.href = redirectUrl; // ✅ Redirect manually
 
     if (!res.ok) {
       setError(
