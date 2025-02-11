@@ -63,7 +63,7 @@ const Tasks = () => {
         setLoading(true);
         try {
           const queryParams = new URLSearchParams({
-            limit: "16",
+            limit: "1600",
             offset: tasks.length.toString(),
           });
 
@@ -99,33 +99,28 @@ const Tasks = () => {
   }, [user, session, filters]); // ✅ Now refetches when filters change
 
   const fetchTasks = async () => {
-    if (loading || !hasMore) return; // Prevent multiple fetches
     setLoading(true);
-
     try {
-      const queryParams = new URLSearchParams({
-        limit: "16",
-        offset: tasks.length.toString(), // Start from the last fetched task
-      });
+      const queryParams = new URLSearchParams({ limit: "16", offset: "0" });
+
+      // ✅ Include active filters in the API request
+      if (filters.statusFilter)
+        queryParams.append("status", filters.statusFilter);
+      if (filters.priorityFilter)
+        queryParams.append("priority", filters.priorityFilter);
+      if (filters.assignedToFilter)
+        queryParams.append("assignedTo", filters.assignedToFilter);
+      if (filters.dueDateFilter)
+        queryParams.append("dueDate", filters.dueDateFilter);
+      if (filters.searchQuery)
+        queryParams.append("search", filters.searchQuery);
 
       const res = await fetch(`/api/tasks?${queryParams.toString()}`);
       const data = await res.json();
-
       if (!res.ok) throw new Error("Fehler beim Abrufen der Aufgaben.");
 
-      setTasks((prevTasks) => {
-        const taskMap = new Map();
-
-        // ✅ Add previous tasks to the map
-        prevTasks.forEach((task) => taskMap.set(task._id, task));
-
-        // ✅ Add new tasks (overwrite duplicates)
-        data.data.forEach((task) => taskMap.set(task._id, task));
-
-        return Array.from(taskMap.values()); // ✅ Convert back to an array
-      });
-
-      setHasMore(data.hasMore); // Stop fetching when no more tasks are left
+      setTasks(data.data); // ✅ Replace old tasks instead of appending
+      setHasMore(data.hasMore); // ✅ Reset pagination properly
     } catch (err) {
       console.error("⚠️ Fehler beim Abrufen der Aufgaben:", err);
       setError("Fehler beim Abrufen der Aufgaben.");
@@ -138,18 +133,19 @@ const Tasks = () => {
   useEffect(() => {
     const handleScroll = () => {
       if (loading || !hasMore) return;
+
       const scrollPosition =
         window.innerHeight + document.documentElement.scrollTop;
       const pageHeight = document.documentElement.offsetHeight;
 
       if (scrollPosition >= pageHeight - 100) {
-        fetchTasks(); // ✅ Now it correctly calls the function
+        fetchTasks(); // ✅ Now fetches even with filters
       }
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [loading, hasMore]);
+  }, [loading, hasMore, filters]); // ✅ Added `filters` dependency
 
   useEffect(() => {
     if (Object.values(filters).some((filter) => filter !== "")) {
@@ -182,11 +178,13 @@ const Tasks = () => {
   // ✅ Function to update filters
 
   const handleFilterChange = useCallback((newFilters) => {
-    setPage(1); // ✅ First reset to page 1
+    setPage(1); // ✅ Reset page to 1
+    setTasks([]); // ✅ Reset tasks to reload them with filters
     setFilters((prevFilters) => ({
       ...prevFilters,
       ...newFilters,
     }));
+    setHasMore(true); // ✅ Reset `hasMore` to allow fetching more tasks
   }, []);
 
   useEffect(() => {
@@ -320,8 +318,8 @@ const Tasks = () => {
 
   // ✅ Function to create a new task
   const handleTaskCreated = (newTask) => {
-    setTasks([]); // ✅ Clear existing tasks
-    fetchTasks(); // ✅ Re-fetch tasks from API
+    setTasks((prevTasks) => [newTask, ...prevTasks]); // ✅ Add the new task to UI first
+    fetchTasks(); // ✅ Then re-fetch from API to get the latest data
   };
 
   // ✅ Function to show toast & auto-dismiss after 2 seconds
