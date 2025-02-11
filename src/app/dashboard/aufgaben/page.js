@@ -63,7 +63,7 @@ const Tasks = () => {
         setLoading(true);
         try {
           const queryParams = new URLSearchParams({
-            limit: "1600",
+            limit: "3000",
             offset: tasks.length.toString(),
           });
 

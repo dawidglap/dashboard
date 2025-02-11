@@ -14,7 +14,8 @@ const TasksWidget = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await fetch("/api/tasks");
+        const response = await fetch("/api/tasks?limit=10000");
+
         const data = await response.json();
         const tasks = data?.data || [];
 
@@ -65,11 +66,11 @@ const TasksWidget = () => {
   }, []);
 
   return (
-    <div className="relative bg-white p-6 rounded-2xl shadow-xl flex flex-col justify-between h-full">
+    <div className="relative  border-white border-2 p-6 rounded-2xl shadow-xl flex flex-col justify-between h-full">
       {/* ✅ Header */}
       <div>
         <h2 className="text-lg font-semibold text-gray-800">Aufgaben</h2>
-        <p className="text-4xl font-extrabold text-yellow-600 mt-1">
+        <p className="text-4xl font-extrabold mt-1">
           {loading ? (
             <span className="skeleton h-8 w-10 bg-gray-300 rounded animate-pulse"></span>
           ) : tasksCount !== null ? (
@@ -91,15 +92,21 @@ const TasksWidget = () => {
         ) : (
           <>
             <p className="text-gray-700 flex items-center">
-              🟠 <span className="ml-1">In Bearbeitung:</span>{" "}
-              <strong>{inProgressTasks}</strong>
+              <span className=" font-semibold text-blue-500 mr-1">
+                In Bearbeitung:
+              </span>{" "}
+              <strong> {inProgressTasks}</strong>
             </p>
-            <p className="text-gray-700 flex items-center">
-              🟢 <span className="ml-1">Erledigt:</span>{" "}
+            <p className="text-gray-700 flex justify-center items-center">
+              <span className=" font-semibold text-green-500 mr-1">
+                Erledigt:
+              </span>{" "}
               <strong>{completedTasks}</strong>
             </p>
-            <p className="text-gray-700 flex items-center">
-              🔴 <span className="ml-1">Ausstehend:</span>{" "}
+            <p className="text-gray-700 flex justify-end items-center">
+              <span className=" font-semibold text-gray-500 mr-1">
+                Ausstehend:
+              </span>{" "}
               <strong>{pendingTasks}</strong>
             </p>
           </>
@@ -112,9 +119,9 @@ const TasksWidget = () => {
           <p className="skeleton h-6 w-32 bg-gray-300 rounded animate-pulse"></p>
         ) : nextDueTask ? (
           <p className="text-gray-700">
-            📅 Nächste Aufgabe: <strong>{nextDueTask.title}</strong>
+            Nächste Aufgabe: <strong>{nextDueTask.title}</strong>
             <br />
-            🗓️ Fällig am: <strong>{nextDueTask.dueDate}</strong>
+            Fällig am: <strong>{nextDueTask.dueDate}</strong>
           </p>
         ) : (
           <p className="text-gray-500">Keine anstehenden Aufgaben.</p>
@@ -124,7 +131,7 @@ const TasksWidget = () => {
       {/* ✅ CTA Button */}
       <Link
         href="/dashboard/tasks"
-        className="mt-6 inline-block bg-yellow-500 text-white px-6 py-2 rounded-full text-center font-semibold hover:bg-yellow-600 transition"
+        className="mt-4 inline-flex items-center justify-center w-64 rounded-full bg-gradient-to-r from-indigo-600 to-purple-500 px-4 py-2 text-white shadow-lg transition-all duration-300 hover:bg-opacity-90 dark:from-indigo-500 dark:to-purple-400"
       >
         Aufgaben anzeigen →
       </Link>

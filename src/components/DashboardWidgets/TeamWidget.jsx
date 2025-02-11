@@ -45,12 +45,12 @@ const TeamWidget = () => {
   }, []);
 
   return (
-    <div className="relative bg-gradient-to-r from-purple-500 to-pink-500 p-6 rounded-2xl shadow-lg text-white flex flex-col justify-between h-full">
+    <div className="relative border-white border-2 dark:bg-slate-800 p-6 rounded-2xl shadow-lg text-gray-800 dark:text-white flex flex-col justify-between h-full">
       <div>
         <h2 className="text-lg font-semibold">Team</h2>
-        <p className="text-3xl font-bold">
+        <p className="text-4xl font-extrabold mt-1">
           {loading ? (
-            <span className="skeleton h-8 w-10 bg-gray-300 rounded animate-pulse"></span>
+            <span className="skeleton h-8 w-10 bg-gray-300 dark:bg-gray-600 rounded animate-pulse"></span>
           ) : teamCount !== null ? (
             teamCount
           ) : (
@@ -62,7 +62,7 @@ const TeamWidget = () => {
       {/* ✅ New Members This Month */}
       <div className="mt-4 text-sm opacity-90">
         {loading ? (
-          <p className="skeleton h-6 w-24 bg-gray-300 rounded animate-pulse"></p>
+          <p className="skeleton h-6 w-24 bg-gray-300 dark:bg-gray-600 rounded animate-pulse"></p>
         ) : (
           <p>
             Neue Mitglieder diesen Monat:{" "}
@@ -73,10 +73,10 @@ const TeamWidget = () => {
         )}
       </div>
 
-      {/* ✅ CTA Button */}
+      {/* ✅ Updated CTA Button */}
       <Link
         href="/dashboard/team"
-        className="mt-4 inline-block bg-white text-purple-600 px-4 py-2 rounded-full text-center font-semibold hover:bg-gray-200 transition"
+        className=" inline-flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-purple-500 px-4 py-2 text-white shadow-lg transition-all duration-300 hover:bg-opacity-90 dark:from-indigo-500 dark:to-purple-400"
       >
         Team anzeigen →
       </Link>

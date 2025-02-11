@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation"; // Import useRouter
 import { motion } from "framer-motion";
+import { signOut } from "next-auth/react"; // ✅ Import NextAuth's signOut
 import {
   FaHome,
   FaBuilding,
@@ -22,8 +23,9 @@ const ROLE_COLORS = {
   markenbotschafter: "bg-green-500",
 };
 
-const SidebarMenu = ({ onLogout }) => {
+const SidebarMenu = () => {
   const pathname = usePathname();
+  const router = useRouter(); // ✅ Use router for navigation
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [openDropdown, setOpenDropdown] = useState(null); // Track open dropdown
@@ -53,12 +55,18 @@ const SidebarMenu = ({ onLogout }) => {
     fetchUser();
   }, []);
 
+  // ✅ Logout Function
+  const handleLogout = async () => {
+    await signOut({ redirect: false }); // ✅ Sign out without auto redirection
+    router.push("/login"); // ✅ Manually redirect user to login page
+  };
+
   return (
     <motion.div
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="fixed top-0 left-0 bg-white h-screen w-64 z-[100] border-r shadow-lg flex flex-col p-4 overflow-y-auto"
+      className="fixed top-0 left-0  h-screen w-64 z-[100] border-r shadow-lg flex flex-col p-4 overflow-y-auto"
     >
       {/* Logo */}
       <div className="flex items-center justify-center">
@@ -107,7 +115,6 @@ const SidebarMenu = ({ onLogout }) => {
                 <FaMoneyBillWave className="text-lg" />
                 <span className="ml-4">Provisionen</span>
               </div>
-              <span>{openDropdown === "provisionen" ? "" : ""}</span>
             </button>
 
             {openDropdown === "provisionen" && (
@@ -159,7 +166,7 @@ const SidebarMenu = ({ onLogout }) => {
 
           {/* Logout Button */}
           <button
-            onClick={onLogout}
+            onClick={handleLogout} // ✅ Attach logout function
             className="flex items-center w-full px-4 py-2 mt-4 rounded-full text-error hover:bg-error/20 transition-all"
           >
             <FaSignOutAlt className="text-md" />

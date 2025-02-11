@@ -89,10 +89,10 @@ const FirmenWidget = () => {
   }, []);
 
   return (
-    <div className="relative bg-gradient-to-r from-blue-500 to-indigo-500 p-6 rounded-2xl shadow-lg text-white flex flex-col justify-between h-full">
+    <div className="relative bg-gradient-to-r border-white border-2 from-indigo-600 to-purple-500 p-6 rounded-2xl shadow-lg text-white flex flex-col justify-between h-full">
       <div>
         <h2 className="text-lg font-semibold">Firmen</h2>
-        <p className="text-3xl font-bold">
+        <p className="text-4xl font-extrabold mt-1">
           {loading ? (
             <span className="skeleton h-8 w-24 bg-gray-300 rounded"></span>
           ) : (
@@ -140,7 +140,7 @@ const FirmenWidget = () => {
       {/* ✅ CTA Button (Optional) */}
       <Link
         href="/dashboard/firmen"
-        className="mt-4 inline-block bg-white text-blue-600 px-4 py-2 rounded-full text-center font-semibold hover:bg-gray-200 transition"
+        className="mt-4 inline-block bg-white text-black px-4 py-2 rounded-full text-center font-semibold hover:bg-gray-200 transition"
       >
         Mehr Details →
       </Link>

@@ -25,13 +25,11 @@ const ProvisionenWidget = () => {
   }, []);
 
   if (loading)
-    return (
-      <div className="bg-base-100 p-4 rounded-xl shadow-lg">Loading...</div>
-    );
+    return <div className=" p-4 rounded-xl shadow-lg">Loading...</div>;
   if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
   return (
-    <div className="bg-base-100 p-4 rounded-xl shadow-xl  flex flex-col h-full">
+    <div className="border-2 border-white p-4 rounded-xl shadow-xl  flex flex-col h-full">
       <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
         Provisionen
       </h2>

@@ -85,7 +85,7 @@ const UmsatzWidget = () => {
   }, []);
 
   return (
-    <div className="bg-base-100 p-6 rounded-xl shadow-xl flex flex-col h-full">
+    <div className="border-2 border-white p-6 rounded-xl shadow-xl flex flex-col h-full">
       <Link href="/dashboard/earnings" className="flex flex-col space-y-4">
         {/* ✅ Umsatz Title */}
         <div>
