@@ -1,14 +1,30 @@
 "use client";
 
-import { useState } from "react";
-import useFetchProvisionen from "@/hooks/useFetchProvisionen";
+import { useState, useEffect } from "react";
 import ProvisionenBreakdown from "@/components/Commissions/ProvisionenBreakdown";
 import { useRouter } from "next/navigation";
 
 const ProvisionenDetails = () => {
-  const [timeframe, setTimeframe] = useState("monthly"); // Default to monthly
-  const { commissions, loading, error } = useFetchProvisionen(timeframe);
+  const [commissions, setCommissions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchCommissions = async () => {
+      try {
+        const res = await fetch("/api/commissions");
+        if (!res.ok) throw new Error("Fehler beim Laden der Provisionen");
+        const data = await res.json();
+        setCommissions(data.commissions || []);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCommissions();
+  }, []);
 
   if (loading) return <p>Loading commission data...</p>;
   if (error) return <p className="text-red-500">Error: {error}</p>;

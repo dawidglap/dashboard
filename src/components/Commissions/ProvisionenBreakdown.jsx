@@ -46,24 +46,18 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
               <th className="py-3 px-4 text-left">Rolle</th>
               <th className="py-3 px-4 text-left">Firma</th>
               <th className="py-3 px-4 text-left">Provision</th>
-              <th className="py-3 px-4 text-left">Startdatum</th>{" "}
-              {/* ✅ New Column */}
+              <th className="py-3 px-4 text-left">Startdatum</th>
               <th className="py-3 px-4 text-left">Zahlungsdatum</th>
             </tr>
           </thead>
           <tbody>
             {filteredCommissions.map((commission, index) => {
-              const createdAt = new Date(commission.paymentDate);
+              const createdAt = new Date(commission.startDatum);
               const payDate = new Date(
                 createdAt.getFullYear(),
-                createdAt.getMonth() - 1,
+                createdAt.getMonth() + 1, // ✅ Next month
                 25
               );
-
-              // ✅ Parse "createdAt" for the "Startdatum" column
-              const startDatum = commission.createdAt
-                ? new Date(commission.createdAt).toLocaleDateString("de-DE")
-                : "Kein Datum";
 
               return (
                 <tr
@@ -79,14 +73,8 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
                     CHF {commission.amount.toLocaleString("de-DE")}
                   </td>
                   <td className="py-4 px-4">
-                    {commission.created_at
-                      ? new Date(commission.created_at).toLocaleDateString(
-                          "de-DE"
-                        )
-                      : "Kein Datum"}
+                    {createdAt.toLocaleDateString("de-DE")}
                   </td>
-
-                  {/* ✅ New Column */}
                   <td className="py-4 px-4">
                     {payDate.toLocaleDateString("de-DE")}
                   </td>
