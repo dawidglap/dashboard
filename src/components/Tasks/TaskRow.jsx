@@ -90,7 +90,10 @@ const TaskRow = ({
       const responseData = await res.json();
       if (!res.ok) throw new Error(responseData.message || "Update failed");
 
-      // ✅ Fetch full task data to update UI properly
+      // ✅ Update the local UI immediately
+      onUpdate(task._id, { ...task, status: newStatus });
+
+      // ✅ Fetch full task data to ensure consistency
       const updatedRes = await fetch(`/api/tasks/${task._id}`);
       const updatedTaskData = await updatedRes.json();
 
@@ -99,8 +102,8 @@ const TaskRow = ({
           updatedTaskData.message || "Failed to fetch updated task"
         );
 
-      // ✅ Ensure `assignedTo` is updated in UI
-      onUpdate(task._id, updatedTaskData.task); // ✅ Fully replace old task with fresh data
+      // ✅ Replace the old task with fresh data
+      onUpdate(task._id, updatedTaskData.task);
     } catch (error) {
       console.error("❌ Fehler beim Aktualisieren der Aufgabe:", error);
     } finally {
@@ -249,8 +252,8 @@ const TaskRow = ({
                 ref={dropdownRef}
                 className="absolute right-0 mt-2 w-56 bg-white border rounded-2xl shadow-lg z-50"
               >
-                {canUpdateStatus && (
-                  <>
+                <>
+                  {user?.role === "admin" && (
                     <li>
                       <button
                         onClick={() => {
@@ -262,47 +265,47 @@ const TaskRow = ({
                         <FaEdit className="mr-2" /> Bearbeiten
                       </button>
                     </li>
-                    <li>
-                      <button
-                        onClick={() => handleUpdateStatus("in_progress")}
-                        className="flex items-center px-4 py-2 hover:bg-indigo-100 w-full rounded-md"
-                      >
-                        {isUpdating ? (
-                          <FaSpinner className="animate-spin mr-2" />
-                        ) : (
-                          <FaPlayCircle className="mr-2 text-blue-500" />
-                        )}
-                        In Bearbeitung
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => handleUpdateStatus("done")}
-                        className="flex items-center px-4 py-2 hover:bg-indigo-100 w-full rounded-md"
-                      >
-                        {isUpdating ? (
-                          <FaSpinner className="animate-spin mr-2" />
-                        ) : (
-                          <FaCheckCircle className="mr-2 text-green-500" />
-                        )}
-                        Erledigt
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        onClick={() => handleUpdateStatus("cannot_complete")}
-                        className="flex items-center px-4 py-2 hover:bg-indigo-100 w-full rounded-md"
-                      >
-                        {isUpdating ? (
-                          <FaSpinner className="animate-spin mr-2" />
-                        ) : (
-                          <FaTimesCircle className="mr-2 text-red-500" />
-                        )}
-                        Nicht abgeschlossen
-                      </button>
-                    </li>
-                  </>
-                )}
+                  )}
+                  <li>
+                    <button
+                      onClick={() => handleUpdateStatus("in_progress")}
+                      className="flex items-center px-4 py-2 hover:bg-indigo-100 w-full rounded-md"
+                    >
+                      {isUpdating ? (
+                        <FaSpinner className="animate-spin mr-2" />
+                      ) : (
+                        <FaPlayCircle className="mr-2 text-blue-500" />
+                      )}
+                      In Bearbeitung
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => handleUpdateStatus("done")}
+                      className="flex items-center px-4 py-2 hover:bg-indigo-100 w-full rounded-md"
+                    >
+                      {isUpdating ? (
+                        <FaSpinner className="animate-spin mr-2" />
+                      ) : (
+                        <FaCheckCircle className="mr-2 text-green-500" />
+                      )}
+                      Erledigt
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => handleUpdateStatus("cannot_complete")}
+                      className="flex items-center px-4 py-2 hover:bg-indigo-100 w-full rounded-md"
+                    >
+                      {isUpdating ? (
+                        <FaSpinner className="animate-spin mr-2" />
+                      ) : (
+                        <FaTimesCircle className="mr-2 text-red-500" />
+                      )}
+                      Nicht abgeschlossen
+                    </button>
+                  </li>
+                </>
 
                 {canDelete && (
                   <li>
