@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import SidebarItem from "./sidebar/SidebarItem";
-import SidebarDropdown from "./sidebar/SidebarDropdown";
-import SidebarProfile from "./sidebar/SidebarProfile";
+import SidebarItem from "./Sidebar/SidebarItem";
+import SidebarDropdown from "./Sidebar/SidebarDropdown";
+import SidebarProfile from "./Sidebar/SidebarProfile";
 import {
   FaHome,
   FaBuilding,
