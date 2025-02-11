@@ -7,7 +7,9 @@ export async function GET(req) {
     const { db } = await connectToDatabase();
 
     // 🔹 Get the user from `/api/users/me`
-    const sessionRes = await fetch("http://localhost:3000/api/users/me", {
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_URL || "https://business.webomo.ch";
+    const sessionRes = await fetch(`${baseUrl}/api/users/me`, {
       headers: req.headers,
     });
 
