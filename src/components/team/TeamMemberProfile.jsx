@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import ProfileDetails from "@/components/Team/ProfileDetails";
-import MemberCompanies from "@/components/Team/MemberCompanies";
+import ProfileDetails from "./ProfileDetails";
+import MemberCompanies from "./MemberCompanies";
 
 const TeamMemberProfile = ({ userId }) => {
   // ✅ Accept userId as a prop
