@@ -378,7 +378,11 @@ const Tasks = () => {
           </button>
         )}
       </div>
-      <FilterTaskBar onFilterChange={handleFilterChange} users={users} />
+      <FilterTaskBar
+        onFilterChange={handleFilterChange}
+        users={users}
+        user={user}
+      />
 
       <div className="rounded-lg  bg-white">
         {/* ✅ Global Toast Notification */}

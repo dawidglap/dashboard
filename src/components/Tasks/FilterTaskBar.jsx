@@ -9,7 +9,7 @@ import {
   FaLock,
 } from "react-icons/fa";
 
-const FilterTaskBar = ({ onFilterChange }) => {
+const FilterTaskBar = ({ onFilterChange, user }) => {
   const [statusFilter, setStatusFilter] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
   const [assignedToFilter, setAssignedToFilter] = useState("");
@@ -104,18 +104,32 @@ const FilterTaskBar = ({ onFilterChange }) => {
       </select>
 
       {/* 👤 Assigned To Filter */}
-      <select
-        value={assignedToFilter}
-        onChange={(e) => setAssignedToFilter(e.target.value || "")}
-        className="select select-sm select-bordered border-indigo-200 w-full md:w-[21vw] rounded-full"
-      >
-        <option value="">Zugewiesen an</option>
-        {users.map((user) => (
-          <option key={user._id} value={user._id}>
-            {user.name}
-          </option>
-        ))}
-      </select>
+      {user?.role === "admin" ? (
+        <select
+          value={assignedToFilter}
+          onChange={(e) => setAssignedToFilter(e.target.value || "")}
+          className="select select-sm select-bordered border-indigo-200 w-full md:w-[21vw] rounded-full"
+        >
+          <option value="">Zugewiesen an</option>
+          {users.map((user) => (
+            <option key={user._id} value={user._id}>
+              {user.name}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <div
+          className="tooltip tooltip-top w-full md:w-[21vw]"
+          data-tip="Nur Admin"
+        >
+          <select
+            disabled
+            className="select select-sm select-bordered border-gray-300 text-gray-400 w-full md:w-[21vw] rounded-full cursor-not-allowed"
+          >
+            <option value="">Zugewiesen an</option>
+          </select>
+        </div>
+      )}
 
       {/* 📅 Due Date Filter */}
       <div className="relative w-full md:w-[16vw]">
