@@ -189,6 +189,48 @@ const Tasks = () => {
     }));
   }, []);
 
+  useEffect(() => {
+    const applyFilters = () => {
+      let updatedTasks = [...tasks]; // Start with all tasks
+
+      if (filters.priorityFilter) {
+        updatedTasks = updatedTasks.filter(
+          (task) => task.priority === filters.priorityFilter
+        );
+      }
+
+      if (filters.statusFilter) {
+        updatedTasks = updatedTasks.filter(
+          (task) => task.status === filters.statusFilter
+        );
+      }
+
+      if (filters.assignedToFilter) {
+        updatedTasks = updatedTasks.filter(
+          (task) => task?.assignedTo?._id === filters.assignedToFilter
+        );
+      }
+
+      if (filters.dueDateFilter) {
+        updatedTasks = updatedTasks.filter(
+          (task) =>
+            new Date(task.dueDate).toISOString().split("T")[0] ===
+            filters.dueDateFilter
+        );
+      }
+
+      if (filters.searchQuery) {
+        updatedTasks = updatedTasks.filter((task) =>
+          task.title.toLowerCase().includes(filters.searchQuery.toLowerCase())
+        );
+      }
+
+      setFilteredTasks(updatedTasks); // ✅ Update filtered tasks
+    };
+
+    applyFilters();
+  }, [filters, tasks]); // ✅ Runs every time filters or tasks change
+
   // ✅ Function to confirm delete (opens modal)
   const confirmDelete = (taskId) => {
     setTaskToDelete(taskId);
@@ -376,7 +418,7 @@ const Tasks = () => {
           </thead>
 
           <tbody>
-            {displayedTasks
+            {filteredTasks
               .filter(
                 (task) =>
                   !filters.assignedToFilter ||
