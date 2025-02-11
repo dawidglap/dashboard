@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { FaPlus } from "react-icons/fa";
-import UserTable from "../../../components/team/UserTable";
-import UserFormModal from "../../../components/team/UserFormModal";
-import DeleteConfirmationModal from "../../../components/team/DeleteConfirmationModal";
-import ToastNotification from "../../../components/team/ToastNotification";
+import UserTable from "../../../components/Team/UserTable";
+import UserFormModal from "../../../components/Team/UserFormModal";
+import DeleteConfirmationModal from "../../../components/Team/DeleteConfirmationModal";
+import ToastNotification from "../../../components/Team/ToastNotification";
 import { motion } from "framer-motion";
 
 const Team = () => {
