@@ -1,20 +1,49 @@
 "use client";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { GoDownload } from "react-icons/go"; // Import the GoDownload icon
+import { GoDownload } from "react-icons/go";
 import materials from "@/data/materials.json";
 import Image from "next/image";
 
 export default function Materialien() {
   const [data, setData] = useState([]);
+  const [downloading, setDownloading] = useState(null); // Tracks downloading item
+  const [completed, setCompleted] = useState({}); // Tracks completed downloads
+  const [imageLoaded, setImageLoaded] = useState({}); // Tracks loaded images
 
   useEffect(() => {
-    setData(materials); // Load materials from JSON
+    setData(materials);
   }, []);
+
+  const handleDownload = (url, index) => {
+    if (downloading !== null) return; // Prevent multiple clicks
+
+    setDownloading(index);
+    setCompleted((prev) => ({ ...prev, [index]: false })); // Reset checkmark
+
+    // Simulate the file download
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Delay for better UX effect
+    setTimeout(() => {
+      setDownloading(null);
+      setCompleted((prev) => ({ ...prev, [index]: true })); // Show checkmark
+
+      // Hide checkmark after animation
+      setTimeout(() => {
+        setCompleted((prev) => ({ ...prev, [index]: false }));
+      }, 2000); // Adjust timing if needed
+    }, 2000);
+  };
 
   return (
     <div className="px-4 md:px-12">
-      {/* Title with motion effect */}
+      {/* Title */}
       <motion.h1
         className="text-3xl md:text-4xl mt-8 mb-8 font-extrabold text-base-content"
         initial={{ opacity: 0, y: -20 }}
@@ -24,9 +53,9 @@ export default function Materialien() {
         Materialien <span className="font-normal text-xl">(Downloads)</span>
       </motion.h1>
 
-      {/* Grid Container for Airbnb-style Layout */}
+      {/* Grid Container */}
       <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6"
         initial="hidden"
         animate="visible"
         variants={{
@@ -41,48 +70,66 @@ export default function Materialien() {
         {data.map((item, index) => (
           <motion.div
             key={index}
-            className="relative group bg-white shadow-lg rounded-lg overflow-hidden"
+            className="relative group bg-white shadow-xl rounded-xl overflow-hidden"
             whileHover={{ scale: 1.01 }}
             transition={{ type: "spring", stiffness: 200, damping: 15 }}
           >
-            {/* Thumbnail with Hover Animation */}
+            {/* Thumbnail with Skeleton Loader */}
             <div className="relative">
-              <div className="relative">
-                {/* Image */}
-                <Image
-                  src={item.thumbnail}
-                  alt={item.title}
-                  width={270}
-                  height={480}
-                  className="w-full h-[480px] object-cover transition-transform duration-300"
-                />
+              {/* Skeleton - Only show while image is loading */}
+              {!imageLoaded[index] && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="skeleton w-full h-full"></div>
+                </div>
+              )}
 
-                {/* Black overlay on hover */}
-                <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
+              {/* Image */}
+              <Image
+                src={item.thumbnail}
+                alt={item.title}
+                width={270}
+                height={480}
+                className="w-full h-auto aspect-[3/4] object-cover transition-opacity duration-300"
+                loading="lazy"
+                onLoadingComplete={() =>
+                  setImageLoaded((prev) => ({ ...prev, [index]: true }))
+                }
+              />
 
-                {/* Download Button (Centered) */}
-                <motion.div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <motion.a
-                    href={item.downloadUrl}
-                    download
-                    className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg"
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <GoDownload className="text-white text-2xl" />
-                  </motion.a>
-                </motion.div>
-              </div>
+              {/* Black overlay on hover */}
+              <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
 
               {/* Download Button (Centered) */}
               <motion.div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <motion.a
-                  href={item.downloadUrl}
-                  download
-                  className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg"
-                  whileTap={{ scale: 0.9 }}
+                <button
+                  onClick={() => handleDownload(item.downloadUrl, index)}
+                  className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg relative"
+                  disabled={downloading === index}
                 >
-                  <GoDownload className="text-white text-2xl" />
-                </motion.a>
+                  {downloading === index ? (
+                    <span className="loading loading-ring loading-lg text-white"></span> // DaisyUI Spinner
+                  ) : completed[index] ? (
+                    <motion.svg
+                      className="text-white w-8 h-8"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                    >
+                      <path
+                        d="M4 12l5 5L20 7"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </motion.svg>
+                  ) : (
+                    <GoDownload className="text-white text-2xl" />
+                  )}
+                </button>
               </motion.div>
             </div>
 
