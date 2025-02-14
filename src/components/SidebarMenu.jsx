@@ -15,6 +15,7 @@ import {
   FaQuestionCircle,
 } from "react-icons/fa";
 import SidebarLogout from "./Sidebar/SidebarLogout";
+import { GoDownload } from "react-icons/go";
 
 const SidebarMenu = () => {
   const [user, setUser] = useState(null);
@@ -69,6 +70,12 @@ const SidebarMenu = () => {
 
     // Always visible
     { title: "Aufgaben", href: "/dashboard/aufgaben", icon: <FaTasks /> },
+    {
+      title: "Materialien",
+      href: "/dashboard/materialien",
+      icon: <GoDownload />,
+    },
+
     { title: "Support", href: "/dashboard/hilfe", icon: <FaQuestionCircle /> },
   ];
 
