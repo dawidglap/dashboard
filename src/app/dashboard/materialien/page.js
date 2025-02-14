@@ -55,7 +55,7 @@ export default function Materialien() {
 
       {/* Grid Container */}
       <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6"
         initial="hidden"
         animate="visible"
         variants={{
@@ -134,9 +134,11 @@ export default function Materialien() {
             </div>
 
             {/* Info Section */}
-            <div className="p-4">
-              <h2 className="text-lg font-semibold">{item.title}</h2>
-              <p className="text-gray-500 text-sm">{item.week}</p>
+            <div className="p-4 bg-slate-50">
+              <h2 className="text-lg lg:text-sm font-semibold border-b border-indigo-300">
+                {item.title}
+              </h2>
+              <p className="text-gray-500 lg:text-xs text-sm">{item.week}</p>
             </div>
           </motion.div>
         ))}
