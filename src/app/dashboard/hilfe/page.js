@@ -17,10 +17,14 @@ const HelpPage = () => {
         </div>
 
         {/* FAQ Section (Right) */}
-        <div className="w-full lg:w-1/3">{/* <FaqSupport /> */}</div>
+        <div className="w-full lg:w-1/3">
+          <FaqSupport />
+        </div>
       </div>
     </div>
   );
 };
 
 export default HelpPage;
+
+// comment
