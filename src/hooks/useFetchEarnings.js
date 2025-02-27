@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getSession } from "next-auth/react";
 
 const useFetchEarnings = (timeframe = "monthly") => {
   const [chartData, setChartData] = useState([]);
@@ -9,10 +10,26 @@ const useFetchEarnings = (timeframe = "monthly") => {
 
   useEffect(() => {
     const fetchEarningsData = async () => {
+      setLoading(true);
       try {
-        const response = await fetch("/api/companies/all");
+        const session = await getSession();
+
+        if (!session || !session.user) {
+          throw new Error("User session not found.");
+        }
+
+        const role = session.user.role;
+        const email = session.user.email; // Using email instead of userId
+
+        console.log("Session Retrieved -> Role:", role, "Email:", email); // Debugging
+
+        const response = await fetch(
+          `/api/companies/all?role=${role}&email=${email}`
+        );
         if (!response.ok) throw new Error("Error fetching companies data.");
         const data = await response.json();
+
+        console.log("Fetched Companies:", data); // Debugging
 
         let totalEarnings = 0;
         let lastMonthEarnings = 0;
@@ -47,7 +64,6 @@ const useFetchEarnings = (timeframe = "monthly") => {
             (earningsByDate[formattedDate] || 0) + earnings;
         });
 
-        // Convert to chart format
         const formattedChartData = Object.keys(earningsByDate).map((key) => ({
           period: key,
           earnings: earningsByDate[key],
@@ -65,6 +81,7 @@ const useFetchEarnings = (timeframe = "monthly") => {
         setBruttoUmsatz(totalEarnings);
         setLastMonthUmsatz(lastMonthEarnings);
       } catch (err) {
+        console.error("Error in useFetchEarnings:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -78,86 +95,3 @@ const useFetchEarnings = (timeframe = "monthly") => {
 };
 
 export default useFetchEarnings;
-
-// import { useState, useEffect } from "react";
-
-// const useFetchEarnings = (timeframe = "monthly") => {
-//   const [chartData, setChartData] = useState([]);
-//   const [bruttoUmsatz, setBruttoUmsatz] = useState(0);
-//   const [lastMonthUmsatz, setLastMonthUmsatz] = useState(0);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-
-//   useEffect(() => {
-//     // ✅ Generate fake data
-//     const generateFakeData = () => {
-//       let fakeData = [];
-//       let totalEarnings = 0;
-//       let lastMonthEarnings = 0;
-//       let currentDate = new Date();
-//       let lastMonth = new Date();
-//       lastMonth.setMonth(lastMonth.getMonth() - 1);
-
-//       if (timeframe === "daily") {
-//         // Generate daily earnings for the last 30 days
-//         for (let i = 0; i < 30; i++) {
-//           let date = new Date();
-//           date.setDate(date.getDate() - i);
-//           let earnings = Math.floor(Math.random() * 5000) + 2000; // Random earnings between 2,000 and 5,000
-//           fakeData.push({ period: date.toISOString().split("T")[0], earnings });
-//           totalEarnings += earnings;
-//           if (date.getMonth() === lastMonth.getMonth())
-//             lastMonthEarnings += earnings;
-//         }
-//       } else if (timeframe === "weekly") {
-//         // Generate weekly earnings for the last 12 weeks
-//         for (let i = 0; i < 12; i++) {
-//           let week = `Week ${i + 1}`;
-//           let earnings = Math.floor(Math.random() * 20000) + 5000;
-//           fakeData.push({ period: week, earnings });
-//           totalEarnings += earnings;
-//           if (i === 10 || i === 11) lastMonthEarnings += earnings; // Approximate last month's earnings
-//         }
-//       } else if (timeframe === "monthly") {
-//         // Generate monthly earnings for the last 12 months
-//         for (let i = 0; i < 12; i++) {
-//           let date = new Date();
-//           date.setMonth(date.getMonth() - i);
-//           let earnings = Math.floor(Math.random() * 30000) + 10000;
-//           fakeData.push({
-//             period: `${date.toLocaleString("default", {
-//               month: "short",
-//             })} '${date.getFullYear().toString().slice(-2)}`,
-//             earnings,
-//           });
-//           totalEarnings += earnings;
-//           if (date.getMonth() === lastMonth.getMonth())
-//             lastMonthEarnings += earnings;
-//         }
-//       } else {
-//         // Generate yearly earnings for the last 5 years
-//         for (let i = 0; i < 5; i++) {
-//           let year = currentDate.getFullYear() - i;
-//           let earnings = Math.floor(Math.random() * 500000) + 100000;
-//           fakeData.push({ period: year.toString(), earnings });
-//           totalEarnings += earnings;
-//           if (year === lastMonth.getFullYear()) lastMonthEarnings += earnings;
-//         }
-//       }
-
-//       // Reverse data so it's in chronological order
-//       fakeData.reverse();
-
-//       setChartData(fakeData);
-//       setBruttoUmsatz(totalEarnings);
-//       setLastMonthUmsatz(lastMonthEarnings);
-//       setLoading(false);
-//     };
-
-//     generateFakeData();
-//   }, [timeframe]);
-
-//   return { chartData, bruttoUmsatz, lastMonthUmsatz, loading, error };
-// };
-
-// export default useFetchEarnings;
