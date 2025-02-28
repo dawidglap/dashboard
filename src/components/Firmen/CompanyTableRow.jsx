@@ -10,6 +10,7 @@ const CompanyTableRow = ({
   onDelete,
   manager,
   markenbotschafter,
+  userRole, // ✅ Get user role from props
 }) => {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -44,12 +45,12 @@ const CompanyTableRow = ({
 
   return (
     <>
-      <tr
-        onClick={() => setShowDetails(true)}
-        className="cursor-pointer dark:text-slate-100 hover:bg-indigo-50 dark:hover:bg-slate-900 transition text-sm border-b border-gray-200 dark:border-slate-700"
-      >
+      <tr className=" dark:text-slate-100 hover:bg-indigo-50 dark:hover:bg-slate-900 transition text-sm border-b border-gray-200 dark:border-slate-700">
         {/* Firmen-Name */}
-        <td className="py-5 px-4 font-semibold">
+        <td
+          onClick={() => setShowDetails(true)}
+          className="py-5 px-4 font-semibold cursor-pointer"
+        >
           {company.company_name || "N/A"}
         </td>
 
@@ -96,12 +97,14 @@ const CompanyTableRow = ({
 
         {/* Aktionen */}
         <td className="py-5 px-4 flex justify-center items-center h-full space-x-2">
+          {/* ✅ Disable Buttons for non-admins */}
           <button
             onClick={(e) => {
               e.stopPropagation(); // ✅ Prevent row click event
               onEdit(company);
             }}
-            className="btn btn-xs rounded-full btn-outline btn-neutral"
+            disabled={userRole !== "admin"} // ✅ Disable for non-admins
+            className="btn btn-xs rounded-full btn-outline btn-neutral disabled:opacity-50"
           >
             <FaEdit />
           </button>
@@ -110,7 +113,8 @@ const CompanyTableRow = ({
               e.stopPropagation(); // ✅ Prevent row click event
               onDelete(company);
             }}
-            className="btn btn-xs rounded-full btn-outline btn-error"
+            disabled={userRole !== "admin"} // ✅ Disable for non-admins
+            className="btn btn-xs rounded-full btn-outline btn-error disabled:opacity-50"
           >
             <FaTrash />
           </button>

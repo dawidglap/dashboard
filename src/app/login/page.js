@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 const SignIn = () => {
   const [error, setError] = useState(null);
@@ -17,7 +18,7 @@ const SignIn = () => {
     const res = await signIn("credentials", {
       email,
       password,
-      redirect: false, // ✅ Prevent auto redirection
+      redirect: false,
     });
 
     if (res?.error) {
@@ -28,18 +29,15 @@ const SignIn = () => {
       return;
     }
 
-    // ✅ Fetch the user session after login
     const sessionRes = await fetch("/api/auth/session");
     const session = await sessionRes.json();
-
-    // ✅ Redirect based on role
     const role = session?.user?.role;
     const redirectUrl =
       role === "manager" || role === "markenbotschafter"
         ? "/dashboard/aufgaben"
         : "/dashboard";
 
-    window.location.href = redirectUrl; // ✅ Redirect manually
+    window.location.href = redirectUrl;
 
     if (!res.ok) {
       setError(
@@ -50,8 +48,29 @@ const SignIn = () => {
   };
 
   return (
-    <div className="ml-[-16rem] flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-500 via-pink-300 to-indigo-300">
-      {/* Background Overlay */}
+    <div className="ml-[-16rem] relative flex min-h-screen items-center justify-center overflow-hidden">
+      {/* Logo at Top-Left */}
+      {/* <div className="absolute top-6 left-6 z-50">
+        <Image
+          src="/logo/webomo_white_4kpx.png" // ✅ Correct path
+          alt="Webomo Logo"
+          width={150}
+          height={50}
+          className="w-auto h-12 sm:h-16"
+          priority
+        />
+      </div> */}
+
+      {/* Animated Gradient Background */}
+      <div
+        className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-pink-300 to-indigo-300 
+                  bg-[length:400%_400%] animate-gradientMorph"
+      ></div>
+
+      {/* 🎨 Noise Texture Overlay */}
+      <div className="absolute inset-0 bg-[url('/noise.png')] opacity-30 mix-blend-overlay pointer-events-none"></div>
+
+      {/* 🌓 Background Overlay for Blur & Contrast */}
       <div className="absolute inset-0 bg-black bg-opacity-30 backdrop-blur-xl"></div>
 
       {/* Animated Login Card */}
@@ -61,11 +80,19 @@ const SignIn = () => {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="relative z-10 w-full max-w-lg rounded-3xl bg-white/10 p-10 shadow-2xl backdrop-blur-lg border border-white/20"
       >
-        {/* Logo */}
+        {/* Logo in the Center */}
         <div className="text-center mb-6">
-          <h1 className="text-4xl font-extrabold text-white tracking-wide">
+          {/* <h1 className="text-3xl font-extrabold text-white tracking-wide">
             Webomo Business
-          </h1>
+          </h1> */}
+          <Image
+            src="/logo/webomo_white_4kpx.png" // ✅ Correct path
+            alt="Webomo Logo"
+            width={1000}
+            height={500}
+            className="w-auto h-12 sm:h-24 mx-auto"
+            priority
+          />
           <p className="text-sm text-gray-300 mt-2">
             Willkommen zurück! Melden Sie sich an, um fortzufahren.
           </p>
@@ -110,7 +137,7 @@ const SignIn = () => {
           <button
             type="submit"
             className={`btn w-full rounded-full text-white text-lg font-bold transition-all ${
-              loading ? "bg-gray-400 cursor-not-allowed" : "btn-neutral "
+              loading ? "bg-gray-400 cursor-not-allowed" : "btn-neutral"
             }`}
             disabled={loading}
           >

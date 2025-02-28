@@ -1,21 +1,29 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { getSession } from "next-auth/react";
 import CompanyTableRow from "./CompanyTableRow";
 
-const CompanyTable = ({
-  companies,
-  onEdit,
-  onDelete,
-  page,
-  setPage,
-  hasMore,
-}) => {
-  const [users, setUsers] = useState([]); // Store users
-  const [totalCompanies, setTotalCompanies] = useState(0); // ✅ Store the total count of companies
-  const itemsPerPage = 6; // Number of items per page
+const CompanyTable = ({ onEdit, onDelete }) => {
+  const [companies, setCompanies] = useState([]); // ✅ Store API-fetched companies
+  const [users, setUsers] = useState([]); // ✅ Store users
+  const [totalCompanies, setTotalCompanies] = useState(0); // ✅ Store total companies count
+  const [userRole, setUserRole] = useState(null); // ✅ Store user role
+  const [loading, setLoading] = useState(true); // ✅ Add loading state
 
-  // ✅ Fetch users when component mounts
+  // ✅ Fetch session for user role
+  useEffect(() => {
+    const fetchSession = async () => {
+      const session = await getSession();
+      if (session?.user?.role) {
+        setUserRole(session.user.role);
+      }
+    };
+
+    fetchSession();
+  }, []);
+
+  // ✅ Fetch users
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -31,32 +39,36 @@ const CompanyTable = ({
     fetchUsers();
   }, []);
 
-  // ✅ Fetch total number of companies (independent of pagination)
+  // ✅ Fetch companies from API
   useEffect(() => {
-    const fetchTotalCompanies = async () => {
+    const fetchCompanies = async () => {
+      setLoading(true); // ✅ Start loading
       try {
         const res = await fetch("/api/companies/all");
-        if (!res.ok) throw new Error("Fehler beim Laden der Firmenanzahl");
+        if (!res.ok) throw new Error("Fehler beim Laden der Firmen");
         const data = await res.json();
+        setCompanies(data.data || []);
         setTotalCompanies(data.data.length || 0);
       } catch (error) {
-        console.error("Fehler beim Laden der Firmenanzahl:", error);
+        console.error("Fehler beim Laden der Firmen:", error);
+      } finally {
+        setLoading(false); // ✅ Stop loading when done
       }
     };
 
-    fetchTotalCompanies();
+    fetchCompanies();
   }, []);
 
   // ✅ Get user by ID
   const getUserById = (userId) => users.find((u) => u._id === userId);
 
   return (
-    <div className="">
-      <div className="overflow-x-auto">
+    <div className="overflow-x-auto rounded-xl">
+      {/* ✅ Scrollable Table with Fixed Header */}
+      <div className="max-h-[90vh] overflow-auto">
         <table className="table table-xs w-full">
-          <thead>
+          <thead className="sticky top-0 z-10 bg-white  ">
             <tr className="text-sm md:text-md text-base-content border-b border-indigo-300 dark:text-white">
-              {/* ✅ Show Total Companies in Header */}
               <th className="py-3 px-4 text-left">
                 Firmen-Name{" "}
                 <span className="text-gray-400">({totalCompanies})</span>
@@ -83,8 +95,17 @@ const CompanyTable = ({
           </thead>
 
           <tbody>
-            {companies.length === 0 ? (
-              // ✅ No Data Found
+            {loading ? (
+              // ✅ DaisyUI Skeleton Loader while loading
+              Array.from({ length: 5 }).map((_, index) => (
+                <tr key={index}>
+                  <td colSpan="1" className="py-4 text-center">
+                    <div className="skeleton h-6 w-full"></div>
+                  </td>
+                </tr>
+              ))
+            ) : companies.length === 0 ? (
+              // ✅ Only show "No Companies Found" after loading finishes
               <tr>
                 <td colSpan="9" className="py-6 text-center text-gray-500">
                   Keine Firmen gefunden.
@@ -101,37 +122,18 @@ const CompanyTable = ({
                   <CompanyTableRow
                     key={company._id}
                     company={company}
-                    index={(page - 1) * itemsPerPage + index + 1}
+                    index={index + 1} // ✅ Fix index (now global, no pagination)
                     onEdit={onEdit}
                     onDelete={onDelete}
                     manager={manager}
                     markenbotschafter={markenbotschafter}
+                    userRole={userRole} // ✅ Pass user role to table row
                   />
                 );
               })
             )}
           </tbody>
         </table>
-      </div>
-      {/* ✅ Pagination UI */}
-      <div className="flex justify-between items-center mt-6">
-        <button
-          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-          disabled={page === 1}
-          className="btn btn-xs rounded-full px-4 btn-neutral"
-        >
-          ← Zurück
-        </button>
-
-        <span className="text-gray-700 text-xs">Seite {page}</span>
-
-        <button
-          onClick={() => setPage((prev) => prev + 1)}
-          disabled={!hasMore}
-          className="btn btn-xs rounded-full px-4 btn-neutral"
-        >
-          Weiter →
-        </button>
       </div>
     </div>
   );

@@ -125,15 +125,32 @@ const Firmen = () => {
         <div className="overflow-x-auto rounded-lg shadow-sm">
           <table className="table table-xs w-full">
             <thead>
-              <tr className="text-sm md:text-md text-base-content border-b border-indigo-300">
-                <th className="py-3 px-4 text-left">Name</th>
-                <th className="py-3 px-4 text-left">Erstellt am</th>
+              <tr className="text-sm md:text-md text-base-content border-b border-indigo-300 dark:text-white">
+                {/* ✅ Show Total Companies in Header */}
+                <th className="py-3 px-4 text-left">
+                  Firmen-Name{" "}
+                  <span className="text-gray-400 ms-1">
+                    <span className="loading loading-spinner loading-xs"></span>
+                  </span>
+                </th>
+                <th className="py-3 px-4 text-left">Plan</th>
                 <th className="py-3 px-4 text-left hidden md:table-cell">
-                  Status
+                  Preis (CHF)
                 </th>
                 <th className="py-3 px-4 text-left hidden md:table-cell">
-                  Aktionen
+                  Inhaber
                 </th>
+                <th className="py-3 px-4 text-left hidden md:table-cell">
+                  Manager
+                </th>
+                <th className="py-3 px-4 text-left hidden md:table-cell">
+                  Markenbotschafter
+                </th>
+                <th className="py-3 px-4 text-left">Ablauf</th>
+                <th className="py-3 px-4 text-left hidden md:table-cell">
+                  Provision (CHF)
+                </th>
+                <th className="py-3 px-4 text-center">Aktion</th>
               </tr>
             </thead>
             <tbody>
@@ -142,9 +159,9 @@ const Firmen = () => {
                   key={index}
                   className="animate-pulse border-b border-gray-200"
                 >
-                  {[...Array(4)].map((_, i) => (
+                  {[...Array(9)].map((_, i) => (
                     <td key={i} className="py-4 px-4">
-                      <div className="h-4 w-24 bg-gray-300 rounded"></div>
+                      <div className="h-4 w-24 bg-gray-300 rounded-full"></div>
                     </td>
                   ))}
                 </tr>
