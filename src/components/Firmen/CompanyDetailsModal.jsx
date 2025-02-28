@@ -17,7 +17,7 @@ const CompanyDetailsModal = ({ company, onClose }) => {
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-4">
           <h3 className="text-2xl font-bold text-base-content">
-            🏢 {company.company_name}
+            {company.company_name}
           </h3>
         </div>
 
@@ -171,7 +171,7 @@ const CompanyDetailsModal = ({ company, onClose }) => {
             onClick={onClose}
             className="btn btn-sm btn-neutral rounded-full"
           >
-            Schließen
+            Schliessen
           </button>
         </div>
       </motion.div>

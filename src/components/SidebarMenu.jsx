@@ -40,14 +40,14 @@ const SidebarMenu = () => {
   const isAdmin = user?.role === "admin";
 
   const menuItems = [
-    { title: "Home", href: "/dashboard", icon: <FaHome />, disabled: !isAdmin },
+    { title: "Home", href: "/dashboard", icon: <FaHome /> },
 
     // Admin-only pages (Disabled for non-admins)
     {
       title: "Firmen",
       href: "/dashboard/firmen",
       icon: <FaBuilding />,
-      disabled: !isAdmin, // Disable for non-admins
+      // Disable for non-admins
     },
     {
       title: "Demo Calls",
@@ -59,7 +59,7 @@ const SidebarMenu = () => {
       title: "Umsatz",
       href: "/dashboard/umsatz",
       icon: <FaChartBar />,
-      disabled: !isAdmin, // Disable for non-admins
+      // Disable for non-admins
     },
     {
       title: "Team",
