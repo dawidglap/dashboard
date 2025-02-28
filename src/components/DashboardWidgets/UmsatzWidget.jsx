@@ -86,7 +86,7 @@ const UmsatzWidget = () => {
 
   return (
     <div className="border-2 border-white p-6 rounded-xl shadow-xl flex flex-col h-full">
-      <Link href="/dashboard/earnings" className="flex flex-col space-y-4">
+      <Link href="/dashboard/umsatz" className="flex flex-col space-y-4">
         {/* ✅ Umsatz Title */}
         <div>
           <h2 className="text-lg font-semibold text-gray-800 dark:text-white">

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { FaPlus } from "react-icons/fa";
+import { getSession } from "next-auth/react";
+
 import CompanyTable from "../../../components/Firmen/CompanyTable";
 import DeleteCompanyModal from "../../../components/Firmen/DeleteCompanyModal";
 import NewCompanyModal from "../../../components/Firmen/NewCompanyModal";
@@ -10,6 +12,7 @@ import ToastNotification from "../../../components/Firmen/ToastNotification";
 
 const Firmen = () => {
   const [companies, setCompanies] = useState(null); // ✅ Prevent SSR issues
+  const [userRole, setUserRole] = useState(null); // ✅ Store user role
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [companyToDelete, setCompanyToDelete] = useState(null);
@@ -22,14 +25,25 @@ const Firmen = () => {
   const [hasMore, setHasMore] = useState(true);
   const companiesPerPage = 6;
 
+  // ✅ Fetch user session for role checking
+  useEffect(() => {
+    const fetchSession = async () => {
+      const session = await getSession();
+      if (session?.user?.role) {
+        setUserRole(session.user.role);
+      }
+    };
+
+    fetchSession();
+  }, []);
+
   // ✅ Fetch Companies with Pagination
   useEffect(() => {
     const fetchCompanies = async () => {
       setLoading(true);
       try {
-        const res = await fetch(
-          `/api/companies?page=${page}&limit=${companiesPerPage}`
-        );
+        const res = await fetch("/api/companies/all"); // Fetch all companies without pagination
+
         if (!res.ok) throw new Error("Fehler beim Abrufen der Firmen-Daten.");
         const data = await res.json();
         setCompanies(data.data || []);
@@ -178,9 +192,11 @@ const Firmen = () => {
         <h1 className=" text-3xl mt-8 md:text-4xl font-extrabold text-base-content dark:text-white">
           Firmen
         </h1>
+
         <button
           onClick={() => setShowModal(true)}
-          className=" btn btn-neutral px-4 hover:text-white btn-sm dark:text-white dark:hover:bg-slate-900 flex mt-auto rounded-full items-center space-x-2"
+          disabled={userRole !== "admin"}
+          className="btn btn-neutral px-4 hover:text-white btn-sm dark:text-white dark:hover:bg-slate-900 flex rounded-full items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <FaPlus />
           <span>Neue Firma</span>

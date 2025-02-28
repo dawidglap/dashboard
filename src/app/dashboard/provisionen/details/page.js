@@ -36,7 +36,12 @@ const ProvisionenDetails = () => {
     fetchUserAndCommissions();
   }, []);
 
-  if (loading) return <p>Loading commission data...</p>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <span className="loading loading-ring loading-lg"></span>
+      </div>
+    );
   if (error) return <p className="text-red-500">Error: {error}</p>;
 
   // ✅ Define the redirect button based on user role

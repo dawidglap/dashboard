@@ -1,71 +1,77 @@
 import { connectToDatabase } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function GET(req) {
   try {
     const { db } = await connectToDatabase();
 
-    // 🔹 Get the user from `/api/users/me`
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_URL || "https://business.webomo.ch";
-    const sessionRes = await fetch(`${baseUrl}/api/users/me`, {
-      headers: req.headers,
-    });
+    // ✅ Fetch session directly (instead of fetching `/api/users/me`)
+    const session = await getServerSession(authOptions);
 
-    if (!sessionRes.ok) {
+    if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const sessionData = await sessionRes.json();
-    const user = sessionData.user;
+    // ✅ Get user data from database based on session email
+    const user = await db
+      .collection("users")
+      .findOne({ email: session.user.email });
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 🔹 Fetch all companies
+    // ✅ Fetch all companies
     const companies = await db.collection("companies").find().toArray();
     let commissions = [];
 
     for (const company of companies) {
-      const managerId = company.manager_id.toString();
-      const markenbotschafterId = company.markenbotschafter_id.toString();
+      // ✅ Ensure `manager_id` and `markenbotschafter_id` exist before calling `.toString()`
+      const managerId = company.manager_id?.toString();
+      const markenbotschafterId = company.markenbotschafter_id?.toString();
       const userId = user._id.toString();
 
       // ✅ Fetch manager details
-      const manager = await db
-        .collection("users")
-        .findOne(
-          { _id: new ObjectId(managerId) },
-          { projection: { name: 1, surname: 1 } }
-        );
+      const manager = managerId
+        ? await db
+            .collection("users")
+            .findOne(
+              { _id: new ObjectId(managerId) },
+              { projection: { name: 1, surname: 1 } }
+            )
+        : null;
 
       // ✅ Fetch markenbotschafter details
-      const markenbotschafter = await db
-        .collection("users")
-        .findOne(
-          { _id: new ObjectId(markenbotschafterId) },
-          { projection: { name: 1, surname: 1 } }
-        );
+      const markenbotschafter = markenbotschafterId
+        ? await db
+            .collection("users")
+            .findOne(
+              { _id: new ObjectId(markenbotschafterId) },
+              { projection: { name: 1, surname: 1 } }
+            )
+        : null;
 
       // ✅ Extract Startdatum (Company Creation Date)
       const startDate = company.created_at
-        ? new Date(company.created_at).toLocaleDateString("de-DE")
+        ? new Date(company.created_at).toISOString().split("T")[0] // ✅ Always ensure correct ISO format (YYYY-MM-DD)
         : "Kein Datum";
 
       // ✅ Calculate Zahlungsdatum (Payment Date: 25th of the next month)
       let zahlungsdatum = "Invalid Date";
       if (company.created_at) {
         const createdAt = new Date(company.created_at);
-        zahlungsdatum = new Date(
+        const paymentDate = new Date(
           createdAt.getFullYear(),
           createdAt.getMonth() + 1,
           25
-        ).toLocaleDateString("de-DE");
+        );
+        zahlungsdatum = paymentDate.toISOString().split("T")[0]; // ✅ Convert to YYYY-MM-DD
       }
 
-      // ✅ Commission logic: Admin sees everything, others see only theirs
+      // ✅ Commission logic: Admin sees everything, others see only their own
       if (user.role === "admin") {
         commissions.push(
           {
