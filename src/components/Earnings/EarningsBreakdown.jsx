@@ -6,7 +6,7 @@ const EarningsBreakdown = () => {
   ];
 
   return (
-    <div className="bg-base-100 p-4 rounded-2xl border-l-2 border-b-2 border-green-200 shadow-lg">
+    <div className="bg-base-100 p-4 border-2 border-white  bg-transparent rounded-xl shadow-xl">
       <h2 className="text-xl font-bold mb-4">Umsatzübersicht nach Plan</h2>
       <table className="w-full text-left">
         <thead>

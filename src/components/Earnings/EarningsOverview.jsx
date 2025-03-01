@@ -3,7 +3,7 @@ const EarningsOverview = ({ chartData = [], timeframeLabel }) => {
 
   if (!chartData.length) {
     return (
-      <div className="bg-base-100 border-l-2 border-b-2 border-black p-4 rounded-2xl shadow-lg">
+      <div className="border-2 border-white  p-4 bg-transparent rounded-xl shadow-xl">
         <h1 className="text-xl font-bold">Bruttoumsatz ({timeframeLabel})</h1>
         <p className="text-3xl font-semibold text-gray-400">
           Daten werden geladen...
@@ -31,7 +31,7 @@ const EarningsOverview = ({ chartData = [], timeframeLabel }) => {
   const nettoUmsatz = bruttoUmsatz - steuer;
 
   return (
-    <div className="bg-base-100 border-l-2 border-b-2 border-black p-4 rounded-2xl shadow-lg">
+    <div className="border-2 border-white  bg-transparent rounded-xl shadow-xl p-4">
       <h1 className="text-xl font-bold">Bruttoumsatz ({timeframeLabel})</h1>
       <p className="text-3xl font-semibold">
         CHF {Math.round(bruttoUmsatz).toLocaleString("de-DE")}

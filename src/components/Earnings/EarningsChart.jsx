@@ -21,7 +21,7 @@ const EarningsChart = ({ chartData, timeframe }) => {
       : "Jahr";
 
   return (
-    <div className="bg-base-100 p-4 rounded-2xl shadow-lg border-b-2 border-indigo-400 ">
+    <div className="border-2 border-white  p-4 bg-transparent rounded-xl shadow-xl ">
       <h2 className="text-xl font-bold mb-4">Umsatz über die Zeit</h2>
       <ResponsiveContainer width="100%" height={320}>
         <AreaChart
@@ -71,7 +71,7 @@ const EarningsChart = ({ chartData, timeframe }) => {
             stroke=" #a5b4fc"
             strokeWidth={2}
             fill="url(#colorEarnings)"
-            dot={{ r: 4, strokeWidth: 2, fill: " #818cf8" }}
+            dot={{ r: 3, strokeWidth: 2, fill: " #818cf8" }}
             activeDot={{ r: 6, fill: " #4338ca" }}
           />
 

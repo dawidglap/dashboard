@@ -9,7 +9,7 @@ import EarningsBreakdown from "@/components/Earnings/EarningsBreakdown";
 import GrowthRateWidget from "@/components/Earnings/GrowthRateWidget";
 
 const Earnings = () => {
-  const [timeframe, setTimeframe] = useState("monthly"); // Default to monthly
+  const [timeframe, setTimeframe] = useState("daily"); // Default to monthly
   const { chartData, bruttoUmsatz, lastMonthUmsatz, loading, error } =
     useFetchEarnings(timeframe);
 
@@ -31,7 +31,7 @@ const Earnings = () => {
     }[timeframe] || "Zeitraum"; // ✅ Default fallback
 
   return (
-    <div className="p-6 grid grid-cols-12 gap-4">
+    <div className="p-6 grid grid-cols-12 gap-4 bg-gradient-to-br from-indigo-50 via-pink-50 to-blue-50 bg-white/30 dark:bg-slate-800/30 backdrop-blur-lg shadow-xl">
       {/* ✅ Timeframe Selector with Framer Motion */}
       <div className="col-span-12 flex justify-end mb-4">
         <div className="flex space-x-2 bg-base-200 p-2 px-6 rounded-full shadow">
