@@ -187,7 +187,7 @@ const Firmen = () => {
     );
 
   return (
-    <div className="px-4 md:px-12">
+    <div className="px-4 md:px-12 ">
       <div className="flex justify-between items-center mb-8">
         <h1 className=" text-3xl mt-8 md:text-4xl font-extrabold text-base-content dark:text-white">
           Firmen

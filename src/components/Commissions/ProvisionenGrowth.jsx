@@ -2,7 +2,7 @@ import { FaArrowTrendUp, FaArrowTrendDown } from "react-icons/fa6";
 
 const ProvisionenGrowth = ({ growthRate = 0, timeframeLabel = "Zeitraum" }) => {
   return (
-    <div className="bg-base-100 p-4 rounded-2xl shadow-lg border-l-2 border-b-2 border-yellow-300 text-center flex flex-col justify-between h-full">
+    <div className="border-2 border-white  p-4 bg-transparent rounded-xl shadow-xl text-center flex flex-col justify-between h-full">
       <div>
         <h2 className="text-sm font-bold">Provisionen Wachstum</h2>
         <p className="text-xs">({timeframeLabel})</p>

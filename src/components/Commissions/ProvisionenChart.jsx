@@ -12,7 +12,7 @@ import {
 const ProvisionenChart = ({ chartData, timeframe }) => {
   if (!chartData || chartData.length < 2) {
     return (
-      <div className="bg-base-100 p-4 rounded-2xl shadow-lg border-b-2 border-green-400 text-center">
+      <div className="border-2 border-white  p-4 bg-transparent rounded-xl shadow-xl text-center">
         <h2 className="text-xl font-bold mb-4">Provisionen über die Zeit</h2>
         <p className="text-gray-500">Nicht genug Daten für das Diagramm.</p>
       </div>
@@ -30,7 +30,7 @@ const ProvisionenChart = ({ chartData, timeframe }) => {
       : "Jahr";
 
   return (
-    <div className="bg-base-100 p-4 rounded-2xl shadow-lg border-b-2 border-green-400">
+    <div className="border-2 border-white  p-4 bg-transparent rounded-xl shadow-xl">
       <h2 className="text-xl font-bold mb-4">Provisionen über die Zeit</h2>
       <ResponsiveContainer width="100%" height={320}>
         <AreaChart

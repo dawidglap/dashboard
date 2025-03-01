@@ -8,7 +8,7 @@ import ProvisionenChart from "@/components/Commissions/ProvisionenChart";
 import ProvisionenGrowth from "@/components/Commissions/ProvisionenGrowth";
 
 const Provisionen = () => {
-  const [timeframe, setTimeframe] = useState("monthly"); // Default to monthly
+  const [timeframe, setTimeframe] = useState("daily"); // Default to monthly
   const { chartData, bruttoProvisionen, commissions, loading, error } =
     useFetchProvisionen(timeframe);
 
@@ -16,7 +16,12 @@ const Provisionen = () => {
   const growthRate = bruttoProvisionen > 0 ? Math.random() * 10 - 5 : 0; // Example: Random % change between -5% and +5%
   // const projectedProvisionen = bruttoProvisionen * 1.1; // Example: +10% growth assumption
 
-  if (loading) return <p>Loading commission data...</p>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <span className="loading loading-ring loading-lg"></span>
+      </div>
+    );
   if (error) return <p className="text-red-500">Error: {error}</p>;
 
   const timeframeLabel = {
@@ -27,10 +32,10 @@ const Provisionen = () => {
   }[timeframe];
 
   return (
-    <div className="p-6 grid grid-cols-12 gap-4">
+    <div className="min-h-screen p-6 grid grid-cols-12 gap-4 bg-gradient-to-br from-indigo-50 via-pink-50 to-blue-50 bg-white/30 dark:bg-slate-800/30 backdrop-blur-lg shadow-xl">
       {/* ✅ Modern Timeframe Selector */}
       <div className="col-span-12 flex justify-end mb-4">
-        <div className="flex space-x-2 bg-base-200 p-2 px-6 rounded-full shadow">
+        <div className="flex h-10 space-x-2 bg-base-200 p-2 px-6 rounded-full shadow">
           {["daily", "weekly", "monthly", "yearly"].map((option) => (
             <button
               key={option}
