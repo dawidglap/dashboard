@@ -67,8 +67,8 @@ const CompanyTable = ({ onEdit, onDelete }) => {
       {/* ✅ Scrollable Table with Fixed Header */}
       <div className="max-h-[90vh] overflow-auto">
         <table className="table table-xs w-full">
-          <thead className="sticky top-0 z-10 bg-white  ">
-            <tr className="text-sm md:text-md text-base-content border-b border-indigo-300 dark:text-white">
+          <thead className="sticky top-0 z-50 bg-white  ">
+            <tr className="text-sm md:text-md text-base-content border-b border-indigo-300 z-10 dark:text-white">
               <th className="py-3 px-4 text-left">
                 Firmen-Name{" "}
                 <span className="text-gray-400">({totalCompanies})</span>

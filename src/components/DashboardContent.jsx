@@ -9,7 +9,7 @@ import DemoCallsWidget from "./DashboardWidgets/DemoCallsWidget";
 import TeamWidget from "./DashboardWidgets/TeamWidget";
 import TasksWidget from "./DashboardWidgets/TasksWidget";
 
-const DashboardContent = ({ user }) => {
+const DashboardContent = ({ user, companies }) => {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -19,16 +19,20 @@ const DashboardContent = ({ user }) => {
     return () => clearInterval(interval);
   }, []);
 
+  const isAdmin = user?.role === "admin";
+  const isManager = user?.role === "manager";
+  const isMarkenbotschafter = user?.role === "markenbotschafter";
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="h-screen p-6 flex-1  bg-gradient-to-br from-indigo-50 via-pink-50 to-blue-50 bg-white/30 dark:bg-slate-800/30 backdrop-blur-lg shadow-xl "
+      className="h-screen p-6 flex-1 bg-gradient-to-br from-indigo-50 via-pink-50 to-blue-50 bg-white/30 dark:bg-slate-800/30 backdrop-blur-lg shadow-xl"
     >
       {/* Header Section */}
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">
           Willkommen zurück{user?.name ? `, ${user.name}` : ""}!
         </h1>
         <div className="text-right">
@@ -46,7 +50,7 @@ const DashboardContent = ({ user }) => {
         </div>
       </div>
 
-      {/* 🚀 Bento Grid Layout: Improved Sizing & Balance */}
+      {/* 🚀 Bento Grid Layout */}
       <motion.div
         className="grid grid-cols-12 gap-6"
         initial="hidden"
@@ -59,7 +63,7 @@ const DashboardContent = ({ user }) => {
           },
         }}
       >
-        {/* Umsatz - Large Widget */}
+        {/* Umsatz (Always Visible) */}
         <motion.div
           variants={{
             hidden: { opacity: 0, y: 20 },
@@ -70,7 +74,7 @@ const DashboardContent = ({ user }) => {
           <UmsatzWidget />
         </motion.div>
 
-        {/* Provisionen - Large Widget */}
+        {/* Provisionen (Always Visible) */}
         <motion.div
           variants={{
             hidden: { opacity: 0, y: 20 },
@@ -81,7 +85,7 @@ const DashboardContent = ({ user }) => {
           <ProvisionenWidget />
         </motion.div>
 
-        {/* Firmen - Medium Widget */}
+        {/* Firmen (Filtered for Managers/Markenbotschafters) */}
         <motion.div
           variants={{
             hidden: { opacity: 0, y: 20 },
@@ -89,21 +93,23 @@ const DashboardContent = ({ user }) => {
           }}
           className="col-span-12 sm:col-span-6 md:col-span-3"
         >
-          <FirmenWidget />
+          <FirmenWidget companies={companies} />
         </motion.div>
 
-        {/* Demo Calls - Medium Widget */}
-        <motion.div
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            visible: { opacity: 1, y: 0 },
-          }}
-          className="col-span-12 sm:col-span-6 md:col-span-3"
-        >
-          <DemoCallsWidget />
-        </motion.div>
+        {/* Demo Calls (Only for Admins) */}
+        {isAdmin && (
+          <motion.div
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0 },
+            }}
+            className="col-span-12 sm:col-span-6 md:col-span-3"
+          >
+            <DemoCallsWidget />
+          </motion.div>
+        )}
 
-        {/* Team - Small Widget */}
+        {/* Team (Handled later) */}
         <motion.div
           variants={{
             hidden: { opacity: 0, y: 20 },
@@ -114,7 +120,7 @@ const DashboardContent = ({ user }) => {
           <TeamWidget />
         </motion.div>
 
-        {/* Tasks - Small Widget */}
+        {/* Tasks (Always Visible) */}
         <motion.div
           variants={{
             hidden: { opacity: 0, y: 20 },
