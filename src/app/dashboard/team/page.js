@@ -77,7 +77,12 @@ const Team = () => {
     setCurrentUser(null);
   };
 
-  if (loading) return <p className="text-center text-lg">Lädt...</p>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <span className="loading loading-ring loading-lg"></span>
+      </div>
+    );
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (

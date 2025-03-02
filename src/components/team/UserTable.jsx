@@ -14,6 +14,7 @@ const UserTable = ({ onDelete }) => {
   const [selectedTeamMember, setSelectedTeamMember] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [filter, setFilter] = useState(""); // ✅ Filter state
   const containerRef = useRef(null);
   const fetchedIds = useRef(new Set()); // ✅ Prevent duplicate entries
 
@@ -24,11 +25,12 @@ const UserTable = ({ onDelete }) => {
         const response = await fetch("/api/users");
         const data = await response.json();
         if (data.success) {
-          const uniqueUsers = data.users.filter(
-            (user) => !fetchedIds.current.has(user._id)
-          );
-          uniqueUsers.forEach((u) => fetchedIds.current.add(u._id));
-          setUsers(uniqueUsers);
+          setUsers((prevUsers) => {
+            const uniqueUsers = data.users.filter(
+              (user) => !prevUsers.some((u) => u._id === user._id)
+            );
+            return [...prevUsers, ...uniqueUsers];
+          });
         }
       } catch (error) {
         console.error("❌ Error fetching users:", error);
@@ -46,16 +48,19 @@ const UserTable = ({ onDelete }) => {
     setLoadingMore(true);
 
     try {
-      const res = await fetch(`/api/users?cursor=${users.length}`);
-      if (!res.ok) throw new Error("Fehler beim Abrufen weiterer Benutzer.");
+      const res = await fetch(`/api/users`);
       const data = await res.json();
 
-      const newUsers = data.users.filter(
-        (user) => !fetchedIds.current.has(user._id)
-      );
-
-      newUsers.forEach((u) => fetchedIds.current.add(u._id));
-      setUsers((prev) => [...prev, ...newUsers]);
+      if (data.users && Array.isArray(data.users)) {
+        setUsers((prevUsers) => {
+          const newUsers = data.users.filter(
+            (user) => !prevUsers.some((u) => u._id === user._id)
+          );
+          return [...prevUsers, ...newUsers];
+        });
+      } else {
+        console.error("❌ API returned unexpected format:", data);
+      }
     } catch (err) {
       console.error("❌ Fehler beim Laden weiterer Benutzer:", err);
     } finally {
@@ -86,8 +91,61 @@ const UserTable = ({ onDelete }) => {
     };
   }, [users]);
 
+  // ✅ Apply Filtering on Already Loaded Data (No API call needed for now)
+  const filteredUsers = filter
+    ? users.filter((user) =>
+        user.name.toLowerCase().includes(filter.toLowerCase())
+      )
+    : users;
+
   return (
     <>
+      {/* ✅ Filter Dropdown & Total Count */}
+      <div className="flex justify-between items-center mb-4">
+        {/* 🔹 User Filter Dropdown */}
+        <select
+          className="p-2 px-4 my-2 ms-1 w-44 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        >
+          <option value="">Alle Mitglieder</option>
+          {[...new Set(users.map((u) => u.name))].map((name, i) => (
+            <option key={i} value={name}>
+              {name}
+            </option>
+          ))}
+        </select>
+        <div className="flex space-x-2">
+          {/* 🔹 Total Manager & Markenbotschafter Count */}
+          <p className="p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300">
+            Business Partners:{" "}
+            <span className="text-indigo-600 font-bold">
+              {filteredUsers.filter((user) => user.role === "manager").length}
+            </span>
+          </p>
+
+          <p className="p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300">
+            Markenbotschafter:{" "}
+            <span className="text-indigo-600 font-bold">
+              {
+                filteredUsers.filter(
+                  (user) => user.role === "markenbotschafter"
+                ).length
+              }
+            </span>
+          </p>
+
+          {/* 🔹 Total Team Count (Filtered & All) */}
+          <p className="p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300">
+            Team Mitglieder:{" "}
+            <span className="text-indigo-600 font-bold">
+              {filteredUsers.length}
+            </span>
+          </p>
+        </div>
+      </div>
+
+      {/* ✅ Scrollable Table with Fixed Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -106,7 +164,7 @@ const UserTable = ({ onDelete }) => {
             </tr>
           </thead>
           <tbody>
-            {users.map((user, index) => (
+            {filteredUsers.map((user, index) => (
               <tr
                 key={`${user._id}-${index}`} // ✅ Unique key fix
                 className="border-b border-gray-200 dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition text-sm"
