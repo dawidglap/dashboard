@@ -47,7 +47,7 @@ const TeamWidget = () => {
   return (
     <div className="relative border-white border-2 dark:bg-slate-800 p-6 rounded-2xl shadow-lg text-gray-800 dark:text-white flex flex-col justify-between h-full">
       <div>
-        <h2 className="text-lg font-semibold">Team</h2>
+        <h2 className="text-lg font-extrabold">Team</h2>
         <p className="text-4xl font-extrabold mt-1">
           {loading ? (
             <span className="skeleton h-8 w-10 bg-gray-300 dark:bg-gray-600 rounded animate-pulse"></span>

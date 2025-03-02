@@ -28,7 +28,7 @@ const DashboardContent = ({ user, companies }) => {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="h-screen p-6 flex-1 bg-gradient-to-br from-indigo-50 via-pink-50 to-blue-50 bg-white/30 dark:bg-slate-800/30 backdrop-blur-lg shadow-xl"
+      className="min-h-screen p-6 flex-1 bg-gradient-to-br from-indigo-50 via-pink-50 to-blue-50 bg-white/30 dark:bg-slate-800/30 backdrop-blur-lg shadow-xl"
     >
       {/* Header Section */}
       <div className="flex justify-between items-center mb-8">
@@ -103,7 +103,7 @@ const DashboardContent = ({ user, companies }) => {
               hidden: { opacity: 0, y: 20 },
               visible: { opacity: 1, y: 0 },
             }}
-            className="col-span-12 sm:col-span-6 md:col-span-3"
+            className="col-span-12 sm:col-span-6 md:col-span-4"
           >
             <DemoCallsWidget />
           </motion.div>
@@ -126,7 +126,7 @@ const DashboardContent = ({ user, companies }) => {
             hidden: { opacity: 0, y: 20 },
             visible: { opacity: 1, y: 0 },
           }}
-          className="col-span-12 sm:col-span-6 md:col-span-6"
+          className="col-span-12 sm:col-span-6 md:col-span-5"
         >
           <TasksWidget />
         </motion.div>

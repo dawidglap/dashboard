@@ -29,6 +29,7 @@ export async function GET(req, { params }) {
           user_postcode: 1,
           user_city: 1,
           subscription_expiration: 1,
+          referralId: 1, // ✅ Include referralId in projection
         },
       }
     );
@@ -37,7 +38,20 @@ export async function GET(req, { params }) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, user }, { status: 200 });
+    // ✅ Generate the referral link
+    const referralId = user.referralId || id; // Use referralId if exists, fallback to userId
+    const referralLink = `https://webomo.ch/ref/${referralId}`;
+
+    return NextResponse.json(
+      {
+        success: true,
+        user: {
+          ...user,
+          referralLink, // ✅ Add referral link to response
+        },
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("❌ Error fetching user:", error);
     return NextResponse.json(

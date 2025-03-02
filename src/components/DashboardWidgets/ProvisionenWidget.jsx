@@ -26,13 +26,17 @@ const ProvisionenWidget = () => {
   }, []);
 
   if (loading)
-    return <div className=" p-4 rounded-xl shadow-lg">Loading...</div>;
+    return (
+      <div className="flex justify-center py-4">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
   if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
   return (
     <div className="border-2 border-white p-4 rounded-xl shadow-xl  flex flex-col h-full">
       <Link href="/dashboard/provisionen" className="flex flex-col space-y-4">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+        <h2 className="text-lg font-extrabold text-gray-800 dark:text-white">
           Provisionen
         </h2>
         <p className="text-2xl font-bold text-indigo-500">

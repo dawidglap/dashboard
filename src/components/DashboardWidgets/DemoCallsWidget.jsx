@@ -90,7 +90,7 @@ const DemoCallsWidget = () => {
         href="/dashboard/demo-calls"
         className=" inline-flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-purple-500 px-4 py-2 text-white shadow-lg transition-all duration-300 hover:bg-opacity-90 dark:from-indigo-500 dark:to-purple-400"
       >
-        Anrufe anzeigen →
+        Demo-calls anzeigen →
       </Link>
     </div>
   );

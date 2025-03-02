@@ -69,7 +69,7 @@ const TasksWidget = () => {
     <div className="relative  border-white border-2 p-6 rounded-2xl shadow-xl flex flex-col justify-between h-full">
       {/* ✅ Header */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-800">Aufgaben</h2>
+        <h2 className="text-lg font-extrabold text-gray-800">Aufgaben</h2>
         <p className="text-4xl font-extrabold mt-1">
           {loading ? (
             <span className="skeleton h-8 w-10 bg-gray-300 rounded animate-pulse"></span>

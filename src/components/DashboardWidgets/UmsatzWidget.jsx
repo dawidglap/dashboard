@@ -104,7 +104,7 @@ const UmsatzWidget = () => {
           </p>
 
           {/* ✅ Show comparison (optional) */}
-          <p className="text-sm text-gray-600 flex items-center">
+          {/* <p className="text-sm text-gray-600 flex items-center">
             Vergleich:{" "}
             {comparisonToLastMonth > 0 ? (
               <FaArrowUp className="text-green-500 ml-1" />
@@ -114,7 +114,7 @@ const UmsatzWidget = () => {
               <FaEquals className="text-gray-500 ml-1" />
             )}
             {comparisonToLastMonth}%
-          </p>
+          </p> */}
         </div>
 
         {/* ✅ Umsatz Mini Chart */}
