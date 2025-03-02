@@ -40,7 +40,7 @@ export async function GET(req, { params }) {
 
     // ✅ Generate the referral link
     const referralId = user.referralId || id; // Use referralId if exists, fallback to userId
-    const referralLink = `https://webomo.ch/ref/${referralId}`;
+    const referralLink = `https://business.webomo.ch/ref/${referralId}`;
 
     return NextResponse.json(
       {
