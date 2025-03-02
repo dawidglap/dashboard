@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useSession } from "next-auth/react";
 import NewTaskModal from "../../../components/Tasks/NewTaskModal";
 import TaskRow from "../../../components/Tasks/TaskRow";
@@ -130,22 +130,31 @@ const Tasks = () => {
   };
 
   // ✅ Call this function inside `useEffect` for scrolling:
+  const tableContainerRef = useRef(null);
+
   useEffect(() => {
     const handleScroll = () => {
       if (loading || !hasMore) return;
+      const container = tableContainerRef.current;
+      if (!container) return;
 
-      const scrollPosition =
-        window.innerHeight + document.documentElement.scrollTop;
-      const pageHeight = document.documentElement.offsetHeight;
-
-      if (scrollPosition >= pageHeight - 100) {
-        fetchTasks(); // ✅ Now fetches even with filters
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      if (scrollTop + clientHeight >= scrollHeight - 100) {
+        fetchTasks(); // ✅ Trigger fetch when near bottom
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [loading, hasMore, filters]); // ✅ Added `filters` dependency
+    const container = tableContainerRef.current;
+    if (container) {
+      container.addEventListener("scroll", handleScroll);
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [loading, hasMore, filters]);
 
   useEffect(() => {
     if (Object.values(filters).some((filter) => filter !== "")) {
@@ -397,76 +406,81 @@ const Tasks = () => {
           />
         )}
 
-        <table className="table w-full  border-b border-gray-200 ">
-          <thead className=" text-gray-700 text-sm border-b">
-            <tr>
-              <th className="py-3 px-4 w-6">
-                <input
-                  type="checkbox"
-                  checked={allSelected}
-                  onChange={handleSelectAll}
-                  className="checkbox checkbox-sm rounded-full"
-                />
-              </th>
-              <th className="py-3 px-4 text-left text-lg font-bold w-6">!</th>{" "}
-              {/* Priority column */}
-              <th className="py-3 px-4 text-left w-auto">Titel</th>
-              <th className="py-3 px-4 text-left w-44">Status</th>
-              <th className="py-3 px-4 text-left w-40">Zugewiesen an</th>
-              <th className="py-3 px-4 text-left w-32">Rolle</th>
-              <th className="py-3 px-4 text-left w-28">Fällig am</th>
-              <th className="py-3 px-4 text-left w-28">Erstellt am</th>
-              <th className="py-3 px-4 text-center w-6">Aktion</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {filteredTasks
-              .filter(
-                (task) =>
-                  !filters.assignedToFilter ||
-                  task?.assignedTo?._id === filters.assignedToFilter
-              ) // ✅ Apply filter
-
-              .map((task, index) => {
-                if (!task?._id) {
-                  console.warn("⚠️ Skipping task with missing _id:", task);
-                  return null; // ✅ Skip rendering if _id is missing
-                }
-
-                return (
-                  <TaskRow
-                    key={task._id || `temp-${index}`}
-                    task={task}
-                    user={user}
-                    onUpdate={(taskId, updatedTask) => {
-                      setTasks((prevTasks) =>
-                        prevTasks.map((t) =>
-                          t._id === taskId ? updatedTask : t
-                        )
-                      );
-                    }}
-                    onDelete={confirmDelete}
-                    openDropdownId={openDropdownId}
-                    setOpenDropdownId={setOpenDropdownId}
-                    assignedTo={
-                      task?.assignedTo && typeof task.assignedTo === "object"
-                        ? task.assignedTo
-                        : {
-                            _id: "unassigned",
-                            name: "Nicht zugewiesen",
-                            role: "Unbekannt",
-                          }
-                    }
-                    dueDate={task?.dueDate ?? "Kein Datum"}
-                    createdAt={task?.createdAt ?? "Unbekannt"}
-                    onSelectTask={handleTaskSelect}
-                    isSelected={selectedTasks.includes(task._id)}
+        <div
+          ref={tableContainerRef}
+          className="overflow-x-auto max-h-[80vh] overflow-auto rounded-lg "
+        >
+          <table className="table w-full border-b border-gray-200">
+            <thead className="sticky top-0 bg-white dark:bg-gray-900 z-50 shadow-sm ">
+              <tr>
+                <th className="py-3 px-4 w-6">
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    onChange={handleSelectAll}
+                    className="checkbox checkbox-sm rounded-full"
                   />
-                );
-              })}
-          </tbody>
-        </table>
+                </th>
+                <th className="py-3 px-4 text-left text-lg font-bold w-6">!</th>{" "}
+                {/* Priority column */}
+                <th className="py-3 px-4 text-left w-auto">Titel</th>
+                <th className="py-3 px-4 text-left w-44">Status</th>
+                <th className="py-3 px-4 text-left w-40">Zugewiesen an</th>
+                <th className="py-3 px-4 text-left w-32">Rolle</th>
+                <th className="py-3 px-4 text-left w-28">Fällig am</th>
+                <th className="py-3 px-4 text-left w-28">Erstellt am</th>
+                <th className="py-3 px-4 text-center w-6">Aktion</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {filteredTasks
+                .filter(
+                  (task) =>
+                    !filters.assignedToFilter ||
+                    task?.assignedTo?._id === filters.assignedToFilter
+                ) // ✅ Apply filter
+
+                .map((task, index) => {
+                  if (!task?._id) {
+                    console.warn("⚠️ Skipping task with missing _id:", task);
+                    return null; // ✅ Skip rendering if _id is missing
+                  }
+
+                  return (
+                    <TaskRow
+                      key={task._id || `temp-${index}`}
+                      task={task}
+                      user={user}
+                      onUpdate={(taskId, updatedTask) => {
+                        setTasks((prevTasks) =>
+                          prevTasks.map((t) =>
+                            t._id === taskId ? updatedTask : t
+                          )
+                        );
+                      }}
+                      onDelete={confirmDelete}
+                      openDropdownId={openDropdownId}
+                      setOpenDropdownId={setOpenDropdownId}
+                      assignedTo={
+                        task?.assignedTo && typeof task.assignedTo === "object"
+                          ? task.assignedTo
+                          : {
+                              _id: "unassigned",
+                              name: "Nicht zugewiesen",
+                              role: "Unbekannt",
+                            }
+                      }
+                      dueDate={task?.dueDate ?? "Kein Datum"}
+                      createdAt={task?.createdAt ?? "Unbekannt"}
+                      onSelectTask={handleTaskSelect}
+                      isSelected={selectedTasks.includes(task._id)}
+                    />
+                  );
+                })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* ✅ Pagination Controls (Minimalistic & Functional) */}

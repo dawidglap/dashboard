@@ -46,7 +46,7 @@ const ProfileDetails = ({ user }) => {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-gray-700 text-sm font-medium">
-            Straße
+            Strasse
           </label>
           <input
             type="text"
