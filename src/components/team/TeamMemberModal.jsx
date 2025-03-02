@@ -30,7 +30,7 @@ const TeamMemberModal = ({ userId, onClose }) => {
       {/* Close Button (DaisyUI KBD) */}
       <button
         onClick={onClose}
-        className="absolute top-12 right-12 flex items-center space-x-2 text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm"
+        className="absolute top-12 bg-indigo-50 shadow-lg p-2 rounded-full px-4 right-12 flex items-center space-x-2 text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm"
       >
         <span className="font-bold">Klicken oder </span>{" "}
         <kbd className="kbd kbd-sm bg-gradient-to-r from-indigo-300 to-purple-300">
