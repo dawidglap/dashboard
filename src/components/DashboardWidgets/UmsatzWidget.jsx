@@ -20,12 +20,11 @@ const UmsatzWidget = () => {
 
         let totalEarnings = 0;
         let totalNetEarnings = 0;
-        let monthlyEarnings = {};
+        let dailyEarnings = {};
 
-        // ✅ Ensure correct date parsing
         companies.forEach((company) => {
           const date = new Date(company.created_at);
-          const monthYear = `${date.getFullYear()}-${date.getMonth() + 1}`;
+          const dayKey = date.toISOString().split("T")[0]; // Format YYYY-MM-DD
 
           const earnings =
             company.plan === "BASIC"
@@ -36,42 +35,36 @@ const UmsatzWidget = () => {
               ? parseFloat(company.plan_price)
               : 0;
 
-          const commission =
-            company.plan === "BASIC"
-              ? 1000
-              : company.plan === "PRO"
-              ? 1000
-              : company.plan === "BUSINESS"
-              ? 1000
-              : 0;
+          const commission = 1000; // Assume fixed commission
 
           totalEarnings += earnings;
           totalNetEarnings += earnings - commission;
 
-          if (!monthlyEarnings[monthYear]) {
-            monthlyEarnings[monthYear] = 0;
+          if (!dailyEarnings[dayKey]) {
+            dailyEarnings[dayKey] = 0;
           }
-          monthlyEarnings[monthYear] += earnings;
+          dailyEarnings[dayKey] += earnings;
         });
 
-        // ✅ Format chart data correctly
-        const formattedChartData = Object.entries(monthlyEarnings).map(
-          ([month, earnings]) => ({
-            month,
+        const formattedChartData = Object.entries(dailyEarnings).map(
+          ([date, earnings]) => ({
+            period: date,
             earnings,
           })
         );
 
-        // ✅ Calculate last month comparison correctly
-        const currentMonth = new Date();
-        const lastMonth = `${currentMonth.getFullYear()}-${currentMonth.getMonth()}`;
-        const earningsLastMonth = monthlyEarnings[lastMonth] || 0;
+        // ✅ Comparison Calculation
+        const currentDate = new Date();
+        const lastMonthKey = `${currentDate.getFullYear()}-${(
+          "0" +
+          (currentDate.getMonth() + 1)
+        ).slice(-2)}`;
+        const earningsLastMonth = dailyEarnings[lastMonthKey] || 0;
         const comparison =
           earningsLastMonth > 0
             ? ((totalEarnings - earningsLastMonth) / earningsLastMonth) * 100
             : 0;
 
-        // ✅ Set final state values
         setBruttoUmsatz(totalEarnings);
         setNettoUmsatz(totalNetEarnings);
         setComparisonToLastMonth(comparison.toFixed(2));
@@ -89,7 +82,7 @@ const UmsatzWidget = () => {
       <Link href="/dashboard/umsatz" className="flex flex-col space-y-4">
         {/* ✅ Umsatz Title */}
         <div>
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+          <h2 className="text-lg font-extrabold text-gray-800 dark:text-white">
             Umsatz
           </h2>
           <p className="text-2xl font-bold text-green-500">
@@ -110,7 +103,8 @@ const UmsatzWidget = () => {
             )}
           </p>
 
-          {/* <p className="text-sm text-gray-600 flex items-center">
+          {/* ✅ Show comparison (optional) */}
+          <p className="text-sm text-gray-600 flex items-center">
             Vergleich:{" "}
             {comparisonToLastMonth > 0 ? (
               <FaArrowUp className="text-green-500 ml-1" />
@@ -120,15 +114,15 @@ const UmsatzWidget = () => {
               <FaEquals className="text-gray-500 ml-1" />
             )}
             {comparisonToLastMonth}%
-          </p> */}
+          </p>
         </div>
 
-        {/* ✅ Umsatz Mini Chart or "Not Enough Data" Message */}
+        {/* ✅ Umsatz Mini Chart */}
         <div className="h-24 flex items-end justify-center">
-          {chartData.length >= 3 ? (
+          {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData}>
-                <XAxis dataKey="month" hide />
+                <XAxis dataKey="period" hide /> {/* Hide X-Axis Labels */}
                 <Tooltip
                   formatter={(value) => `CHF ${value.toLocaleString("de-DE")}`}
                 />
@@ -140,8 +134,8 @@ const UmsatzWidget = () => {
                     x2="0"
                     y2="1"
                   >
-                    <stop offset="0%" stopColor="#22c55e" stopOpacity={0.7} />
-                    <stop offset="100%" stopColor="#22c55e" stopOpacity={0.1} />
+                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.7} />
+                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0.1} />
                   </linearGradient>
                 </defs>
                 <Area
@@ -158,9 +152,7 @@ const UmsatzWidget = () => {
               <h2 className="text-sm font-bold text-gray-700">
                 Umsatz über die Zeit
               </h2>
-              <p className="text-gray-500 text-xs">
-                Nicht genug Daten für das Diagramm.
-              </p>
+              <p className="text-gray-500 text-xs">Noch keine Daten.</p>
             </div>
           )}
         </div>
