@@ -44,7 +44,7 @@ const SidebarMenu = () => {
 
     // Admin-only pages (Disabled for non-admins)
     {
-      title: "Firmen",
+      title: "Kunden",
       href: "/dashboard/firmen",
       icon: <FaBuilding />,
       // Disable for non-admins

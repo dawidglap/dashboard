@@ -8,6 +8,7 @@ const TasksWidget = () => {
   const [pendingTasks, setPendingTasks] = useState(0);
   const [inProgressTasks, setInProgressTasks] = useState(0);
   const [completedTasks, setCompletedTasks] = useState(0);
+  const [notCompletedTasks, setNotCompletedTasks] = useState(0); // ✅ NEW state
   const [nextDueTask, setNextDueTask] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -32,6 +33,9 @@ const TasksWidget = () => {
         setCompletedTasks(
           tasks.filter((task) => task.status === "done").length
         );
+        setNotCompletedTasks(
+          tasks.filter((task) => task.status === "cannot_complete").length
+        ); // ✅ Count not completed tasks
 
         // ✅ Find the next due task
         const upcomingTask = tasks
@@ -66,7 +70,7 @@ const TasksWidget = () => {
   }, []);
 
   return (
-    <div className="relative  border-white border-2 p-6 rounded-2xl shadow-xl flex flex-col justify-between h-full">
+    <div className="relative border-white border-2 p-6 rounded-2xl shadow-xl flex flex-col justify-between h-full">
       {/* ✅ Header */}
       <div>
         <h2 className="text-lg font-extrabold text-gray-800">Aufgaben</h2>
@@ -81,10 +85,11 @@ const TasksWidget = () => {
         </p>
       </div>
 
-      {/* ✅ Task Breakdown in 3 Columns */}
-      <div className="mt-4 grid grid-cols-3 gap-4 text-sm">
+      {/* ✅ Task Breakdown in 4 Columns */}
+      <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
         {loading ? (
           <>
+            <p className="skeleton h-6 w-full bg-gray-300 rounded animate-pulse"></p>
             <p className="skeleton h-6 w-full bg-gray-300 rounded animate-pulse"></p>
             <p className="skeleton h-6 w-full bg-gray-300 rounded animate-pulse"></p>
             <p className="skeleton h-6 w-full bg-gray-300 rounded animate-pulse"></p>
@@ -92,22 +97,28 @@ const TasksWidget = () => {
         ) : (
           <>
             <p className="text-gray-700 flex items-center">
-              <span className=" font-semibold text-blue-500 mr-1">
+              <span className="font-semibold text-blue-500 mr-1">
                 In Bearbeitung:
               </span>{" "}
-              <strong> {inProgressTasks}</strong>
+              <strong>{inProgressTasks}</strong>
             </p>
-            <p className="text-gray-700 flex justify-center items-center">
-              <span className=" font-semibold text-green-500 mr-1">
+            <p className="text-gray-700 flex  items-center">
+              <span className="font-semibold text-green-500 mr-1">
                 Erledigt:
               </span>{" "}
               <strong>{completedTasks}</strong>
             </p>
-            <p className="text-gray-700 flex justify-end items-center">
-              <span className=" font-semibold text-gray-500 mr-1">
+            <p className="text-gray-700 flex items-center">
+              <span className="font-semibold text-gray-500 mr-1">
                 Ausstehend:
               </span>{" "}
               <strong>{pendingTasks}</strong>
+            </p>
+            <p className="text-gray-700 flex  items-center">
+              <span className="font-semibold text-red-500 mr-1">
+                Nicht abgeschlossen:
+              </span>{" "}
+              <strong>{notCompletedTasks}</strong>
             </p>
           </>
         )}
