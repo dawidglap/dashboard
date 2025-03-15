@@ -16,7 +16,7 @@ const UserSubscriptionInfo = ({ newUser, handleChange }) => {
       </div>
 
       {/* Account Status Toggle */}
-      <label className="flex items-center  justify-between p-0 rounded-full">
+      <label className="flex items-center  justify-end gap-2 p-0 rounded-full">
         <span className="text-sm font-medium">Konto Status</span>
         <input
           type="checkbox"

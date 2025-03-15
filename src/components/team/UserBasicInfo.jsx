@@ -34,7 +34,7 @@ const UserBasicInfo = ({ newUser, handleChange }) => {
 
       {/* Name & Surname */}
       <div className="col-span-2">
-        <label className="text-sm font-medium">Name</label>
+        <label className="text-sm font-medium">Vorname</label>
         <input
           type="text"
           name="name"
