@@ -32,7 +32,7 @@ const ProfileDetails = ({ user }) => {
       {/* Phone Number */}
       <div>
         <label className="block text-gray-700 text-sm font-medium">
-          Telefon
+          Mobile nr.
         </label>
         <input
           type="text"
@@ -68,9 +68,7 @@ const ProfileDetails = ({ user }) => {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-gray-700 text-sm font-medium">
-            Stadt
-          </label>
+          <label className="block text-gray-700 text-sm font-medium">Ort</label>
           <input
             type="text"
             value={user?.user_city || ""}

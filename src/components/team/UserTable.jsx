@@ -6,6 +6,7 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 import { getSession } from "next-auth/react";
 import UserFormModal from "./UserFormModal";
 import TeamMemberModal from "./TeamMemberModal";
+import { FaSyncAlt } from "react-icons/fa"; // ✅ Add this at the top with other imports
 
 const UserTable = ({ onDelete }) => {
   const [users, setUsers] = useState([]); // ✅ Store fetched users
@@ -16,6 +17,8 @@ const UserTable = ({ onDelete }) => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [filter, setFilter] = useState(""); // ✅ Filter state
   const containerRef = useRef(null);
+  const [roleFilter, setRoleFilter] = useState(""); // ✅ Nuovo stato per filtrare per ruolo
+
   const fetchedIds = useRef(new Set()); // ✅ Prevent duplicate entries
   const fetchUsers = async () => {
     try {
@@ -86,56 +89,87 @@ const UserTable = ({ onDelete }) => {
   }, [users]);
 
   // ✅ Apply Filtering on Already Loaded Data (No API call needed for now)
-  const filteredUsers = filter
-    ? users.filter((user) =>
-        user.name.toLowerCase().includes(filter.toLowerCase())
-      )
-    : users;
+  const filteredUsers = users.filter((user) => {
+    const matchesName = filter
+      ? user.name.toLowerCase().includes(filter.toLowerCase())
+      : true;
+
+    const matchesRole = roleFilter ? user.role === roleFilter : true;
+
+    return matchesName && matchesRole;
+  });
 
   return (
     <>
       {/* ✅ Filter Dropdown & Total Count */}
+
       <div className="flex justify-between items-center mb-4">
-        {/* 🔹 User Filter Dropdown */}
-        <select
-          className="p-2 px-4 my-2 ms-1 w-44 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-        >
-          <option value="">Alle Mitglieder</option>
-          {[...new Set(users.map((u) => u.name))].map((name, i) => (
-            <option key={i} value={name}>
-              {name}
-            </option>
-          ))}
-        </select>
+        <div className="flex items-center space-x-2">
+          {/* 🔹 Dropdown for user names */}
+          <select
+            className="p-2 px-4 my-2 ms-1 w-44 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          >
+            <option value="">Alle Mitglieder</option>
+            {[...new Set(users.map((u) => u.name))].map((name, i) => (
+              <option key={i} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+
+          {/* 🔹 Reset button with FaSyncAlt icon */}
+          <button
+            onClick={() => {
+              setFilter("");
+              setRoleFilter("");
+            }}
+            className="btn btn-outline btn-sm rounded-full flex items-center justify-center w-16 px-4 h-[38px]"
+            title="Filter zurücksetzen"
+          >
+            <FaSyncAlt className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* 🔹 Role filter buttons */}
         <div className="flex space-x-2">
-          {/* 🔹 Total Manager & Markenbotschafter Count */}
-          <p className="p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300">
+          <button
+            onClick={() => setRoleFilter("")}
+            className={`p-2 px-4 text-sm rounded-full border ${
+              roleFilter === ""
+                ? "bg-indigo-600 text-white"
+                : "bg-indigo-50 text-gray-700"
+            }`}
+          >
+            Alle Mitglieder: <span className="font-bold">{users.length}</span>
+          </button>
+          <button
+            onClick={() => setRoleFilter("manager")}
+            className={`p-2 px-4 text-sm rounded-full border ${
+              roleFilter === "manager"
+                ? "bg-indigo-600 text-white"
+                : "bg-indigo-50 text-gray-700"
+            }`}
+          >
             Business Partners:{" "}
-            <span className="text-indigo-600 font-bold">
-              {filteredUsers.filter((user) => user.role === "manager").length}
+            <span className="font-bold">
+              {users.filter((user) => user.role === "manager").length}
             </span>
-          </p>
-
-          <p className="p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300">
+          </button>
+          <button
+            onClick={() => setRoleFilter("markenbotschafter")}
+            className={`p-2 px-4 text-sm rounded-full border ${
+              roleFilter === "markenbotschafter"
+                ? "bg-indigo-600 text-white"
+                : "bg-indigo-50 text-gray-700"
+            }`}
+          >
             Markenbotschafter:{" "}
-            <span className="text-indigo-600 font-bold">
-              {
-                filteredUsers.filter(
-                  (user) => user.role === "markenbotschafter"
-                ).length
-              }
+            <span className="font-bold">
+              {users.filter((user) => user.role === "markenbotschafter").length}
             </span>
-          </p>
-
-          {/* 🔹 Total Team Count (Filtered & All) */}
-          <p className="p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300">
-            Team Mitglieder:{" "}
-            <span className="text-indigo-600 font-bold">
-              {filteredUsers.length}
-            </span>
-          </p>
+          </button>
         </div>
       </div>
 
@@ -150,7 +184,7 @@ const UserTable = ({ onDelete }) => {
         <table className="table table-xs w-full border-b border-gray-200 dark:border-gray-700">
           <thead className="sticky top-0 bg-white dark:bg-gray-900 z-50">
             <tr className="dark:bg-indigo-800 text-base-content text-sm">
-              <th className="py-3 px-4 text-left">Vorname</th>
+              <th className="py-3 px-4 text-left">Vor- und Nachname</th>
               <th className="py-3 px-4 text-left">E-Mail</th>
               <th className="py-3 px-4 text-left">Geburtstag</th>
               <th className="py-3 px-4 text-left">Rolle</th>
@@ -168,6 +202,8 @@ const UserTable = ({ onDelete }) => {
                   onClick={() => setSelectedTeamMember(user._id)}
                 >
                   {user.name || "N/A"}
+                  <span> </span>
+                  {user.surname || "N/A"}
                 </td>
 
                 <td className="py-4 px-4">
