@@ -169,7 +169,7 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
 
           {/* Straße & Hausnummer */}
           <div className="col-span-3">
-            <label className="text-sm font-medium">Straße</label>
+            <label className="text-sm font-medium">Strasse</label>
             <input
               type="text"
               name="company_street"

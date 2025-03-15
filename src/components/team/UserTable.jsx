@@ -17,28 +17,22 @@ const UserTable = ({ onDelete }) => {
   const [filter, setFilter] = useState(""); // ✅ Filter state
   const containerRef = useRef(null);
   const fetchedIds = useRef(new Set()); // ✅ Prevent duplicate entries
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("/api/users");
+      const data = await response.json();
+      if (data.success) {
+        setUsers(data.users); // ✅ Overwrite users list to refresh
+      }
+    } catch (error) {
+      console.error("❌ Error fetching users:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ✅ Fetch Initial Users
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch("/api/users");
-        const data = await response.json();
-        if (data.success) {
-          setUsers((prevUsers) => {
-            const uniqueUsers = data.users.filter(
-              (user) => !prevUsers.some((u) => u._id === user._id)
-            );
-            return [...prevUsers, ...uniqueUsers];
-          });
-        }
-      } catch (error) {
-        console.error("❌ Error fetching users:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUsers();
   }, []);
 
@@ -223,10 +217,7 @@ const UserTable = ({ onDelete }) => {
           <UserFormModal
             isOpen={isEditModalOpen}
             onClose={() => setIsEditModalOpen(false)}
-            onSave={() => {
-              fetchUsers();
-              setIsEditModalOpen(false);
-            }}
+            onSave={fetchUsers} // ✅ Just pass fetchUsers
             user={selectedUser}
           />
         )}

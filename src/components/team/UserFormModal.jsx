@@ -6,6 +6,7 @@ import { FaSpinner } from "react-icons/fa";
 import UserBasicInfo from "./UserBasicInfo";
 import UserSubscriptionInfo from "./UserSubscriptionInfo";
 import UserAddressInfo from "./UserAddressInfo";
+import ToastNotification from "./ToastNotification";
 
 const UserFormModal = ({ isOpen, onClose, onSave, user }) => {
   const [newUser, setNewUser] = useState({
@@ -26,6 +27,7 @@ const UserFormModal = ({ isOpen, onClose, onSave, user }) => {
 
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [showToast, setShowToast] = useState(false); // ✅ Toast visibility
 
   useEffect(() => {
     if (user) {
@@ -84,8 +86,11 @@ const UserFormModal = ({ isOpen, onClose, onSave, user }) => {
 
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
-      onSave({ ...newUser, _id: user?._id });
-      onClose();
+
+      onSave(); // ✅ Refresh users
+      setShowToast(true); // ✅ Show toast
+      onSave(); // ✅ Refresh user list
+      setTimeout(() => onClose(), 1000); // ✅ Close modal after toast disappears
     } catch (error) {
       setError(error.message);
     } finally {
@@ -154,6 +159,13 @@ const UserFormModal = ({ isOpen, onClose, onSave, user }) => {
             </div>
           </motion.div>
         </div>
+      )}
+      {showToast && (
+        <ToastNotification
+          message="✅ Benutzer wurde erfolgreich gespeichert!"
+          type="success"
+          onClose={() => setShowToast(false)}
+        />
       )}
     </AnimatePresence>
   );
