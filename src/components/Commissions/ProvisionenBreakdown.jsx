@@ -108,7 +108,7 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
             <tr className="text-sm text-base-content border-b border-indigo-300">
               <th className="py-3 px-4 text-left">Name</th>
               <th className="py-3 px-4 text-left">Rolle</th>
-              <th className="py-3 px-4 text-left">Firma</th>
+              <th className="py-3 px-4 text-left">Kunden</th>
               <th className="py-3 px-4 text-left">Provision</th>
               <th className="py-3 px-4 text-left">Startdatum</th>
               <th className="py-3 px-4 text-left">Zahlungsdatum</th>
