@@ -8,7 +8,7 @@ import ProvisionenChart from "@/components/Commissions/ProvisionenChart";
 import ProvisionenGrowth from "@/components/Commissions/ProvisionenGrowth";
 
 const Provisionen = () => {
-  const [timeframe, setTimeframe] = useState("daily"); // Default to monthly
+  const [timeframe, setTimeframe] = useState("yearly"); // Default to monthly
   const { chartData, bruttoProvisionen, commissions, loading, error } =
     useFetchProvisionen(timeframe);
 
@@ -34,27 +34,32 @@ const Provisionen = () => {
   return (
     <div className="min-h-screen p-6 grid grid-cols-12 gap-4 bg-gradient-to-br from-indigo-50 via-pink-50 to-blue-50 bg-white/30 dark:bg-slate-800/30 backdrop-blur-lg shadow-xl">
       {/* ✅ Modern Timeframe Selector */}
-      <div className="col-span-12 flex justify-end mb-4">
-        <div className="flex h-10 space-x-2 bg-base-200 p-2 px-6 rounded-full shadow">
-          {["daily", "weekly", "monthly", "yearly"].map((option) => (
-            <button
-              key={option}
-              className={`badge px-4 py-2 text-sm font-semibold rounded-full transition-all duration-200 ${
-                timeframe === option
-                  ? "bg-indigo-300 text-black  "
-                  : "text-gray-600 hover:bg-gray-300 hover:text-black"
-              }`}
-              onClick={() => setTimeframe(option)}
-            >
-              {option === "daily"
-                ? "Täglich"
-                : option === "weekly"
-                ? "Wöchentlich"
-                : option === "monthly"
-                ? "Monatlich"
-                : "Jährlich"}
-            </button>
-          ))}
+      <div className="col-span-12 flex justify-between mb-4">
+        <h1 className="text-3xl md:text-4xl mt-8 mb-8 font-extrabold text-base-content">
+          Provisionen
+        </h1>
+        <div className="my-auto">
+          <div className="flex h-10 space-x-2 bg-base-200 p-2 px-6 rounded-full shadow">
+            {["daily", "weekly", "monthly", "yearly"].map((option) => (
+              <button
+                key={option}
+                className={`badge px-4 py-2 text-sm font-semibold rounded-full transition-all duration-200 ${
+                  timeframe === option
+                    ? "bg-indigo-300 text-black  "
+                    : "text-gray-600 hover:bg-gray-300 hover:text-black"
+                }`}
+                onClick={() => setTimeframe(option)}
+              >
+                {option === "daily"
+                  ? "Täglich"
+                  : option === "weekly"
+                  ? "Wöchentlich"
+                  : option === "monthly"
+                  ? "Monatlich"
+                  : "Jährlich"}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

@@ -9,7 +9,7 @@ import EarningsBreakdown from "@/components/Earnings/EarningsBreakdown";
 import GrowthRateWidget from "@/components/Earnings/GrowthRateWidget";
 
 const Earnings = () => {
-  const [timeframe, setTimeframe] = useState("daily"); // Default to monthly
+  const [timeframe, setTimeframe] = useState("yearly"); // Default to monthly
   const { chartData, bruttoUmsatz, lastMonthUmsatz, loading, error } =
     useFetchEarnings(timeframe);
 
@@ -33,29 +33,34 @@ const Earnings = () => {
   return (
     <div className="p-6 grid grid-cols-12 gap-4 bg-gradient-to-br from-indigo-50 via-pink-50 to-blue-50 bg-white/30 dark:bg-slate-800/30 backdrop-blur-lg shadow-xl">
       {/* ✅ Timeframe Selector with Framer Motion */}
-      <div className="col-span-12 flex justify-end mb-4">
-        <div className="flex space-x-2 bg-base-200 p-2 px-6 rounded-full shadow">
-          {["daily", "weekly", "monthly", "yearly"].map((option) => (
-            <motion.button
-              key={option}
-              className={`badge px-4 py-2 text-sm font-semibold rounded-full transition-colors ${
-                timeframe === option
-                  ? "bg-indigo-400 text-white shadow-lg"
-                  : "text-gray-600"
-              }`}
-              onClick={() => setTimeframe(option)}
-              whileTap={{ scale: 0.95 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-            >
-              {option === "daily"
-                ? "Täglich"
-                : option === "weekly"
-                ? "Wöchentlich"
-                : option === "monthly"
-                ? "Monatlich"
-                : "Jährlich"}
-            </motion.button>
-          ))}
+      <div className="col-span-12 flex justify-between mb-4">
+        <h1 className="text-3xl md:text-4xl mt-8 mb-8 font-extrabold text-base-content">
+          Umsatz
+        </h1>
+        <div className="my-auto">
+          <div className="flex space-x-2 bg-base-200 p-2 px-6 rounded-full shadow">
+            {["daily", "weekly", "monthly", "yearly"].map((option) => (
+              <motion.button
+                key={option}
+                className={`badge px-4 py-2 text-sm font-semibold rounded-full transition-colors ${
+                  timeframe === option
+                    ? "bg-indigo-400 text-white shadow-lg"
+                    : "text-gray-600"
+                }`}
+                onClick={() => setTimeframe(option)}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                {option === "daily"
+                  ? "Täglich"
+                  : option === "weekly"
+                  ? "Wöchentlich"
+                  : option === "monthly"
+                  ? "Monatlich"
+                  : "Jährlich"}
+              </motion.button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -64,7 +69,7 @@ const Earnings = () => {
         {/* Earnings Overview */}
         <motion.div
           key={`overview-${timeframe}`}
-          className="col-span-12 md:col-span-5"
+          className="col-span-12 md:col-span-6"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
@@ -79,7 +84,7 @@ const Earnings = () => {
         {/* Earnings Breakdown */}
         <motion.div
           key={`breakdown-${timeframe}`}
-          className="col-span-12 md:col-span-5"
+          className="col-span-12 md:col-span-6"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
@@ -89,7 +94,7 @@ const Earnings = () => {
         </motion.div>
 
         {/* Growth Rate Widget */}
-        <motion.div
+        {/* <motion.div
           key={`growth-${timeframe}`}
           className="col-span-12 md:col-span-2"
           initial={{ opacity: 0, scale: 0.95 }}
@@ -101,7 +106,7 @@ const Earnings = () => {
             bruttoUmsatz={bruttoUmsatz}
             lastMonthUmsatz={lastMonthUmsatz}
           />
-        </motion.div>
+        </motion.div> */}
 
         {/* Earnings Chart */}
         <motion.div

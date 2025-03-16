@@ -87,11 +87,11 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
 
   const handleSubmit = async () => {
     const requiredFields = [
-      { name: "company_name", label: "Firmen-Name" },
-      { name: "company_street", label: "Straße" },
+      { name: "company_name", label: "Kunden Name" },
+      { name: "company_street", label: "Strasse" },
       { name: "company_post_code", label: "PLZ" },
-      { name: "company_city", label: "Stadt" },
-      { name: "company_email", label: "Firmen-E-Mail" },
+      { name: "company_city", label: "Ort" },
+      { name: "company_email", label: "Kunden-E-Mail" },
     ];
 
     const newErrors = {};
@@ -118,7 +118,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
       };
 
       await onSubmit(finalData);
-      setToastMessage("✅ Firma erfolgreich hinzugefügt!");
+      setToastMessage("Firma erfolgreich hinzugefügt!");
 
       // Reset form & close after success
       setTimeout(() => {
@@ -164,7 +164,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-4">
           <h3 className="text-2xl font-bold text-base-content">
-            ➕ Neue Firma hinzufügen
+            Neuen Kunden erstellen
           </h3>
         </div>
 
@@ -176,7 +176,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
           <div className="grid grid-cols-6 gap-3 mt-6">
             {/* Firmen-Name */}
             <div className="col-span-3">
-              <label className="text-sm font-medium"> Firmen-Name</label>
+              <label className="text-sm font-medium"> Kunden Name</label>
               <input
                 type="text"
                 name="company_name"
@@ -207,7 +207,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
 
             {/* Straße & Hausnummer */}
             <div className="col-span-4">
-              <label className="text-sm font-medium"> Straße</label>
+              <label className="text-sm font-medium"> Strasse</label>
               <input
                 type="text"
                 name="company_street"
@@ -222,7 +222,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
               )}
             </div>
             <div className="col-span-1">
-              <label className="text-sm font-medium"> Hausnummer</label>
+              <label className="text-sm font-medium">Nr.</label>
               <input
                 type="text"
                 name="company_street_number"
@@ -249,7 +249,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
               )}
             </div>
             <div className="col-span-2">
-              <label className="text-sm font-medium"> Stadt</label>
+              <label className="text-sm font-medium"> Ort</label>
               <input
                 type="text"
                 name="company_city"
@@ -279,7 +279,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
 
             {/* Firmen-E-Mail */}
             <div className="col-span-3">
-              <label className="text-sm font-medium"> Firmen-E-Mail</label>
+              <label className="text-sm font-medium"> Kunden-E-Mail</label>
               <input
                 type="email"
                 name="company_email"
@@ -337,7 +337,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
               <input
                 type="number"
                 name="plan_price"
-                value={formData.plan_price}
+                value={Math.round(formData.plan_price)} // ✅ Round to whole number
                 onChange={handleChange}
                 className="input input-sm input-bordered w-full rounded-full"
                 disabled={formData.plan !== "BUSINESS"} // ✅ Lock for BASIC/PRO
