@@ -118,7 +118,7 @@ const CompanyTable = ({ onEdit, onDelete }) => {
           value={selectedCompany}
           onChange={(e) => setSelectedCompany(e.target.value)}
         >
-          <option value="">Alle Firmen</option>
+          <option value="">Alle Kunden</option>
           {[...new Set(companies.map((c) => c.company_name))].map((name, i) => (
             <option key={i} value={name}>
               {name}
@@ -141,7 +141,7 @@ const CompanyTable = ({ onEdit, onDelete }) => {
           <thead className="sticky top-0 z-50 bg-white">
             <tr className="text-sm md:text-md text-base-content border-b border-indigo-300 z-10 dark:text-white">
               <th className="py-3 px-4 text-left">
-                Firmen-Name{" "}
+                Kunden Name{" "}
                 <span className="text-gray-400">
                   ({filteredCompanies.length})
                 </span>
@@ -149,20 +149,23 @@ const CompanyTable = ({ onEdit, onDelete }) => {
 
               <th className="py-3 px-4 text-left">Plan</th>
               <th className="py-3 px-4 text-left hidden md:table-cell">
-                Preis (CHF)
+                Preis <br />
+                (CHF)
               </th>
               <th className="py-3 px-4 text-left hidden md:table-cell">
                 Inhaber
               </th>
               <th className="py-3 px-4 text-left hidden md:table-cell">
-                Manager
+                Business
+                <br />
+                Partner
               </th>
               <th className="py-3 px-4 text-left hidden md:table-cell">
                 Markenbotschafter
               </th>
               <th className="py-3 px-4 text-left">Ablauf</th>
               <th className="py-3 px-4 text-left hidden md:table-cell">
-                Provision (CHF)
+                Provision <br /> (CHF)
               </th>
               <th className="py-3 px-4 text-center">Aktion</th>
             </tr>

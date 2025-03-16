@@ -12,7 +12,7 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
         {/* Email */}
         <div>
           <label className="block text-gray-700 text-sm font-medium pb-1">
-            📧 E-Mail
+            E-Mail
           </label>
           <input
             type="email"
@@ -29,17 +29,17 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
         {/* Password Info */}
         <div>
           <label className="block text-gray-700 text-sm font-medium">
-            🔑 Passwort
+            Passwort
           </label>
           <p className="text-gray-500 text-xs italic">
-            ❗ Kontaktieren Sie den Admin, um Ihr Passwort zurückzusetzen.
+            Kontaktieren Sie den Admin, um Ihr Passwort zurückzusetzen.
           </p>
         </div>
 
         {/* Phone Number */}
         <div>
           <label className="block text-gray-700 text-sm font-medium">
-            📞 Telefon
+            Mobile nr.
           </label>
           <input
             type="text"
@@ -57,7 +57,7 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-gray-700 text-sm font-medium">
-              🏠 Straße
+              Strasse
             </label>
             <input
               type="text"
@@ -72,7 +72,7 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
           </div>
           <div>
             <label className="block text-gray-700 text-sm font-medium">
-              🏢 Nr.
+              Nr.
             </label>
             <input
               type="text"
@@ -90,7 +90,7 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-gray-700 text-sm font-medium">
-              🏙 Stadt
+              Ort
             </label>
             <input
               type="text"
@@ -105,7 +105,7 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
           </div>
           <div>
             <label className="block text-gray-700 text-sm font-medium">
-              📮 PLZ
+              PLZ
             </label>
             <input
               type="text"
@@ -126,7 +126,7 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
         {/* Subscription Expiration (Read-Only for Regular Users) */}
         <div>
           <label className="block text-gray-700 text-sm font-medium">
-            📆 Abo gültig bis
+            Abo gültig bis
           </label>
           <input
             type="date"

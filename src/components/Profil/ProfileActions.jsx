@@ -23,7 +23,7 @@ const ProfileActions = ({
           {/* Save Button */}
           <button
             onClick={handleSaveChanges}
-            className="btn btn-neutral rounded-full btn-sm"
+            className="btn btn-outline btn-success rounded-full btn-sm"
             disabled={isSaving} // ✅ Disable while saving
           >
             {isSaving ? (

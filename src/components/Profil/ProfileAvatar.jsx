@@ -1,9 +1,11 @@
 import React from "react";
 
-const ROLE_COLORS = {
-  admin: "bg-red-500",
-  manager: "bg-blue-500",
-  markenbotschafter: "bg-green-500",
+// ✅ Define linear gradients for each role with animation
+const ROLE_GRADIENTS = {
+  admin: "bg-gradient-to-br from-red-500 via-pink-500 to-yellow-500",
+  manager: "bg-gradient-to-br from-blue-500 via-sky-500 to-indigo-500",
+  markenbotschafter:
+    "bg-gradient-to-br from-green-500 via-emerald-500 to-teal-500",
 };
 
 const ProfileAvatar = ({ user, isLoading }) => {
@@ -19,12 +21,16 @@ const ProfileAvatar = ({ user, isLoading }) => {
   }
 
   return (
-    <div className="flex flex-col items-center my-auto ">
-      {/* Profile Avatar */}
+    <div className="flex flex-col items-center my-auto">
+      {/* Profile Avatar with Animated Gradient */}
       <div
-        className={`w-24 h-24 flex items-center justify-center text-white text-3xl font-bold rounded-full ${
-          ROLE_COLORS[user.role] || "bg-gray-500"
-        }`}
+        className={`w-24 h-24 flex items-center justify-center text-white text-3xl font-bold rounded-full shadow-lg
+          ${
+            ROLE_GRADIENTS[user.role] ||
+            "bg-gradient-to-br from-gray-500 to-gray-700"
+          }
+          bg-[length:200%_200%] animate-gradientMove
+        `}
       >
         {user.name?.charAt(0) || "?"}
         {user.surname?.charAt(0) || "?"}
@@ -42,7 +48,7 @@ const ProfileAvatar = ({ user, isLoading }) => {
 
       {/* Account Status Toggle (Only for Admins) */}
       {user.role === "admin" && (
-        <div className="mt-4 flex items-center justify-between p-3 rounded-2xl ">
+        <div className="mt-4 flex items-center justify-between p-3 rounded-full px-4 bg-gray-100 shadow-inner">
           <span className="text-sm font-bold text-gray-700 me-3">
             Konto Status
           </span>

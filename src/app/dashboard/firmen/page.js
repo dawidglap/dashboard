@@ -134,7 +134,7 @@ const Firmen = () => {
     return (
       <div className="px-4 md:px-12">
         <h1 className="text-3xl mt-8 md:text-4xl font-extrabold text-base-content mb-6">
-          Firmen
+          Kunden
         </h1>
         <div className="overflow-x-auto rounded-lg shadow-sm">
           <table className="table table-xs w-full">
@@ -142,7 +142,7 @@ const Firmen = () => {
               <tr className="text-sm md:text-md text-base-content border-b border-indigo-300 dark:text-white">
                 {/* ✅ Show Total Companies in Header */}
                 <th className="py-3 px-4 text-left">
-                  Firmen-Name{" "}
+                  Kunden Name{" "}
                   <span className="text-gray-400 ms-1">
                     <span className="loading loading-spinner loading-xs"></span>
                   </span>
@@ -155,7 +155,7 @@ const Firmen = () => {
                   Inhaber
                 </th>
                 <th className="py-3 px-4 text-left hidden md:table-cell">
-                  Manager
+                  Business Partner
                 </th>
                 <th className="py-3 px-4 text-left hidden md:table-cell">
                   Markenbotschafter
@@ -190,7 +190,7 @@ const Firmen = () => {
     <div className="px-4 md:px-12 ">
       <div className="flex justify-between items-center mb-8">
         <h1 className=" text-3xl mt-8 md:text-4xl font-extrabold text-base-content dark:text-white">
-          Firmen
+          Kunden
         </h1>
 
         <button
@@ -199,7 +199,7 @@ const Firmen = () => {
           className="btn btn-neutral px-4 hover:text-white btn-sm dark:text-white dark:hover:bg-slate-900 flex rounded-full items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <FaPlus />
-          <span>Neue Firma</span>
+          <span>Neuer Kunde</span>
         </button>
       </div>
 
