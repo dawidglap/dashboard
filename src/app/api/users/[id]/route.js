@@ -30,6 +30,7 @@ export async function GET(req, { params }) {
           user_city: 1,
           subscription_expiration: 1,
           referralId: 1, // ✅ Include referralId in projection
+          role: 1,
         },
       }
     );

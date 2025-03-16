@@ -23,7 +23,11 @@ const ProfileDetails = ({ user }) => {
         <label className="block text-gray-700 text-sm font-medium">Rolle</label>
         <input
           type="text"
-          value={user?.role || "Unbekannt"}
+          value={
+            user?.role
+              ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+              : "Unbekannt"
+          }
           disabled
           className="input input-bordered rounded-full w-full bg-gray-100"
         />
