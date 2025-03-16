@@ -150,14 +150,14 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-4">
           <h3 className="text-2xl font-bold text-base-content">
-            Firma bearbeiten
+            Kunde bearbeiten
           </h3>
         </div>
 
         <div className="grid grid-cols-4 gap-3 mt-6">
           {/* Firmen-Name */}
           <div className="col-span-4">
-            <label className="text-sm font-medium">Firmen-Name</label>
+            <label className="text-sm font-medium">Kunden Name</label>
             <input
               type="text"
               name="company_name"
@@ -201,7 +201,7 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
             />
           </div>
           <div className="col-span-3">
-            <label className="text-sm font-medium">Stadt</label>
+            <label className="text-sm font-medium">Ort</label>
             <input
               type="text"
               name="company_city"
@@ -225,7 +225,7 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
 
           {/* Firmen-E-Mail */}
           <div className="col-span-2">
-            <label className="text-sm font-medium">Firmen-E-Mail</label>
+            <label className="text-sm font-medium">Kunden E-Mail</label>
             <input
               type="email"
               name="company_email"
@@ -270,14 +270,14 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
 
           {/* Manager Selection */}
           <div className="col-span-2">
-            <label className="text-sm font-medium">Manager</label>
+            <label className="text-sm font-medium">Business Partner</label>
             <select
               name="manager_id"
               value={formData.manager_id}
               onChange={handleChange}
               className="select select-sm select-bordered w-full rounded-full"
             >
-              <option value="">-- Manager auswählen --</option>
+              <option value="">-- Business Partner auswählen --</option>
               {users
                 .filter(
                   (user) => user.role === "manager" || user.role === "admin"
