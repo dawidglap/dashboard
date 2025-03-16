@@ -5,7 +5,7 @@ import useCompanyForm from "../../hooks/useCompanyForm";
 import { FaSpinner } from "react-icons/fa";
 import { motion } from "framer-motion";
 
-const EditCompanyModal = ({ company, onClose, onSave }) => {
+const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
   const { formData, handleChange, setFormData } = useCompanyForm(
     {
       company_name: "",
@@ -122,13 +122,14 @@ const EditCompanyModal = ({ company, onClose, onSave }) => {
 
     try {
       setIsSaving(true);
-      await onSave(company._id, updatedData);
+      await onSave(company._id, updatedData); // ✅ Pass ID and updated data back to CompanyTable
       setToastMessage("Firma erfolgreich aktualisiert!");
 
       setTimeout(() => {
         setToastMessage(null);
-        onClose();
-      }, 2000);
+        setParentToast("Firma erfolgreich aktualisiert! ✅");
+        onClose(); // Close immediately, but toast stays visible in parent
+      }, 100);
     } catch (error) {
       setIsSaving(false);
       console.error("Update error:", error);

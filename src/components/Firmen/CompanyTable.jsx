@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { getSession } from "next-auth/react";
 import CompanyTableRow from "./CompanyTableRow";
+import EditCompanyModal from "./EditCompanyModal";
 
 const CompanyTable = ({ onEdit, onDelete }) => {
   const [companies, setCompanies] = useState([]); // ✅ Store API-fetched companies
@@ -11,6 +12,19 @@ const CompanyTable = ({ onEdit, onDelete }) => {
   const [userRole, setUserRole] = useState(null); // ✅ Store user role
   const [loading, setLoading] = useState(true); // ✅ Add loading state
   const [selectedCompany, setSelectedCompany] = useState(""); // ✅ Filter state
+  const [editingCompany, setEditingCompany] = useState(null); // ✅ Track company being edited
+  const [toastMessage, setToastMessage] = useState(null); // ✅ New state for toast
+
+  // ✅ Auto-clear toast after 2 seconds
+  useEffect(() => {
+    if (toastMessage) {
+      const timer = setTimeout(() => {
+        setToastMessage(null);
+      }, 2000);
+
+      return () => clearTimeout(timer); // ✅ Clear timeout if component unmounts
+    }
+  }, [toastMessage]);
 
   // ✅ Fetch session for user role
   useEffect(() => {
@@ -41,24 +55,51 @@ const CompanyTable = ({ onEdit, onDelete }) => {
   }, []);
 
   // ✅ Fetch companies from API
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      setLoading(true); // ✅ Start loading
-      try {
-        const res = await fetch("/api/companies/all");
-        if (!res.ok) throw new Error("Fehler beim Laden der Firmen");
-        const data = await res.json();
-        setCompanies(data.data || []);
-        setTotalCompanies(data.data.length || 0);
-      } catch (error) {
-        console.error("Fehler beim Laden der Firmen:", error);
-      } finally {
-        setLoading(false); // ✅ Stop loading when done
-      }
-    };
+  const fetchCompanies = async () => {
+    setLoading(true); // ✅ Start loading
+    try {
+      const res = await fetch("/api/companies/all");
+      if (!res.ok) throw new Error("Fehler beim Laden der Firmen");
+      const data = await res.json();
+      setCompanies(data.data || []);
+      setTotalCompanies(data.data.length || 0);
+    } catch (error) {
+      console.error("Fehler beim Laden der Firmen:", error);
+    } finally {
+      setLoading(false); // ✅ Stop loading when done
+    }
+  };
 
+  // ✅ Fetch companies from API
+  useEffect(() => {
     fetchCompanies();
   }, []);
+
+  // ✅ Function to handle saving (updating) company
+  const handleSave = async (companyId, updatedData) => {
+    try {
+      const res = await fetch(`/api/companies/${companyId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (!res.ok) throw new Error("Fehler beim Aktualisieren der Firma");
+
+      console.log("✅ Firma erfolgreich aktualisiert");
+      await fetchCompanies(); // ✅ Refresh the table
+      setEditingCompany(null); // ✅ Close the modal
+    } catch (error) {
+      console.error("❌ Fehler beim Speichern:", error);
+    }
+  };
+
+  // ✅ Function to open the modal with the selected company
+  const handleEdit = (company) => {
+    setEditingCompany(company); // ✅ Set company to be edited
+  };
 
   // ✅ Get user by ID
   const getUserById = (userId) => users.find((u) => u._id === userId);
@@ -155,12 +196,12 @@ const CompanyTable = ({ onEdit, onDelete }) => {
                   <CompanyTableRow
                     key={company._id}
                     company={company}
-                    index={index + 1} // ✅ Fix index (now global, no pagination)
-                    onEdit={onEdit}
+                    index={index + 1}
+                    onEdit={handleEdit} // ✅ CORRECT: now clicking Edit opens modal
                     onDelete={onDelete}
                     manager={manager}
                     markenbotschafter={markenbotschafter}
-                    userRole={userRole} // ✅ Pass user role to table row
+                    userRole={userRole}
                   />
                 );
               })
@@ -168,6 +209,20 @@ const CompanyTable = ({ onEdit, onDelete }) => {
           </tbody>
         </table>
       </div>
+      {/* ✅ Edit Company Modal */}
+      {editingCompany && (
+        <EditCompanyModal
+          company={editingCompany}
+          onClose={() => setEditingCompany(null)}
+          onSave={handleSave}
+          setParentToast={setToastMessage} // ✅ Pass to child
+        />
+      )}
+      {toastMessage && (
+        <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg">
+          {toastMessage}
+        </div>
+      )}
     </div>
   );
 };
