@@ -87,9 +87,10 @@ const UserFormModal = ({ isOpen, onClose, onSave, user }) => {
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
 
-      onSave(); // ✅ Refresh users
+      const savedUser = data.data; // ✅ Extract new user from response
+
+      onSave(savedUser); // ✅ Pass the created user back
       setShowToast(true); // ✅ Show toast
-      onSave(); // ✅ Refresh user list
       setTimeout(() => onClose(), 1000); // ✅ Close modal after toast disappears
     } catch (error) {
       setError(error.message);

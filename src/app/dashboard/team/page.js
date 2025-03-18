@@ -57,6 +57,11 @@ const Team = () => {
   };
 
   const handleSaveUser = (newUser) => {
+    if (!newUser || !newUser._id) {
+      console.error("❌ Error: newUser is missing `_id`!", newUser);
+      return;
+    }
+
     if (isEditing) {
       setUsers((prev) =>
         prev.map((user) =>
@@ -65,13 +70,11 @@ const Team = () => {
       );
       setToastMessage("Benutzer erfolgreich aktualisiert.");
     } else {
-      setUsers((prev) => [
-        ...prev,
-        { ...newUser, _id: newUser._id || "TEMP_ID" }, // Ensure `_id` exists
-      ]);
-
+      setUsers((prev) => [...prev, newUser]); // ✅ Add new user with correct `_id`
       setToastMessage("Benutzer erfolgreich hinzugefügt.");
     }
+
+    // ✅ Close the modal and reset editing state
     setShowModal(false);
     setIsEditing(false);
     setCurrentUser(null);
