@@ -43,17 +43,29 @@ const Team = () => {
 
   const handleDelete = async () => {
     if (!userToDelete) return;
+
     try {
       const res = await fetch(`/api/users?id=${userToDelete._id}`, {
         method: "DELETE",
       });
+
       if (!res.ok) throw new Error("Fehler beim Löschen des Benutzers.");
-      setUsers((prev) => prev.filter((user) => user._id !== userToDelete._id));
+
+      // ✅ Immediately update the state before setting `userToDelete` to null
+      setUsers((prev) => {
+        const updatedUsers = prev.filter(
+          (user) => user._id !== userToDelete._id
+        );
+        console.log("✅ Updated Users:", updatedUsers); // Debugging
+        return updatedUsers;
+      });
+
       setToastMessage("Benutzer erfolgreich gelöscht.");
     } catch (error) {
       setToastMessage("Fehler beim Löschen: " + error.message);
+    } finally {
+      setUserToDelete(null); // ✅ Ensure modal closes after deletion
     }
-    setUserToDelete(null);
   };
 
   const handleSaveUser = (newUser) => {

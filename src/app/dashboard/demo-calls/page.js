@@ -27,18 +27,14 @@ const DemoCalls = () => {
   // ✅ Fetch Initial Bookings
   useEffect(() => {
     const fetchBookings = async () => {
+      if (bookings.length > 0) return; // ✅ Evita di ricaricare se già ci sono dati
+
       try {
         const res = await fetch("/api/bookings");
         if (!res.ok) throw new Error("Fehler beim Abrufen der Buchungen.");
         const data = await res.json();
 
-        // ✅ Prevent duplicate entries
-        const uniqueBookings = data.data.bookings.filter(
-          (booking) => !fetchedIds.current.has(booking.id)
-        );
-
-        uniqueBookings.forEach((b) => fetchedIds.current.add(b.id));
-        setBookings(uniqueBookings);
+        setBookings(data.data.bookings);
       } catch (err) {
         setError(err.message);
       } finally {
