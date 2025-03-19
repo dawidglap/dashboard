@@ -46,29 +46,17 @@ const UmsatzWidget = () => {
           dailyEarnings[dayKey] += earnings;
         });
 
-        const formattedChartData = Object.entries(dailyEarnings).map(
-          ([date, earnings]) => ({
-            period: date,
-            earnings,
-          })
-        );
-
-        // ✅ Comparison Calculation
-        const currentDate = new Date();
-        const lastMonthKey = `${currentDate.getFullYear()}-${(
-          "0" +
-          (currentDate.getMonth() + 1)
-        ).slice(-2)}`;
-        const earningsLastMonth = dailyEarnings[lastMonthKey] || 0;
-        const comparison =
-          earningsLastMonth > 0
-            ? ((totalEarnings - earningsLastMonth) / earningsLastMonth) * 100
-            : 0;
+        console.log("🔍 Debug - Total Earnings:", totalEarnings); // ✅ Logga il totale
+        console.log("🔍 Debug - Daily Earnings:", dailyEarnings); // ✅ Logga i dati giornalieri
 
         setBruttoUmsatz(totalEarnings);
         setNettoUmsatz(totalNetEarnings);
-        setComparisonToLastMonth(comparison.toFixed(2));
-        setChartData(formattedChartData);
+        setChartData(
+          Object.entries(dailyEarnings).map(([date, earnings]) => ({
+            period: date,
+            earnings,
+          }))
+        );
       } catch (error) {
         console.error("Error fetching earnings data:", error);
       }
