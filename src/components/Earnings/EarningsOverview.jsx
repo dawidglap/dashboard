@@ -1,40 +1,28 @@
-const EarningsOverview = ({ chartData = [], timeframeLabel }) => {
-  console.log("🔍 Debug: chartData in EarningsOverview", chartData); // Debugging
+const EarningsOverview = ({ bruttoUmsatz = 0, timeframeLabel, timeframe }) => {
+  const currentDate = new Date();
+  const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
 
-  if (!chartData.length) {
-    return (
-      <div className="border-2 border-white  p-4 bg-transparent rounded-xl shadow-xl">
-        <h1 className="text-xl font-bold">Bruttoumsatz ({timeframeLabel})</h1>
-        <p className="text-3xl font-semibold text-gray-400">
-          Daten werden geladen...
-        </p>
-      </div>
-    );
-  }
+  const elapsedDays =
+    Math.floor((currentDate - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
+  const elapsedWeeks = Math.ceil(elapsedDays / 7);
+  const elapsedMonths = currentDate.getMonth() + 1;
 
-  // ✅ Dynamically Calculate Umsatz from chartData
-  const filteredChartData =
-    timeframeLabel === "Tag"
-      ? chartData.slice(-1) // Last day
-      : timeframeLabel === "Woche"
-      ? chartData.slice(-1) // Last week
-      : timeframeLabel === "Monat"
-      ? chartData // Sum all available weeks in a month
-      : chartData; // Yearly: Use everything
+  let valuePerPeriod = 0;
 
-  const bruttoUmsatz = filteredChartData.reduce(
-    (sum, entry) => sum + (entry.earnings || 0),
-    0
-  );
+  if (timeframe === "daily") valuePerPeriod = bruttoUmsatz / elapsedDays;
+  else if (timeframe === "weekly") valuePerPeriod = bruttoUmsatz / elapsedWeeks;
+  else if (timeframe === "monthly")
+    valuePerPeriod = bruttoUmsatz / elapsedMonths;
+  else valuePerPeriod = bruttoUmsatz;
 
-  const steuer = bruttoUmsatz * 0.081;
-  const nettoUmsatz = bruttoUmsatz - steuer;
+  const steuer = valuePerPeriod * 0.081;
+  const nettoUmsatz = valuePerPeriod - steuer;
 
   return (
-    <div className="border-2 border-white  bg-transparent rounded-xl shadow-xl p-4">
+    <div className="border-2 border-white bg-transparent rounded-xl shadow-xl p-4">
       <h1 className="text-xl font-bold">Bruttoumsatz ({timeframeLabel})</h1>
       <p className="text-3xl font-semibold">
-        CHF {Math.round(bruttoUmsatz).toLocaleString("de-DE")}
+        CHF {Math.round(valuePerPeriod).toLocaleString("de-DE")}
       </p>
 
       <h2 className="text-lg font-medium mt-4">Steuer (8.1%)</h2>

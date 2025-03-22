@@ -1,6 +1,63 @@
 import { useState, useEffect } from "react";
 import { getSession } from "next-auth/react";
 
+// ✅ Esterno: Genera label statiche per timeframe
+const generateTimeLabels = (timeframe) => {
+  const labels = [];
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+
+  if (timeframe === "yearly") {
+    for (let y = year - 2; y <= year; y++) {
+      labels.push(y.toString());
+    }
+  } else if (timeframe === "monthly") {
+    for (let m = 0; m < 12; m++) {
+      const d = new Date(year, m);
+      labels.push(d.toLocaleString("de-DE", { month: "short" }));
+    }
+  } else if (timeframe === "weekly") {
+    for (let w = 1; w <= 52; w++) {
+      labels.push(`${year}-W${w}`);
+    }
+  } else if (timeframe === "daily") {
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(year, month, d);
+      labels.push(date.toISOString().split("T")[0]);
+    }
+  }
+
+  return labels;
+};
+
+// ✅ Esterno: Aggrega earnings per timeframe
+const aggregateByTimeframe = (dailyData, timeframe) => {
+  const result = {};
+
+  for (const dateStr in dailyData) {
+    const date = new Date(dateStr);
+    if (isNaN(date)) continue;
+
+    let key;
+    if (timeframe === "daily") {
+      key = dateStr;
+    } else if (timeframe === "weekly") {
+      const week = Math.ceil(date.getDate() / 7);
+      key = `${date.getFullYear()}-W${week}`;
+    } else if (timeframe === "monthly") {
+      key = date.toLocaleString("de-DE", { month: "short" });
+    } else {
+      key = date.getFullYear().toString();
+    }
+
+    result[key] = (result[key] || 0) + dailyData[dateStr];
+  }
+
+  return result;
+};
+
 const useFetchEarnings = (timeframe = "monthly") => {
   const [chartData, setChartData] = useState([]);
   const [bruttoUmsatz, setBruttoUmsatz] = useState(0);
@@ -13,42 +70,25 @@ const useFetchEarnings = (timeframe = "monthly") => {
       setLoading(true);
       try {
         const session = await getSession();
-
-        if (!session || !session.user) {
+        if (!session || !session.user)
           throw new Error("User session not found.");
-        }
 
-        const role = session.user.role;
-        const email = session.user.email; // Using email instead of userId
-
-        console.log("Session Retrieved -> Role:", role, "Email:", email); // Debugging
+        const { role, email } = session.user;
 
         const response = await fetch(
           `/api/companies/all?role=${role}&email=${email}`
         );
         if (!response.ok) throw new Error("Error fetching companies data.");
         const data = await response.json();
+        const companies = data?.data || [];
 
-        console.log("Fetched Companies:", data); // Debugging
+        let total = 0;
+        let dailyEarnings = {};
 
-        let totalEarnings = 0;
-        let lastMonthEarnings = 0;
-        let earningsByDate = {};
-
-        // Process and group data based on timeframe
-        data.data.forEach((company) => {
+        companies.forEach((company) => {
+          if (!company.created_at) return;
           const date = new Date(company.created_at);
-          const formattedDate =
-            timeframe === "daily"
-              ? date.toISOString().split("T")[0] // YYYY-MM-DD
-              : timeframe === "weekly"
-              ? `${date.getFullYear()}-W${Math.ceil(date.getDate() / 7)}` // YYYY-WXX
-              : timeframe === "monthly"
-              ? `${date.toLocaleString("default", { month: "short" })} '${date
-                  .getFullYear()
-                  .toString()
-                  .slice(-2)}`
-              : date.getFullYear().toString(); // Yearly
+          if (isNaN(date)) return;
 
           const earnings =
             company.plan === "BASIC"
@@ -59,29 +99,33 @@ const useFetchEarnings = (timeframe = "monthly") => {
               ? parseFloat(company.plan_price)
               : 0;
 
-          totalEarnings += earnings;
-          earningsByDate[formattedDate] =
-            (earningsByDate[formattedDate] || 0) + earnings;
+          total += earnings;
+
+          const dateStr = date.toISOString().split("T")[0];
+          dailyEarnings[dateStr] = (dailyEarnings[dateStr] || 0) + earnings;
         });
 
-        const formattedChartData = Object.keys(earningsByDate).map((key) => ({
-          period: key,
-          earnings: earningsByDate[key],
+        const aggregated = aggregateByTimeframe(dailyEarnings, timeframe);
+        const labels = generateTimeLabels(timeframe);
+
+        const filledData = labels.map((label) => ({
+          period: label,
+          earnings: aggregated[label] || 0,
         }));
 
-        // Calculate last month earnings for growth calculation
+        // Calcolo del mese precedente (solo per confronto)
         const lastMonth = new Date();
         lastMonth.setMonth(lastMonth.getMonth() - 1);
-        const lastMonthKey = `${lastMonth.toLocaleString("default", {
+        const lastMonthKey = lastMonth.toLocaleString("de-DE", {
           month: "short",
-        })} '${lastMonth.getFullYear().toString().slice(-2)}`;
-        lastMonthEarnings = earningsByDate[lastMonthKey] || 0;
+        });
+        const lastMonthValue = aggregated[lastMonthKey] || 0;
 
-        setChartData(formattedChartData);
-        setBruttoUmsatz(totalEarnings);
-        setLastMonthUmsatz(lastMonthEarnings);
+        setChartData(filledData);
+        setBruttoUmsatz(total);
+        setLastMonthUmsatz(lastMonthValue);
       } catch (err) {
-        console.error("Error in useFetchEarnings:", err);
+        console.error("❌ Error in useFetchEarnings:", err.message);
         setError(err.message);
       } finally {
         setLoading(false);

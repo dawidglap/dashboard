@@ -76,7 +76,8 @@ const Earnings = () => {
           transition={{ duration: 0.3, ease: "easeOut" }}
         >
           <EarningsOverview
-            chartData={chartData}
+            bruttoUmsatz={bruttoUmsatz}
+            timeframe={timeframe}
             timeframeLabel={timeframeLabel}
           />
         </motion.div>
@@ -90,23 +91,11 @@ const Earnings = () => {
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
         >
-          <EarningsBreakdown />
-        </motion.div>
-
-        {/* Growth Rate Widget */}
-        {/* <motion.div
-          key={`growth-${timeframe}`}
-          className="col-span-12 md:col-span-2"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-        >
-          <GrowthRateWidget
-            bruttoUmsatz={bruttoUmsatz}
-            lastMonthUmsatz={lastMonthUmsatz}
+          <EarningsBreakdown
+            timeframe={timeframe}
+            timeframeLabel={timeframeLabel}
           />
-        </motion.div> */}
+        </motion.div>
 
         {/* Earnings Chart */}
         <motion.div
