@@ -6,7 +6,7 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const perPage = 20;
+  const perPage = 1020;
   const tableContainerRef = useRef(null);
 
   if (!commissions.length) {

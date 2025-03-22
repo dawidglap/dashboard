@@ -64,20 +64,20 @@ const Provisionen = () => {
       </div>
 
       {/* ✅ Top Widgets (Balanced 4-4-4 Layout) */}
-      <div className="col-span-12 md:col-span-6">
+      {/* <div className="col-span-12 md:col-span-6">
         <ProvisionenOverview
           commissions={commissions}
-          timeframe={timeframe}
           timeframeLabel={timeframeLabel}
+          timeframe={timeframe}
         />
-      </div>
+      </div> */}
 
       {/* <div className="col-span-12 md:col-span-6">
         <ProvisionenGrowth growthRate={growthRate} />
       </div> */}
 
       {/* ✅ Commission Chart */}
-      <div className="col-span-12">
+      <div className="col-span-12 ">
         <ProvisionenChart chartData={chartData} timeframe={timeframe} />
       </div>
 

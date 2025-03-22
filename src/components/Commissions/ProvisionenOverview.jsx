@@ -5,12 +5,19 @@ const ProvisionenOverview = ({
 }) => {
   const currentDate = new Date();
   const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
+
+  // ✅ Filtra solo le commissioni dell’anno corrente e con amount > 0
+  const filteredCommissions = commissions.filter((c) => {
+    const createdAt = new Date(c.startDatum);
+    return createdAt >= startOfYear && c.amount > 0;
+  });
+
+  const total = filteredCommissions.reduce((sum, c) => sum + c.amount, 0);
+
   const elapsedDays =
     Math.floor((currentDate - startOfYear) / (1000 * 60 * 60 * 24)) + 1;
   const elapsedWeeks = Math.ceil(elapsedDays / 7);
   const elapsedMonths = currentDate.getMonth() + 1;
-
-  const total = commissions.reduce((sum, c) => sum + (c.amount || 0), 0);
 
   let valuePerPeriod = 0;
   if (timeframe === "daily") valuePerPeriod = total / elapsedDays;

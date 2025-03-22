@@ -30,9 +30,9 @@ const ProvisionenChart = ({ chartData, timeframe }) => {
       : "Jahr";
 
   return (
-    <div className="border-2 border-white  p-4 bg-transparent rounded-xl shadow-xl">
+    <div className="border-2 border-white   p-4 bg-transparent rounded-xl shadow-xl">
       <h2 className="text-xl font-bold mb-4">Provisionen über die Zeit</h2>
-      <ResponsiveContainer width="100%" height={320}>
+      <ResponsiveContainer width="100%" height={500}>
         <AreaChart
           data={chartData}
           margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
