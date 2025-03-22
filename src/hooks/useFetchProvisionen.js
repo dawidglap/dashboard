@@ -7,64 +7,69 @@ const useFetchProvisionen = (timeframe = "monthly") => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // ✅ Funzione per generare label standard per ogni timeframe
+  const generateTimeLabels = () => {
+    const labels = [];
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth();
+
+    if (timeframe === "yearly") {
+      for (let year = currentYear - 2; year <= currentYear; year++) {
+        labels.push(year.toString());
+      }
+    } else if (timeframe === "monthly") {
+      for (let month = 0; month < 12; month++) {
+        const date = new Date(currentYear, month);
+        labels.push(date.toLocaleString("de-DE", { month: "short" }));
+      }
+    } else if (timeframe === "weekly") {
+      for (let week = 1; week <= 52; week++) {
+        labels.push(`${currentYear}-W${week}`);
+      }
+    } else if (timeframe === "daily") {
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(currentYear, currentMonth, day);
+        labels.push(date.toISOString().split("T")[0]);
+      }
+    }
+
+    return labels;
+  };
+
   useEffect(() => {
     const fetchProvisionenData = async () => {
       try {
-        // ✅ Fetch all companies
-        const companiesResponse = await fetch("/api/companies/all");
-        if (!companiesResponse.ok)
-          throw new Error("Error fetching companies data.");
-        const companiesData = await companiesResponse.json();
-        console.log("✅ Debug: Companies Data ->", companiesData);
+        const res = await fetch("/api/companies/all");
+        if (!res.ok) throw new Error("Fehler beim Laden der Firmen");
+        const data = await res.json();
+        const companies = data.data || [];
 
-        // ✅ Fetch users
-        const usersResponse = await fetch("/api/users");
-        if (!usersResponse.ok) throw new Error("Error fetching users data.");
-        const usersData = await usersResponse.json();
+        let total = 0;
+        let dailyData = {};
+        let details = [];
 
-        if (!usersData?.users || !Array.isArray(usersData.users)) {
-          throw new Error("Users data is invalid.");
-        }
-
-        // ✅ Map user IDs to roles
-        const usersMap = {};
-        usersData.users.forEach((user) => {
-          usersMap[user._id] = { name: user.name, role: user.role };
-        });
-
-        let totalCommissions = 0;
-        let dailyCommissions = {};
-        let commissionsDetails = [];
-
-        // ✅ Process companies
-        companiesData.data.forEach((company) => {
-          if (!company.created_at) return; // Ensure valid dates
+        companies.forEach((company) => {
+          if (!company.created_at) return;
           const date = new Date(company.created_at);
-          let formattedDate = date.toISOString().split("T")[0]; // YYYY-MM-DD
+          if (isNaN(date)) return;
 
-          const manager = usersMap[company.manager_id] || {
-            name: "Unbekannt",
-            role: "unknown",
-          };
-          const markenbotschafter = usersMap[company.markenbotschafter_id] || {
-            name: "Unbekannt",
-            role: "unknown",
-          };
+          const formattedDate = date.toISOString().split("T")[0];
+          const manager = company.manager_id;
+          const ambassador = company.markenbotschafter_id;
 
-          let managerCommission = manager.role === "admin" ? 0 : 1000;
-          let markenbotschafterCommission =
-            markenbotschafter.role === "admin" ? 0 : 1000;
-          let companyCommission =
-            managerCommission + markenbotschafterCommission;
+          const managerCommission = manager ? 1000 : 0;
+          const ambassadorCommission = ambassador ? 1000 : 0;
+          const commissionTotal = managerCommission + ambassadorCommission;
 
-          totalCommissions += companyCommission;
-          dailyCommissions[formattedDate] =
-            (dailyCommissions[formattedDate] || 0) + companyCommission;
+          total += commissionTotal;
+          dailyData[formattedDate] =
+            (dailyData[formattedDate] || 0) + commissionTotal;
 
           if (managerCommission > 0) {
-            commissionsDetails.push({
-              userName: manager.name,
-              role: "Manager",
+            details.push({
+              userName: "Manager",
+              role: "manager",
               companyName: company.company_name,
               amount: managerCommission,
               paymentDate: new Date(
@@ -75,12 +80,13 @@ const useFetchProvisionen = (timeframe = "monthly") => {
               created_at: company.created_at,
             });
           }
-          if (markenbotschafterCommission > 0) {
-            commissionsDetails.push({
-              userName: markenbotschafter.name,
-              role: "Markenbotschafter",
+
+          if (ambassadorCommission > 0) {
+            details.push({
+              userName: "Markenbotschafter",
+              role: "markenbotschafter",
               companyName: company.company_name,
-              amount: markenbotschafterCommission,
+              amount: ambassadorCommission,
               paymentDate: new Date(
                 date.getFullYear(),
                 date.getMonth() + 2,
@@ -91,36 +97,20 @@ const useFetchProvisionen = (timeframe = "monthly") => {
           }
         });
 
-        console.log("✅ Debug: dailyCommissions ->", dailyCommissions);
+        // ✅ Aggrega per il timeframe selezionato
+        const aggregated = aggregateByTimeframe(dailyData, timeframe);
+        const labels = generateTimeLabels();
 
-        // ✅ Aggregate data based on timeframe
-        let aggregatedData = aggregateTimeframe(dailyCommissions, timeframe);
-        console.log("✅ Debug: aggregatedData ->", aggregatedData);
-
-        // ✅ Convert into chart format
-        const formattedChartData = Object.keys(aggregatedData).map((key) => ({
-          period: key,
-          earnings: aggregatedData[key],
+        const filled = labels.map((label) => ({
+          period: label,
+          earnings: aggregated[label] || 0,
         }));
 
-        formattedChartData.sort(
-          (a, b) => new Date(a.period) - new Date(b.period)
+        setChartData(filled);
+        setBruttoProvisionen(
+          filled.reduce((sum, item) => sum + (item.earnings || 0), 0)
         );
-
-        console.log("✅ Debug: formattedChartData ->", formattedChartData);
-
-        setChartData(formattedChartData);
-
-        // ✅ Fix bruttoProvisionen calculation based on timeframe
-        const totalEarnings = formattedChartData.reduce(
-          (sum, entry) => sum + (entry.earnings || 0),
-          0
-        );
-
-        console.log("✅ Debug: Total Earnings ->", totalEarnings);
-
-        setBruttoProvisionen(totalEarnings);
-        setCommissionsList(commissionsDetails);
+        setCommissionsList(details);
       } catch (err) {
         console.error("❌ Fetch Error:", err.message);
         setError(err.message);
@@ -132,34 +122,30 @@ const useFetchProvisionen = (timeframe = "monthly") => {
     fetchProvisionenData();
   }, [timeframe]);
 
-  // ✅ Function to aggregate daily data into weekly, monthly, or yearly
-  const aggregateTimeframe = (dailyData, timeframe) => {
-    let aggregatedData = {};
+  // ✅ Aggregazione intelligente in base al timeframe
+  const aggregateByTimeframe = (data, timeframe) => {
+    let result = {};
 
-    Object.keys(dailyData).forEach((dateStr) => {
-      let date = new Date(dateStr);
-      let formatted;
+    for (const dateStr in data) {
+      const date = new Date(dateStr);
+      if (isNaN(date)) continue;
 
+      let key;
       if (timeframe === "daily") {
-        formatted = dateStr;
+        key = dateStr;
       } else if (timeframe === "weekly") {
-        let year = date.getFullYear();
-        let week = Math.ceil(date.getDate() / 7);
-        formatted = `${year}-W${week}`;
+        const week = Math.ceil(date.getDate() / 7);
+        key = `${date.getFullYear()}-W${week}`;
       } else if (timeframe === "monthly") {
-        formatted = `${date.toLocaleString("default", {
-          month: "short",
-        })} '${date.getFullYear().toString().slice(-2)}`;
+        key = date.toLocaleString("de-DE", { month: "short" });
       } else {
-        formatted = date.getFullYear().toString(); // Yearly
+        key = date.getFullYear().toString();
       }
 
-      aggregatedData[formatted] =
-        (aggregatedData[formatted] || 0) + dailyData[dateStr];
-    });
+      result[key] = (result[key] || 0) + data[dateStr];
+    }
 
-    console.log(`📌 Aggregated Data for ${timeframe}:`, aggregatedData);
-    return aggregatedData;
+    return result;
   };
 
   return {

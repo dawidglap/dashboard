@@ -2,30 +2,26 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FaArrowUp, FaArrowDown, FaEquals } from "react-icons/fa";
 import { ResponsiveContainer, AreaChart, Area, XAxis, Tooltip } from "recharts";
 
 const UmsatzWidget = () => {
   const [bruttoUmsatz, setBruttoUmsatz] = useState(0);
   const [nettoUmsatz, setNettoUmsatz] = useState(0);
-  const [comparisonToLastMonth, setComparisonToLastMonth] = useState(0);
   const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchEarningsData = async () => {
       try {
-        const response = await fetch("/api/companies");
+        const response = await fetch("/api/companies/all"); // ✅ Stesso endpoint di FirmenWidget
         const data = await response.json();
         const companies = data?.data || [];
 
+        let monthlyEarnings = Array(12).fill(0); // ✅ Array con 12 mesi inizializzati a 0
         let totalEarnings = 0;
         let totalNetEarnings = 0;
-        let dailyEarnings = {};
 
         companies.forEach((company) => {
-          const date = new Date(company.created_at);
-          const dayKey = date.toISOString().split("T")[0]; // Format YYYY-MM-DD
-
           const earnings =
             company.plan === "BASIC"
               ? 799 * 12 * 1.081
@@ -35,30 +31,32 @@ const UmsatzWidget = () => {
               ? parseFloat(company.plan_price)
               : 0;
 
-          const commission = 1000; // Assume fixed commission
-
+          const commission = 1000;
           totalEarnings += earnings;
           totalNetEarnings += earnings - commission;
 
-          if (!dailyEarnings[dayKey]) {
-            dailyEarnings[dayKey] = 0;
+          // ✅ Distribuiamo i guadagni nel corso dell'anno (ipotizziamo crescita costante)
+          for (let i = 0; i < 12; i++) {
+            monthlyEarnings[i] += earnings / 12; // Dividiamo equamente nei mesi
           }
-          dailyEarnings[dayKey] += earnings;
         });
-
-        console.log("🔍 Debug - Total Earnings:", totalEarnings); // ✅ Logga il totale
-        console.log("🔍 Debug - Daily Earnings:", dailyEarnings); // ✅ Logga i dati giornalieri
 
         setBruttoUmsatz(totalEarnings);
         setNettoUmsatz(totalNetEarnings);
-        setChartData(
-          Object.entries(dailyEarnings).map(([date, earnings]) => ({
-            period: date,
-            earnings,
-          }))
-        );
+
+        // ✅ Creiamo il dataset per il grafico con tutti i mesi
+        const chartData = monthlyEarnings.map((earnings, index) => ({
+          period: new Date(2025, index).toLocaleString("de-DE", {
+            month: "short",
+          }),
+          earnings,
+        }));
+
+        setChartData(chartData);
       } catch (error) {
         console.error("Error fetching earnings data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -68,41 +66,26 @@ const UmsatzWidget = () => {
   return (
     <div className="border-2 border-white p-6 rounded-xl shadow-xl flex flex-col h-full">
       <Link href="/dashboard/umsatz" className="flex flex-col space-y-4">
-        {/* ✅ Umsatz Title */}
         <div>
           <h2 className="text-lg font-extrabold text-gray-800 dark:text-white">
             Umsatz
           </h2>
           <p className="text-2xl font-bold text-green-500">
-            {bruttoUmsatz > 0
-              ? `CHF ${Math.round(bruttoUmsatz).toLocaleString("de-DE")}`
-              : "Loading..."}
+            {loading
+              ? "Loading..."
+              : `CHF ${Math.round(bruttoUmsatz).toLocaleString("de-DE")}`}
           </p>
         </div>
 
-        {/* ✅ Netto Umsatz & Comparison */}
         <div>
           <p className="text-sm text-gray-600">
             Netto Umsatz:{" "}
-            {nettoUmsatz > 0 ? (
-              `CHF ${Math.round(nettoUmsatz).toLocaleString("de-DE")}`
-            ) : (
+            {loading ? (
               <span className="skeleton h-6 w-32 bg-gray-200 rounded animate-pulse"></span>
+            ) : (
+              `CHF ${Math.round(nettoUmsatz).toLocaleString("de-DE")}`
             )}
           </p>
-
-          {/* ✅ Show comparison (optional) */}
-          {/* <p className="text-sm text-gray-600 flex items-center">
-            Vergleich:{" "}
-            {comparisonToLastMonth > 0 ? (
-              <FaArrowUp className="text-green-500 ml-1" />
-            ) : comparisonToLastMonth < 0 ? (
-              <FaArrowDown className="text-red-500 ml-1" />
-            ) : (
-              <FaEquals className="text-gray-500 ml-1" />
-            )}
-            {comparisonToLastMonth}%
-          </p> */}
         </div>
 
         {/* ✅ Umsatz Mini Chart */}
@@ -113,14 +96,12 @@ const UmsatzWidget = () => {
                 data={chartData}
                 margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
               >
-                {/* ✅ Remove Axis Labels */}
                 <XAxis dataKey="period" hide />
                 <Tooltip
                   contentStyle={{ display: "none" }}
                   cursor={{ stroke: "transparent" }}
                 />
 
-                {/* ✅ Smooth Gradient Area */}
                 <defs>
                   <linearGradient
                     id="colorEarnings"
@@ -134,15 +115,14 @@ const UmsatzWidget = () => {
                   </linearGradient>
                 </defs>
 
-                {/* ✅ Monotone Line for Smoothness */}
                 <Area
                   type="monotone"
                   dataKey="earnings"
                   stroke="#a5b4fc"
                   strokeWidth={2}
                   fill="url(#colorEarnings)"
-                  dot={false} // Hide dots
-                  activeDot={false} // No active dot on hover
+                  dot={false}
+                  activeDot={false}
                 />
               </AreaChart>
             </ResponsiveContainer>
