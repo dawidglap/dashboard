@@ -16,6 +16,7 @@ const UserFormModal = ({ isOpen, onClose, onSave, user }) => {
     surname: "",
     birthday: "",
     role: "admin",
+    manager_id: "",
     phone_number: "",
     user_street: "",
     user_street_number: "",
@@ -31,8 +32,8 @@ const UserFormModal = ({ isOpen, onClose, onSave, user }) => {
 
   useEffect(() => {
     if (user) {
-      setNewUser((prev) => ({
-        ...prev,
+      // ✏️ Modal Edit: Popola i dati esistenti
+      setNewUser({
         email: user.email || "",
         name: user.name || "",
         surname: user.surname || "",
@@ -44,13 +45,33 @@ const UserFormModal = ({ isOpen, onClose, onSave, user }) => {
         user_postcode: user.user_postcode || "",
         user_city: user.user_city || "",
         subscription_expiration: user.subscription_expiration
-          ? new Date(user.subscription_expiration).toISOString().split("T")[0] // ✅ Convert date to YYYY-MM-DD
+          ? new Date(user.subscription_expiration).toISOString().split("T")[0]
           : "",
         is_active: user.is_active !== undefined ? user.is_active : true,
-        password: "", // ✅ Prevent sending hashed password
-      }));
+        password: "",
+        manager_id: user.manager_id || "", // <- se presente
+      });
+    } else {
+      // 🆕 Modal Nuovo: Reset totale
+      setNewUser({
+        email: "",
+        password: "",
+        name: "",
+        surname: "",
+        birthday: "",
+        role: "admin",
+        phone_number: "",
+        user_street: "",
+        user_street_number: "",
+        user_postcode: "",
+        user_city: "",
+        subscription_expiration: "",
+        is_active: true,
+        manager_id: "", // <- nuovo campo
+      });
     }
   }, [user]);
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -99,6 +120,23 @@ const UserFormModal = ({ isOpen, onClose, onSave, user }) => {
     }
   };
 
+  const [allUsers, setAllUsers] = useState([]);
+
+useEffect(() => {
+  const fetchUsers = async () => {
+    const res = await fetch("/api/users");
+    const data = await res.json();
+    setAllUsers(data.users || []);
+  };
+
+  fetchUsers();
+}, []);
+
+const managerList = allUsers.filter(
+  (u) => u.role === "manager" || u.role === "admin"
+);
+
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -123,7 +161,12 @@ const UserFormModal = ({ isOpen, onClose, onSave, user }) => {
             {/* Form Layout */}
             <div className="grid grid-cols-4 gap-3 mt-6">
               <div className="col-span-2">
-                <UserBasicInfo newUser={newUser} handleChange={handleChange} />
+              <UserBasicInfo
+  newUser={newUser}
+  handleChange={handleChange}
+  managers={managerList}
+/>
+
               </div>
               <div className="col-span-2">
                 <UserAddressInfo
