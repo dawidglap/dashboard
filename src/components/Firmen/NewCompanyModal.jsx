@@ -57,6 +57,8 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
   const [isSaving, setIsSaving] = useState(false); // Track saving state
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [error, setError] = useState(null);
+  const [filteredMarkenbotschafter, setFilteredMarkenbotschafter] = useState([]);
+
 
   // ✅ Fetch users only when the modal opens
   useEffect(() => {
@@ -78,6 +80,22 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
 
     fetchUsers();
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!formData.manager_id || !users.length) {
+      setFilteredMarkenbotschafter([]);
+      return;
+    }
+  
+    const filtered = users.filter(
+      (user) =>
+        user.role === "markenbotschafter" &&
+        user.manager_id === formData.manager_id
+    );
+  
+    setFilteredMarkenbotschafter(filtered);
+  }, [formData.manager_id, users]);
+  
 
   // ✅ Reset loading state when modal opens
   useEffect(() => {
@@ -239,6 +257,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
               <label className="text-sm font-medium">Nr.</label>
               <input
                 type="text"
+                maxlength="10"
                 name="company_street_number"
                 value={formData.company_street_number}
                 onChange={handleChange}
@@ -252,6 +271,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
               <input
                 type="text"
                 name="company_post_code"
+                maxlength="7"
                 value={formData.company_post_code}
                 onChange={handleChange}
                 className="input input-sm input-bordered w-full rounded-full"
@@ -397,23 +417,20 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
             <div className="col-span-2">
               <label className="text-sm font-medium"> Markenbotschafter</label>
               <select
-                name="markenbotschafter_id"
-                value={formData.markenbotschafter_id}
-                onChange={handleChange}
-                className="select select-sm select-bordered w-full rounded-full"
-              >
-                <option value={adminId}>-- Standard: Admin --</option>
-                {users
-                  .filter(
-                    (user) =>
-                      user.role === "markenbotschafter" || user.role === "admin"
-                  )
-                  .map((user) => (
-                    <option key={user._id} value={user._id}>
-                      {user.name} {user.surname} ({user.email})
-                    </option>
-                  ))}
-              </select>
+  name="markenbotschafter_id"
+  value={formData.markenbotschafter_id}
+  onChange={handleChange}
+  className="select select-sm select-bordered w-full rounded-full"
+>
+  <option value={adminId}>-- Standard: Admin --</option>
+
+  {filteredMarkenbotschafter.map((user) => (
+    <option key={user._id} value={user._id}>
+      {user.name} {user.surname} ({user.email})
+    </option>
+  ))}
+</select>
+
             </div>
           </div>
         )}
