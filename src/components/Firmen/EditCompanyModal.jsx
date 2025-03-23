@@ -43,6 +43,8 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
 
   const [toastMessage, setToastMessage] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [filteredMarkenbotschafter, setFilteredMarkenbotschafter] = useState([]);
+
 
   // ✅ Fetch users when modal opens
   useEffect(() => {
@@ -61,6 +63,22 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    if (!users || users.length === 0 || !formData.manager_id) {
+      setFilteredMarkenbotschafter([]);
+      return;
+    }
+
+    const filtered = users.filter(
+      (user) =>
+        user.role === "markenbotschafter" &&
+        user.manager_id === formData.manager_id
+    );
+
+    setFilteredMarkenbotschafter(filtered.length > 0 ? filtered : []);
+  }, [users, formData.manager_id]);
+
+
   // ✅ Populate fields when opening the modal
   useEffect(() => {
     if (company) {
@@ -77,21 +95,21 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
           company.plan === "BUSINESS"
             ? company.plan_price || ""
             : company.plan === "PRO"
-            ? 899 * 12 * 1.081
-            : 799 * 12 * 1.081,
+              ? 899 * 12 * 1.081
+              : 799 * 12 * 1.081,
         company_owner: company.company_owner || "", // ✅ Added Inhaber
         plan_price: company.plan_price || "",
         expiration_date: company.expiration_date
-        ? new Date(company.expiration_date).toISOString().split("T")[0]
-        : createdAt
-        ? new Date(
-            new Date(createdAt).setFullYear(
-              new Date(createdAt).getFullYear() + 1
+          ? new Date(company.expiration_date).toISOString().split("T")[0]
+          : createdAt
+            ? new Date(
+              new Date(createdAt).setFullYear(
+                new Date(createdAt).getFullYear() + 1
+              )
             )
-          )
-            .toISOString()
-            .split("T")[0]
-        : "",
+              .toISOString()
+              .split("T")[0]
+            : "",
 
         manager_id: company.manager_id || "",
         markenbotschafter_id: company.markenbotschafter_id || "",
@@ -103,7 +121,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
 
   useEffect(() => {
     if (!company || !company._id) return;
-  
+
     const fetchCreatedAt = async () => {
       try {
         const res = await fetch(`/api/companies/${company._id}`);
@@ -117,10 +135,10 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
         console.error("Fehler beim Laden von createdAt:", err);
       }
     };
-  
+
     fetchCreatedAt();
   }, [company]);
-  
+
 
   const handleSubmit = async () => {
     // ✅ Validate required fields before submitting
@@ -156,8 +174,8 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
         formData.plan === "BUSINESS"
           ? formData.plan_price || null
           : formData.plan === "PRO"
-          ? 899 * 12 * 1.081
-          : 799 * 12 * 1.081,
+            ? 899 * 12 * 1.081
+            : 799 * 12 * 1.081,
     };
 
     console.log("Submitting update with data:", updatedData);
@@ -279,21 +297,21 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
           </div>
           {/* Ablaufdatum */}
           {/* Startdatum */}
-<div className="col-span-1">
-  <label className="text-sm font-medium">Startdatum</label>
-  <input
-    type="date"
-    value={
-      createdAt
-        ? new Date(createdAt).toISOString().split("T")[0]
-        : ""
-    }
-    className="input input-sm input-bordered w-full rounded-full"
-    readOnly
-  />
-</div>
+          <div className="col-span-1">
+            <label className="text-sm font-medium">Startdatum</label>
+            <input
+              type="date"
+              value={
+                createdAt
+                  ? new Date(createdAt).toISOString().split("T")[0]
+                  : ""
+              }
+              className="input input-sm input-bordered w-full rounded-full"
+              readOnly
+            />
+          </div>
 
-          
+
           <div className="col-span-1">
             <label className="text-sm font-medium">Ablaufdatum</label>
             <input
@@ -304,7 +322,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
               className="input input-sm input-bordered w-full rounded-full"
             />
           </div>
-          
+
 
           {/* Telefon & Mobile */}
           <div className="col-span-2">
@@ -385,20 +403,25 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
               value={formData.markenbotschafter_id}
               onChange={handleChange}
               className="select select-sm select-bordered w-full rounded-full"
+              disabled={!formData.manager_id}
             >
-              <option value="">-- Markenbotschafter auswählen --</option>
-              {users
-                .filter(
-                  (user) =>
-                    user.role === "markenbotschafter" || user.role === "admin"
-                )
-                .map((user) => (
-                  <option key={user._id} value={user._id}>
-                    {user.name} {user.surname}
-                  </option>
-                ))}
+              {!formData.manager_id ? (
+                <option value="">Bitte zuerst einen Manager wählen</option>
+              ) : filteredMarkenbotschafter.length === 0 ? (
+                <option value="">Keine Markenbotschafter verfügbar</option>
+              ) : (
+                <>
+                  <option value="">-- Markenbotschafter auswählen --</option>
+                  {filteredMarkenbotschafter.map((user) => (
+                    <option key={user._id} value={user._id}>
+                      {user.name} {user.surname} ({user.email})
+                    </option>
+                  ))}
+                </>
+              )}
             </select>
           </div>
+
         </div>
 
         {/* Buttons */}
