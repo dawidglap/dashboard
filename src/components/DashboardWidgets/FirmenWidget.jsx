@@ -91,7 +91,7 @@ const FirmenWidget = () => {
   return (
     <div className="relative bg-gradient-to-r border-white border-2 from-indigo-600 to-purple-500 p-6 rounded-2xl shadow-lg text-white flex flex-col justify-between h-full">
       <div>
-        <h2 className="text-lg font-semibold">Firmen</h2>
+        <h2 className="text-lg font-semibold">Kunden</h2>
         <p className="text-4xl font-extrabold mt-1">
           {loading ? (
             <span className="skeleton h-8 w-24 bg-gray-300 rounded"></span>
@@ -107,14 +107,14 @@ const FirmenWidget = () => {
           {loading ? (
             <span className="skeleton h-6 w-32 bg-gray-300 rounded"></span>
           ) : (
-            `Neue Firmen: ${newCompaniesCount}`
+            `Neue Kunden: ${newCompaniesCount}`
           )}
         </p>
         <p>
           {loading ? (
             <span className="skeleton h-6 w-32 bg-gray-300 rounded"></span>
           ) : (
-            `Beliebtester Plan: ${topPlan}`
+            `Beliebtester Paket: ${topPlan}`
           )}
         </p>
         <p>
