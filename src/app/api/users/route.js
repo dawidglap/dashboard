@@ -26,6 +26,7 @@ export async function GET(request) {
             user_city: 1,
             subscription_expiration: 1, // ✅ Include subscription expiration
             is_active: 1, // ✅ Include account status
+            manager_id: 1,
           },
         }
       )

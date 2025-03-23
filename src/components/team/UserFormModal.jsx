@@ -99,7 +99,7 @@ const UserFormModal = ({ isOpen, onClose, onSave, user }) => {
         delete userPayload.password; // ✅ Do not send password if empty
       }
 
-      const res = await fetch("/api/users", {
+      const res = await fetch("/api/users/extended", {
         method: user ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: user?._id, ...userPayload }),
