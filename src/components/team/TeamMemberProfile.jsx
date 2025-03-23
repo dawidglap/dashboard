@@ -21,10 +21,12 @@ const TeamMemberProfile = ({ userId }) => {
     const fetchTeamMemberData = async () => {
       try {
         setLoading(true);
-        console.log("📡 Fetching user data for ID:", userId);
-        const userRes = await fetch(`/api/users/${userId}`);
+        console.log("📡 Fetching user (with manager) for ID:", userId);
+
+        const userRes = await fetch(`/api/users/${userId}/with-manager`);
         if (!userRes.ok)
           throw new Error(`Error fetching user details: ${userRes.status}`);
+
         const userData = await userRes.json();
         setUser(userData.user);
 
@@ -41,6 +43,7 @@ const TeamMemberProfile = ({ userId }) => {
         setLoading(false);
       }
     };
+
 
     fetchTeamMemberData();
   }, [userId]);
@@ -95,10 +98,27 @@ const TeamMemberProfile = ({ userId }) => {
         </div>
 
         {/* Right Side - Assigned Companies */}
-        <div>
-          <h3 className="text-sm font-medium pb-1 ps-4">Mein Team</h3>
-          <MemberCompanies companies={companies} userId={userId} />
+        {/* Right Side - Dynamic Section */}
+        <div className="space-y-4">
+          {user?.role === "markenbotschafter" && user.manager ? (
+            <div className="bg-gradient-to-r mt-5  from-indigo-600 to-purple-500 p-4 px-8 rounded-full shadow-xl">
+              <div className="flex">
+                <h3 className="text-sm font-semibold mb-2 text-gray-300 dark:text-gray-200">Dein Business Partner:</h3>
+                <p className="text-sm text-white font-bold ms-2">
+                  {user.manager.name} {user.manager.surname}
+                </p>
+
+              </div>
+              <p className="text-sm text-white font-bold"><span className="text-sm font-semibold mb-2 text-gray-300 dark:text-gray-200">Kontakt:</span> {user.manager.email}</p>
+            </div>
+          ) : user?.role === "manager" ? (
+            <>
+              <h3 className="text-sm font-medium pb-1 ps-4">Mein Team</h3>
+              <MemberCompanies companies={companies} userId={userId} />
+            </>
+          ) : null}
         </div>
+
       </div>
     </div>
   );
