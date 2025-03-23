@@ -96,7 +96,7 @@ const TeamMemberProfile = ({ userId }) => {
 
         {/* Right Side - Assigned Companies */}
         <div>
-          <h3 className="text-sm font-medium pb-1 ps-4">Zugewiesene Kunden</h3>
+          <h3 className="text-sm font-medium pb-1 ps-4">Mein Team</h3>
           <MemberCompanies companies={companies} userId={userId} />
         </div>
       </div>
