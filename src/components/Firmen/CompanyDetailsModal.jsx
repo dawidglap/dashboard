@@ -1,9 +1,51 @@
 "use client";
+import { useEffect, useState } from "react";
 
 import { motion } from "framer-motion";
 
+const formatSwissPhoneNumber = (number) => {
+  if (!number) return "Nicht verfügbar";
+  const digits = number.replace(/\D/g, "").slice(0, 14);
+  if (digits.length === 10) {
+    return digits.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, "$1 $2 $3 $4");
+  }
+  return number;
+};
+
+
+
+
+
 const CompanyDetailsModal = ({ company, onClose }) => {
+  const [users, setUsers] = useState([]);
+
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch("/api/users");
+        const data = await res.json();
+        setUsers(data.users || []);
+      } catch (err) {
+        console.error("Fehler beim Laden der Benutzerliste", err);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const getManagerName = () => {
+    const manager = users.find((u) => u._id === company.manager_id);
+    return manager ? `${manager.name} ${manager.surname}` : "Nicht zugewiesen";
+  };
+
+  const getMarkenbotschafterName = () => {
+    const bot = users.find((u) => u._id === company.markenbotschafter_id);
+    return bot ? `${bot.name} ${bot.surname}` : "Nicht zugewiesen";
+  };
   if (!company) return null;
+
+  
 
   return (
     <div className="modal modal-open">
@@ -25,7 +67,7 @@ const CompanyDetailsModal = ({ company, onClose }) => {
         <div className="grid grid-cols-4 gap-3 mt-6">
           {/* Firmen-Name */}
           <div className="col-span-4">
-            <label className="text-sm font-medium"> Firmen-Name</label>
+            <label className="text-sm font-medium"> Kunden Name</label>
             <input
               type="text"
               value={company.company_name}
@@ -36,7 +78,7 @@ const CompanyDetailsModal = ({ company, onClose }) => {
 
           {/* Straße & Hausnummer */}
           <div className="col-span-3">
-            <label className="text-sm font-medium"> Straße</label>
+            <label className="text-sm font-medium"> Strasse</label>
             <input
               type="text"
               value={company.company_street}
@@ -45,7 +87,7 @@ const CompanyDetailsModal = ({ company, onClose }) => {
             />
           </div>
           <div className="col-span-1">
-            <label className="text-sm font-medium"> Hausnummer</label>
+            <label className="text-sm font-medium"> Nr</label>
             <input
               type="text"
               value={company.company_street_number}
@@ -65,7 +107,7 @@ const CompanyDetailsModal = ({ company, onClose }) => {
             />
           </div>
           <div className="col-span-3">
-            <label className="text-sm font-medium"> Stadt</label>
+            <label className="text-sm font-medium"> Ort</label>
             <input
               type="text"
               value={company.company_city}
@@ -106,8 +148,8 @@ const CompanyDetailsModal = ({ company, onClose }) => {
           <div className="col-span-2">
             <label className="text-sm font-medium"> Telefon</label>
             <input
-              type="text"
-              value={company.telephone || "Nicht verfügbar"}
+              type="tel"
+              value={formatSwissPhoneNumber(company.telephone)}
               className="input input-sm input-bordered w-full rounded-full"
               readOnly
             />
@@ -115,8 +157,8 @@ const CompanyDetailsModal = ({ company, onClose }) => {
           <div className="col-span-2">
             <label className="text-sm font-medium"> Mobil</label>
             <input
-              type="text"
-              value={company.mobile || "Nicht verfügbar"}
+              type="tel"
+              value={formatSwissPhoneNumber(company.mobile)}
               className="input input-sm input-bordered w-full rounded-full"
               readOnly
             />
@@ -149,7 +191,7 @@ const CompanyDetailsModal = ({ company, onClose }) => {
             <label className="text-sm font-medium"> Manager</label>
             <input
               type="text"
-              value={company.manager_name || "Nicht zugewiesen"}
+              value={getManagerName()}
               className="input input-sm input-bordered w-full rounded-full"
               readOnly
             />
@@ -158,7 +200,7 @@ const CompanyDetailsModal = ({ company, onClose }) => {
             <label className="text-sm font-medium"> Markenbotschafter</label>
             <input
               type="text"
-              value={company.markenbotschafter_name || "Nicht zugewiesen"}
+              value={getMarkenbotschafterName()}
               className="input input-sm input-bordered w-full rounded-full"
               readOnly
             />

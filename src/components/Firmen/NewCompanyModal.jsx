@@ -5,6 +5,14 @@ import useCompanyForm from "../../hooks/useCompanyForm";
 import { FaSpinner } from "react-icons/fa";
 import { motion } from "framer-motion";
 
+const formatSwissPhoneNumber = (number = "") => {
+  const digits = number.replace(/\D/g, "").slice(0, 14);
+  if (digits.length === 10)
+    return digits.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, "$1 $2 $3 $4");
+  return digits;
+};
+
+
 const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
   const adminId = "679396cd375db32de1bbfd01"; // Default Admin ID
   const today = new Date().toISOString().split("T")[0]; // ✅ Ensure only future dates can be selected
@@ -33,7 +41,13 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
     plan: "BASIC",
     company_owner: "",
     plan_price: calculatePlanPrice("BASIC"),
-    expiration_date: today, // ✅ Default to today
+    expiration_date: new Date(
+      new Date(new Date().setFullYear(new Date().getFullYear() + 1)).getTime() - 24 * 60 * 60 * 1000
+    )
+      .toISOString()
+      .split("T")[0],
+    
+    
     manager_id: adminId, // Default to Admin
     markenbotschafter_id: adminId, // Default to Admin
   });
@@ -265,6 +279,17 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
 
             {/* Ablaufdatum */}
+            {/* Startdatum */}
+<div className="col-span-1">
+  <label className="text-sm font-medium">Startdatum</label>
+  <input
+    type="date"
+    value={today}
+    readOnly
+    className="input input-sm input-bordered w-full rounded-full"
+  />
+</div>
+
             <div className="col-span-1">
               <label className="text-sm font-medium"> Ablaufdatum</label>
               <input
@@ -278,7 +303,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
 
             {/* Firmen-E-Mail */}
-            <div className="col-span-3">
+            <div className="col-span-2">
               <label className="text-sm font-medium"> Kunden-E-Mail</label>
               <input
                 type="email"
@@ -298,20 +323,22 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
             <div className="col-span-2">
               <label className="text-sm font-medium"> Telefon</label>
               <input
-                type="text"
+                type="tel"
                 name="telephone"
-                value={formData.telephone}
+                value={formatSwissPhoneNumber(formData.telephone)}
                 onChange={handleChange}
+                maxLength={14}
                 className="input input-sm input-bordered w-full rounded-full"
               />
             </div>
             <div className="col-span-2">
               <label className="text-sm font-medium"> Mobil</label>
               <input
-                type="text"
+                type="tel"
                 name="mobile"
-                value={formData.mobile}
+                value={formatSwissPhoneNumber(formData.mobile)}
                 onChange={handleChange}
+                maxLength={14}
                 className="input input-sm input-bordered w-full rounded-full"
               />
             </div>

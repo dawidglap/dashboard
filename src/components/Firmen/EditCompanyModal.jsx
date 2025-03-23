@@ -5,6 +5,16 @@ import useCompanyForm from "../../hooks/useCompanyForm";
 import { FaSpinner } from "react-icons/fa";
 import { motion } from "framer-motion";
 
+const formatSwissPhoneNumber = (number) => {
+  if (!number) return "";
+  const digits = number.replace(/\D/g, "").slice(0, 14);
+  if (digits.length === 10) {
+    return digits.replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, "$1 $2 $3 $4");
+  }
+  return number;
+};
+
+
 const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
   const { formData, handleChange, setFormData } = useCompanyForm(
     {
@@ -29,6 +39,8 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
   );
 
   const [users, setUsers] = useState([]); // ✅ Store all users
+  const [createdAt, setCreatedAt] = useState(null);
+
   const [toastMessage, setToastMessage] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -70,8 +82,17 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
         company_owner: company.company_owner || "", // ✅ Added Inhaber
         plan_price: company.plan_price || "",
         expiration_date: company.expiration_date
-          ? new Date(company.expiration_date).toISOString().split("T")[0]
-          : "",
+        ? new Date(company.expiration_date).toISOString().split("T")[0]
+        : createdAt
+        ? new Date(
+            new Date(createdAt).setFullYear(
+              new Date(createdAt).getFullYear() + 1
+            )
+          )
+            .toISOString()
+            .split("T")[0]
+        : "",
+
         manager_id: company.manager_id || "",
         markenbotschafter_id: company.markenbotschafter_id || "",
       });
@@ -80,14 +101,35 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
     }
   }, [company, setFormData]);
 
+  useEffect(() => {
+    if (!company || !company._id) return;
+  
+    const fetchCreatedAt = async () => {
+      try {
+        const res = await fetch(`/api/companies/${company._id}`);
+        if (!res.ok) throw new Error("Fehler beim Laden von createdAt");
+        const data = await res.json();
+        setCreatedAt(data.data?.created_at || data.data?.createdAt);
+
+
+
+      } catch (err) {
+        console.error("Fehler beim Laden von createdAt:", err);
+      }
+    };
+  
+    fetchCreatedAt();
+  }, [company]);
+  
+
   const handleSubmit = async () => {
     // ✅ Validate required fields before submitting
     const requiredFields = [
-      { name: "company_name", label: "Firmen-Name" },
-      { name: "company_street", label: "Straße" },
+      { name: "company_name", label: "Kunden Name" },
+      { name: "company_street", label: "Strasse" },
       { name: "company_post_code", label: "PLZ" },
-      { name: "company_city", label: "Stadt" },
-      { name: "company_email", label: "Firmen-E-Mail" },
+      { name: "company_city", label: "Ort" },
+      { name: "company_email", label: "Kunden E-Mail" },
     ];
 
     const missingFields = requiredFields.filter(
@@ -104,7 +146,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
 
     if (!company || !company._id) {
       console.error("Error: Company ID is missing!");
-      setToastMessage("❌ Fehler: Firmen-ID fehlt!");
+      setToastMessage("❌ Fehler: Kunden ID fehlt!");
       return;
     }
 
@@ -156,7 +198,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
         </div>
 
         <div className="grid grid-cols-4 gap-3 mt-6">
-          {/* Firmen-Name */}
+          {/* Kunden Name */}
           <div className="col-span-4">
             <label className="text-sm font-medium">Kunden Name</label>
             <input
@@ -168,7 +210,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
             />
           </div>
 
-          {/* Straße & Hausnummer */}
+          {/* Strasse & Hausnummer */}
           <div className="col-span-3">
             <label className="text-sm font-medium">Strasse</label>
             <input
@@ -190,7 +232,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
             />
           </div>
 
-          {/* PLZ & Stadt */}
+          {/* PLZ & Ort */}
           <div className="col-span-1">
             <label className="text-sm font-medium">PLZ</label>
             <input
@@ -224,7 +266,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
             />
           </div>
 
-          {/* Firmen-E-Mail */}
+          {/* Kunden E-Mail */}
           <div className="col-span-2">
             <label className="text-sm font-medium">Kunden E-Mail</label>
             <input
@@ -236,7 +278,23 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
             />
           </div>
           {/* Ablaufdatum */}
-          <div className="col-span-2">
+          {/* Startdatum */}
+<div className="col-span-1">
+  <label className="text-sm font-medium">Startdatum</label>
+  <input
+    type="date"
+    value={
+      createdAt
+        ? new Date(createdAt).toISOString().split("T")[0]
+        : ""
+    }
+    className="input input-sm input-bordered w-full rounded-full"
+    readOnly
+  />
+</div>
+
+          
+          <div className="col-span-1">
             <label className="text-sm font-medium">Ablaufdatum</label>
             <input
               type="date"
@@ -246,14 +304,15 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
               className="input input-sm input-bordered w-full rounded-full"
             />
           </div>
+          
 
           {/* Telefon & Mobile */}
           <div className="col-span-2">
             <label className="text-sm font-medium">Telefon</label>
             <input
-              type="text"
+              type="tel"
               name="telephone"
-              value={formData.telephone}
+              value={formatSwissPhoneNumber(formData.telephone)}
               onChange={handleChange}
               className="input input-sm input-bordered w-full rounded-full"
             />
@@ -261,9 +320,9 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
           <div className="col-span-2">
             <label className="text-sm font-medium">Mobil</label>
             <input
-              type="text"
+              type="tel"
               name="mobile"
-              value={formData.mobile}
+              value={formatSwissPhoneNumber(formData.mobile)}
               onChange={handleChange}
               className="input input-sm input-bordered w-full rounded-full"
             />
