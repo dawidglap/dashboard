@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import SidebarItem from "./Sidebar/SidebarItem";
 import SidebarDropdown from "./Sidebar/SidebarDropdown";
@@ -20,6 +21,7 @@ import { GoDownload } from "react-icons/go";
 const SidebarMenu = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const pathname = usePathname();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -41,43 +43,42 @@ const SidebarMenu = () => {
 
   const menuItems = [
     { title: "Home", href: "/dashboard", icon: <FaHome /> },
-
-    // Admin-only pages (Disabled for non-admins)
     {
       title: "Kunden",
       href: "/dashboard/firmen",
       icon: <FaBuilding />,
-      // Disable for non-admins
     },
     {
       title: "Demo Calls",
       href: "/dashboard/demo-calls",
       icon: <FaVideo />,
-      disabled: !isAdmin, // Disable for non-admins
+      disabled: !isAdmin,
     },
     {
       title: "Umsatz",
       href: "/dashboard/umsatz",
       icon: <FaChartBar />,
-      // Disable for non-admins
     },
     {
       title: "Team",
       href: "/dashboard/team",
       icon: <FaUsers />,
-      disabled: !isAdmin, // Disable for non-admins
+      disabled: !isAdmin,
     },
-
-    // Always visible
-    { title: "Aufgaben", href: "/dashboard/aufgaben", icon: <FaTasks /> },
+    {
+      title: "Aufgaben",
+      href: "/dashboard/aufgaben",
+      icon: <FaTasks />,
+    },
     {
       title: "Materialien",
       href: "/dashboard/materialien",
       icon: <GoDownload />,
     },
-
-    { title: "Support", href: "/dashboard/hilfe", icon: <FaQuestionCircle /> },
   ];
+
+  // Funzione per determinare se l’item è attivo
+  const isActive = (href) => pathname?.startsWith(href);
 
   return (
     <motion.div className="fixed top-0 left-0 h-screen w-64 z-[100] border-r shadow-lg flex flex-col p-4 overflow-y-auto">
@@ -90,10 +91,24 @@ const SidebarMenu = () => {
       <nav className="mt-6 flex-grow">
         <ul className="flex flex-col space-y-1">
           {menuItems.map((item, index) => (
-            <SidebarItem key={index} {...item} />
+            <SidebarItem
+              key={index}
+              {...item}
+              active={isActive(item.href)}
+            />
           ))}
+
           <SidebarDropdown />
+
+          {/* ✅ Support sotto il dropdown */}
+          <SidebarItem
+            title="Support"
+            href="/dashboard/hilfe"
+            icon={<FaQuestionCircle />}
+            active={isActive("/dashboard/hilfe")}
+          />
         </ul>
+
         <SidebarLogout />
       </nav>
 
@@ -103,5 +118,3 @@ const SidebarMenu = () => {
 };
 
 export default SidebarMenu;
-
-// mvp done
