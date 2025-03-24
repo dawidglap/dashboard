@@ -12,8 +12,8 @@ const PaidStatusIcon = ({ status, onClick }) => {
     return (
         <motion.button
             onClick={onClick}
-            disabled={status}
-            className={`mx-auto w-8 h-8 rounded-full border ${status ? "border-green-500" : "border-gray-400"
+
+            className={`mx-auto w-8 h-8 rounded-full cursor-pointer ${status ? "border-green-500" : "border-gray-400"
                 } flex items-center justify-center transition-colors duration-300`}
             whileTap={{ scale: 0.9 }}
             aria-label="Toggle Bezahlt"

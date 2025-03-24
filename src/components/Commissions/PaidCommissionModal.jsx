@@ -19,13 +19,15 @@ const PaidCommissionModal = ({ company, onConfirm, onCancel }) => {
                 className="modal-box max-w-lg bg-base-100 shadow-lg rounded-2xl p-8"
             >
                 <h3 className="text-xl font-bold text-black border-b pb-3">
-                    Provision als bezahlt markieren
+                    Provision als {company.statusProvisionen ? "nicht bezahlt" : "bezahlt"} markieren
                 </h3>
 
                 <p className="py-6 text-base-content">
                     Möchten Sie wirklich die Provision für{" "}
                     <span className="font-semibold">{company.companyName}</span>{" "}
-                    als <span className="text-green-600 font-semibold">bezahlt</span> markieren?
+                    als <span className={company.statusProvisionen ? "text-red-500 font-semibold" : "text-green-600 font-semibold"}>
+                        {company.statusProvisionen ? "nicht bezahlt" : "bezahlt"}
+                    </span> markieren?
                 </p>
 
                 <div className="modal-action flex justify-between">

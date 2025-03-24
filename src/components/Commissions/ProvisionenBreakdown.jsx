@@ -52,7 +52,8 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
 
       const start = managerCommission?.startDatum || mbCommission?.startDatum;
 
-      const status = managerCommission?.status_provisionen ?? mbCommission?.status_provisionen ?? false;
+      const status = managerCommission?.status_provisionen || mbCommission?.status_provisionen || false;
+
 
       groupedCommissions.push({
         companyName,
@@ -80,7 +81,7 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           company_name: selectedCompany.companyName,
-          status_provisionen: true,
+          status_provisionen: !selectedCompany.statusProvisionen, // toggle dinamico
         }),
       });
 
@@ -88,13 +89,12 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
 
       const updated = displayedCommissions.map((item) =>
         item.companyName === selectedCompany.companyName
-          ? { ...item, statusProvisionen: true }
+          ? { ...item, statusProvisionen: !item.statusProvisionen }
           : item
       );
 
-
       setDisplayedCommissions(updated);
-      console.log("✅ Commissione aggiornata");
+      console.log("✅ Commissione aggiornata!");
     } catch (err) {
       console.error("❌ Errore:", err);
     } finally {
@@ -102,6 +102,7 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
       setSelectedCompany(null);
     }
   };
+
 
 
 

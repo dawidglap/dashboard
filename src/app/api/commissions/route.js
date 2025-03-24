@@ -83,6 +83,8 @@ export async function GET(req) {
             role: "manager",
             startDatum: startDate,
             zahlungsdatum: zahlungsdatum,
+            status_provisionen: company.status_provisionen || false,
+
           },
           {
             userName: markenbotschafter
@@ -104,6 +106,8 @@ export async function GET(req) {
             role: "manager",
             startDatum: startDate,
             zahlungsdatum: zahlungsdatum,
+            status_provisionen: company.status_provisionen || false,
+
           });
         }
         if (markenbotschafterId === userId) {
@@ -114,6 +118,8 @@ export async function GET(req) {
             role: "markenbotschafter",
             startDatum: startDate,
             zahlungsdatum: zahlungsdatum,
+            status_provisionen: company.status_provisionen || false,
+
           });
         }
       }
