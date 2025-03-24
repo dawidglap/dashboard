@@ -7,6 +7,9 @@ import UserFormModal from "../../../components/team/UserFormModal";
 import DeleteConfirmationModal from "../../../components/team/DeleteConfirmationModal";
 import ToastNotification from "../../../components/team/ToastNotification";
 import { motion } from "framer-motion";
+import { useSession } from "next-auth/react";
+import TeamMemberProfile from "@/components/team/TeamMemberProfile";
+
 
 const Team = () => {
   const [users, setUsers] = useState([]);
@@ -40,6 +43,24 @@ const Team = () => {
     setCurrentUser(user);
     setShowModal(true);
   };
+
+  const { data: session, status } = useSession();
+const user = session?.user;
+
+const [fullUser, setFullUser] = useState(null);
+
+useEffect(() => {
+  if (user?.role === "manager" || user?.role === "markenbotschafter") {
+    fetch("/api/users/me")
+      .then((res) => res.json())
+      .then((data) => setFullUser(data.user));
+  }
+}, [user]);
+if ((user?.role === "manager" || user?.role === "markenbotschafter") && fullUser) {
+  return <TeamMemberProfile userId={fullUser._id} />;
+}
+
+
 
   const handleDelete = async () => {
     if (!userToDelete) return;
@@ -99,6 +120,9 @@ const Team = () => {
       </div>
     );
   if (error) return <p className="text-center text-red-500">{error}</p>;
+
+
+  
 
   return (
     <motion.div
