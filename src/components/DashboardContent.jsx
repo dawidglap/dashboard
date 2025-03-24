@@ -9,7 +9,7 @@ import DemoCallsWidget from "./DashboardWidgets/DemoCallsWidget";
 import TeamWidget from "./DashboardWidgets/TeamWidget";
 import TasksWidget from "./DashboardWidgets/TasksWidget";
 
-const DashboardContent = ({ user, companies }) => {
+const DashboardContent = ({ user, companies, commissions }) => {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -82,7 +82,7 @@ const DashboardContent = ({ user, companies }) => {
           }}
           className="col-span-12 md:col-span-6 xl:col-span-4"
         >
-          <ProvisionenWidget />
+          <ProvisionenWidget commissions={commissions} />
         </motion.div>
 
         {/* Firmen (Filtered for Managers/Markenbotschafters) */}

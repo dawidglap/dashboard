@@ -12,7 +12,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const ProvisionenWidget = () => {
+const ProvisionenWidget = ({ commissions = [] }) => {
+  const totalCommissions = commissions.reduce((sum, c) => sum + c.amount, 0);
+
   const [timeframe, setTimeframe] = useState("monthly"); // Default view
   const { chartData, bruttoProvisionen, loading, error } =
     useFetchProvisionen(timeframe);
@@ -40,10 +42,11 @@ const ProvisionenWidget = () => {
           Provisionen
         </h2>
         <p className="text-2xl font-bold text-indigo-500">
-          {bruttoProvisionen > 0
-            ? `CHF ${Math.round(bruttoProvisionen).toLocaleString("de-DE")}`
+          {totalCommissions > 0
+            ? `${totalCommissions.toLocaleString("de-DE")} CHF`
             : "Keine Daten"}
         </p>
+
 
         {/* ✅ Display Chart or "Not Enough Data" Message */}
         <div className="mt-auto h-24">
