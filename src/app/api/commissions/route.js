@@ -128,3 +128,29 @@ export async function GET(req) {
     );
   }
 }
+
+export async function PUT(req) {
+  try {
+    const { company_name, status_provisionen } = await req.json();
+
+    if (!company_name) {
+      return NextResponse.json({ error: "Missing company name" }, { status: 400 });
+    }
+
+    const { db } = await connectToDatabase();
+
+    const result = await db.collection("companies").updateOne(
+      { company_name: company_name.trim() },
+      { $set: { status_provisionen: !!status_provisionen } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return NextResponse.json({ error: "Company not updated" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("❌ Error in PUT /api/commissions:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
