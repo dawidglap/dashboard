@@ -369,7 +369,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
           </div>
           {/* Plan Auswahl */}
           <div className="col-span-2">
-            <label className="text-sm font-medium">Plan</label>
+            <label className="text-sm font-medium">Paket</label>
             <select
               name="plan"
               value={formData.plan}

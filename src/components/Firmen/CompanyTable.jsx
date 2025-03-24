@@ -147,7 +147,7 @@ const CompanyTable = ({ onEdit, onDelete }) => {
                 </span>
               </th>
 
-              <th className="py-3 px-4 text-left">Plan</th>
+              <th className="py-3 px-4 text-left">Paket</th>
               <th className="py-3 px-4 text-left hidden md:table-cell">
                 Preis <br />
                 (CHF)

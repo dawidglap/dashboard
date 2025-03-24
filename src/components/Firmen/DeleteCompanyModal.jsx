@@ -20,7 +20,7 @@ const DeleteCompanyModal = ({ company, onDelete, onCancel }) => {
         </div>
 
         {/* Content */}
-        <div className="mt-6 text-center">
+        <div className="mt-6 text-">
           <p className="text-lg font-semibold text-base-content">
             Sind Sie sicher, dass Sie die Firma{" "}
             <span className="font-bold text-error">
