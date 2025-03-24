@@ -52,7 +52,7 @@ const SidebarMenu = () => {
       title: "Demo Calls",
       href: "/dashboard/demo-calls",
       icon: <FaVideo />,
-      disabled: !isAdmin,
+
     },
     {
       title: "Umsatz",
@@ -63,7 +63,7 @@ const SidebarMenu = () => {
       title: "Team",
       href: "/dashboard/team",
       icon: <FaUsers />,
-      disabled: !isAdmin,
+
     },
     {
       title: "Aufgaben",
