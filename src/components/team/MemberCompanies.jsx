@@ -71,7 +71,20 @@ const MemberCompanies = ({ companies, userId }) => {
                   <td className="py-4 px-4 font-medium">
                     {user.name} {user.surname}
                   </td>
-                  <td className="py-4 px-4">{user.email}</td>
+                  <td className="py-4 px-4">
+                    <div
+                      className="tooltip"
+                      data-tip={`${`https://business.webomo.ch/ref=${user._id}`.slice(0, 40)}...`}
+                    >
+                      <p className="text-xs text-gray-500 cursor-default">
+                        {`https://business.webomo.ch/ref=${user._id}`.slice(0, 25)}...
+                      </p>
+                    </div>
+
+                  </td>
+
+
+
 
                   <td className="py-4 px-4">
                     {user.createdAt
