@@ -77,8 +77,7 @@ const CompanyTableRow = ({
         {/* Markenbotschafter */}
         <td className="py-5 px-4">
           {markenbotschafter
-            ? `${markenbotschafter.name || ""} ${
-                markenbotschafter.surname || ""
+            ? `${markenbotschafter.name || ""} ${markenbotschafter.surname || ""
               }`.trim()
             : "N/A"}
         </td>
@@ -96,29 +95,31 @@ const CompanyTableRow = ({
         </td>
 
         {/* Aktionen */}
-        <td className="py-5 px-4 flex justify-center items-center h-full space-x-2">
-          {/* ✅ Disable Buttons for non-admins */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation(); // ✅ Prevent row click event
-              onEdit(company);
-            }}
-            disabled={userRole !== "admin"} // ✅ Disable for non-admins
-            className="btn btn-xs rounded-full btn-outline btn-neutral disabled:opacity-50"
-          >
-            <FaEdit />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation(); // ✅ Prevent row click event
-              onDelete(company);
-            }}
-            disabled={userRole !== "admin"} // ✅ Disable for non-admins
-            className="btn btn-xs rounded-full btn-outline btn-error disabled:opacity-50"
-          >
-            <FaTrash />
-          </button>
-        </td>
+        {userRole === "admin" && (
+          <td className="py-5 px-4 flex justify-center items-center h-full space-x-2">
+            {/* ✅ Disable Buttons for non-admins */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); // ✅ Prevent row click event
+                onEdit(company);
+              }}
+              disabled={userRole !== "admin"} // ✅ Disable for non-admins
+              className="btn btn-xs rounded-full btn-outline btn-neutral disabled:opacity-50"
+            >
+              <FaEdit />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); // ✅ Prevent row click event
+                onDelete(company);
+              }}
+              disabled={userRole !== "admin"} // ✅ Disable for non-admins
+              className="btn btn-xs rounded-full btn-outline btn-error disabled:opacity-50"
+            >
+              <FaTrash />
+            </button>
+          </td>
+        )}
       </tr>
 
       {showDetails && (

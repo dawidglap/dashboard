@@ -240,7 +240,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
             />
           </div>
           <div className="col-span-1">
-            <label className="text-sm font-medium">Hausnummer</label>
+            <label className="text-sm font-medium">Nr.</label>
             <input
               type="text"
               name="company_street_number"

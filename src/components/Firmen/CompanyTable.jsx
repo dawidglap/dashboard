@@ -191,7 +191,10 @@ const CompanyTable = ({ onEdit, onDelete }) => {
               <th className="py-3 px-4 text-left hidden md:table-cell">
                 Provision <br /> (CHF)
               </th>
-              <th className="py-3 px-4 text-center">Aktion</th>
+              {userRole === "admin" && (
+                <th className="py-3 px-4 text-center">Aktion</th>
+              )}
+
             </tr>
           </thead>
 

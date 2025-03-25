@@ -48,7 +48,7 @@ const MemberCompanies = ({ companies, userId }) => {
           <thead>
             <tr className="text-sm md:text-md text-base-content border-b border-indigo-300">
               <th className="py-3 px-4 text-left">Markenbotschafter ({assignedBotschafters.length})</th>
-              {/* <th className="py-3 px-4 text-left">E-Mail</th> */}
+              <th className="py-3 px-4 text-left">E-Mail</th>
 
               <th className="py-3 px-4 text-left">Affiliate Link</th>
               <th className="py-3 px-4 text-left">Erstellt am</th>
@@ -74,9 +74,20 @@ const MemberCompanies = ({ companies, userId }) => {
                   </td>
 
                   {/* E-Mail */}
-                  {/* <td className="py-4 px-4 text-sm">
-                    {user.email || "—"}
-                  </td> */}
+                  {/* E-Mail */}
+                  <td className="py-4 px-4 text-sm">
+                    {user.email ? (
+                      <a
+                        href={`mailto:${user.email}`}
+                        className="text-indigo-600 hover:underline"
+                      >
+                        {user.email}
+                      </a>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+
 
 
 

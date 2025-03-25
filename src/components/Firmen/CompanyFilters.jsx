@@ -23,7 +23,7 @@ const CompanyFilters = ({
                 value={selectedManager}
                 onChange={(e) => onManagerChange(e.target.value)}
             >
-                <option value="">Alle Manager</option>
+                <option value="" className="">Alle Manager</option>
                 {managers.map((manager) => (
                     <option key={manager._id} value={manager._id}>
                         {manager.name} {manager.surname}

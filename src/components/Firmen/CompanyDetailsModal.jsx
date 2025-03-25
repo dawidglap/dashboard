@@ -18,6 +18,9 @@ const formatSwissPhoneNumber = (number) => {
 
 const CompanyDetailsModal = ({ company, onClose }) => {
   const [users, setUsers] = useState([]);
+  const [createdAt, setCreatedAt] = useState(null);
+
+
 
 
   useEffect(() => {
@@ -34,6 +37,24 @@ const CompanyDetailsModal = ({ company, onClose }) => {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    if (!company || !company._id) return;
+
+    const fetchCreatedAt = async () => {
+      try {
+        const res = await fetch(`/api/companies/${company._id}`);
+        if (!res.ok) throw new Error("Fehler beim Laden von createdAt");
+        const data = await res.json();
+        setCreatedAt(data.data?.created_at || data.data?.createdAt || null);
+      } catch (err) {
+        console.error("Fehler beim Laden von createdAt:", err);
+      }
+    };
+
+    fetchCreatedAt();
+  }, [company]);
+
+
   const getManagerName = () => {
     const manager = users.find((u) => u._id === company.manager_id);
     return manager ? `${manager.name} ${manager.surname}` : "Nicht zugewiesen";
@@ -45,7 +66,7 @@ const CompanyDetailsModal = ({ company, onClose }) => {
   };
   if (!company) return null;
 
-  
+
 
   return (
     <div className="modal modal-open">
@@ -116,22 +137,36 @@ const CompanyDetailsModal = ({ company, onClose }) => {
             />
           </div>
 
+          {/* Startdatum */}
+          <div className="col-span-1">
+            <label className="text-sm font-medium">Startdatum</label>
+            <input
+              type="text"
+              value={
+                createdAt
+                  ? new Date(createdAt).toLocaleDateString("de-DE")
+                  : "Nicht verfügbar"
+              }
+              className="input input-sm input-bordered w-full rounded-full"
+              readOnly
+            />
+          </div>
+
           {/* Ablaufdatum */}
-          <div className="col-span-2">
+          <div className="col-span-1">
             <label className="text-sm font-medium"> Ablaufdatum</label>
             <input
               type="text"
               value={
                 company.expiration_date
-                  ? new Date(company.expiration_date).toLocaleDateString(
-                      "de-DE"
-                    )
+                  ? new Date(company.expiration_date).toLocaleDateString("de-DE")
                   : "Kein Datum"
               }
               className="input input-sm input-bordered w-full rounded-full"
               readOnly
             />
           </div>
+
 
           {/* Firmen-E-Mail */}
           <div className="col-span-2">

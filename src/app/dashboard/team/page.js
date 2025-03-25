@@ -9,6 +9,8 @@ import ToastNotification from "../../../components/team/ToastNotification";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import TeamMemberProfile from "@/components/team/TeamMemberProfile";
+import TeamMemberProfileCompact from "@/components/team/TeamMemberProfileCompact";
+
 
 
 const Team = () => {
@@ -57,7 +59,12 @@ useEffect(() => {
   }
 }, [user]);
 if ((user?.role === "manager" || user?.role === "markenbotschafter") && fullUser) {
-  return <TeamMemberProfile userId={fullUser._id} />;
+  return user?.role === "manager" ? (
+    <TeamMemberProfileCompact userId={fullUser._id} />
+  ) : (
+    <TeamMemberProfile userId={fullUser._id} />
+  );
+  
 }
 
 

@@ -192,7 +192,7 @@ const Firmen = () => {
         <h1 className=" text-3xl mt-8 md:text-4xl font-extrabold text-base-content dark:text-white">
           Kunden
         </h1>
-
+        {userRole === "admin" && (
         <button
           onClick={() => setShowModal(true)}
           disabled={userRole !== "admin"}
@@ -201,6 +201,7 @@ const Firmen = () => {
           <FaPlus />
           <span>Neuer Kunde</span>
         </button>
+        )}
       </div>
 
       <CompanyTable
