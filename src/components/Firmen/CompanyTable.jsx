@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { getSession } from "next-auth/react";
 import CompanyTableRow from "./CompanyTableRow";
 import EditCompanyModal from "./EditCompanyModal";
+import CompanyFilters from "./CompanyFilters";
+
 
 const CompanyTable = ({ onEdit, onDelete }) => {
   const [companies, setCompanies] = useState([]); // ✅ Store API-fetched companies
@@ -14,6 +16,9 @@ const CompanyTable = ({ onEdit, onDelete }) => {
   const [selectedCompany, setSelectedCompany] = useState(""); // ✅ Filter state
   const [editingCompany, setEditingCompany] = useState(null); // ✅ Track company being edited
   const [toastMessage, setToastMessage] = useState(null); // ✅ New state for toast
+  const [selectedManager, setSelectedManager] = useState("");
+  const [selectedMarkenbotschafter, setSelectedMarkenbotschafter] = useState("");
+
 
   // ✅ Auto-clear toast after 2 seconds
   useEffect(() => {
@@ -105,9 +110,18 @@ const CompanyTable = ({ onEdit, onDelete }) => {
   const getUserById = (userId) => users.find((u) => u._id === userId);
 
   // ✅ Apply filtering on already loaded data (⚠️ API call might be needed in the future)
-  const filteredCompanies = selectedCompany
-    ? companies.filter((company) => company.company_name === selectedCompany)
-    : companies;
+  const filteredCompanies = companies.filter((company) => {
+    const matchesCompany =
+      selectedCompany === "" || company.company_name === selectedCompany;
+    const matchesManager =
+      selectedManager === "" || company.manager_id === selectedManager;
+    const matchesMarkenbotschafter =
+      selectedMarkenbotschafter === "" ||
+      company.markenbotschafter_id === selectedMarkenbotschafter;
+
+    return matchesCompany && matchesManager && matchesMarkenbotschafter;
+  });
+
 
   return (
     <div className="overflow-x-auto rounded-xl">
@@ -133,7 +147,17 @@ const CompanyTable = ({ onEdit, onDelete }) => {
             {filteredCompanies.length}
           </span>
         </p> */}
+        <CompanyFilters
+          users={users}
+          selectedManager={selectedManager}
+          selectedMarkenbotschafter={selectedMarkenbotschafter}
+          onManagerChange={setSelectedManager}
+          onMarkenbotschafterChange={setSelectedMarkenbotschafter}
+        />
       </div>
+      {/* ✅ New CompanyFilters Component */}
+
+
 
       {/* ✅ Scrollable Table with Fixed Header */}
       <div className="max-h-[90vh] overflow-auto">
