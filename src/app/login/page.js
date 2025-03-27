@@ -34,7 +34,7 @@ const SignIn = () => {
     const role = session?.user?.role;
     const redirectUrl =
       role === "manager" || role === "markenbotschafter"
-        ? "/dashboard/aufgaben"
+        ? "/dashboard"
         : "/dashboard";
 
     window.location.href = redirectUrl;
