@@ -21,6 +21,8 @@ const UserProfile = () => {
   });
   const [toastMessage, setToastMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(true); // ✅ Track loading state
+  const [copied, setCopied] = useState(false);
+
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -89,6 +91,15 @@ const UserProfile = () => {
     }
   };
 
+  const copyToClipboard = () => {
+    if (!user?._id) return;
+    const affiliateLink = `https://business.webomo.ch/ref/${user._id}`;
+    navigator.clipboard.writeText(affiliateLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+
   return (
     <div className="p-6 max-w-6xl mx-auto bg-white  rounded-lg">
       <h2 className="text-2xl font-semibold mb-6">Mein Profil</h2>
@@ -127,6 +138,26 @@ const UserProfile = () => {
                 handleChange={handleChange}
                 isEditing={isEditing}
               />
+              <div className="w-full mt-6">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ">
+                  Dein Empfehlungslink
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={`https://business.webomo.ch/ref/${user._id}`}
+                    readOnly
+                    className="input py-6 input-sm input-bordered w-full rounded-full bg-indigo-100 ps-4 dark:bg-gray-800 text-sm"
+                  />
+                  <button
+                    onClick={copyToClipboard}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 badge badge-primary"
+                  >
+                    {copied ? "Kopiert!" : "Kopieren"}
+                  </button>
+                </div>
+              </div>
+
             </div>
 
             {/* Right Side: Avatar */}
