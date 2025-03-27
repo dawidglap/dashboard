@@ -128,7 +128,7 @@ export async function GET(request) {
           },
         },
       ])
-      .sort({ dueDate: 1 })
+      .sort({ createdAt: -1 }) // ← ORDINE NUOVO: per data di creazione, dal più recente al più vecchio
       .skip(offset)
       .limit(limit)
       .toArray();
