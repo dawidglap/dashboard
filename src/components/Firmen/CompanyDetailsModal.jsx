@@ -201,7 +201,7 @@ const CompanyDetailsModal = ({ company, onClose }) => {
 
           {/* Plan & Plan-Preis */}
           <div className="col-span-2">
-            <label className="text-sm font-medium"> Plan</label>
+            <label className="text-sm font-medium"> Paket</label>
             <input
               type="text"
               value={company.plan}
@@ -210,7 +210,7 @@ const CompanyDetailsModal = ({ company, onClose }) => {
             />
           </div>
           <div className="col-span-2">
-            <label className="text-sm font-medium"> Plan-Preis</label>
+            <label className="text-sm font-medium"> Paket Preis</label>
             <input
               type="text"
               value={`CHF ${Number(company.plan_price || 0).toLocaleString(

@@ -46,8 +46,8 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
     )
       .toISOString()
       .split("T")[0],
-    
-    
+
+
     manager_id: adminId, // Default to Admin
     markenbotschafter_id: adminId, // Default to Admin
   });
@@ -86,16 +86,16 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
       setFilteredMarkenbotschafter([]);
       return;
     }
-  
+
     const filtered = users.filter(
       (user) =>
         user.role === "markenbotschafter" &&
         user.manager_id === formData.manager_id
     );
-  
+
     setFilteredMarkenbotschafter(filtered);
   }, [formData.manager_id, users]);
-  
+
 
   // ✅ Reset loading state when modal opens
   useEffect(() => {
@@ -300,15 +300,15 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
 
             {/* Ablaufdatum */}
             {/* Startdatum */}
-<div className="col-span-1">
-  <label className="text-sm font-medium">Startdatum</label>
-  <input
-    type="date"
-    value={today}
-    readOnly
-    className="input input-sm input-bordered w-full rounded-full"
-  />
-</div>
+            <div className="col-span-1">
+              <label className="text-sm font-medium">Startdatum</label>
+              <input
+                type="date"
+                value={today}
+                readOnly
+                className="input input-sm input-bordered w-full rounded-full"
+              />
+            </div>
 
             <div className="col-span-1">
               <label className="text-sm font-medium"> Ablaufdatum</label>
@@ -365,7 +365,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
 
             {/* Plan Selection */}
             <div className="col-span-1">
-              <label className="text-sm font-medium">Plan</label>
+              <label className="text-sm font-medium">Paket</label>
               <select
                 name="plan"
                 value={formData.plan}
@@ -380,7 +380,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
 
             {/* Plan Price */}
             <div className="col-span-1">
-              <label className="text-sm font-medium">Plan Preis (CHF)</label>
+              <label className="text-sm font-medium">Paket Preis (CHF)</label>
               <input
                 type="number"
                 name="plan_price"
@@ -417,19 +417,19 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
             <div className="col-span-2">
               <label className="text-sm font-medium"> Markenbotschafter</label>
               <select
-  name="markenbotschafter_id"
-  value={formData.markenbotschafter_id}
-  onChange={handleChange}
-  className="select select-sm select-bordered w-full rounded-full"
->
-  <option value={adminId}>-- Standard: Admin --</option>
+                name="markenbotschafter_id"
+                value={formData.markenbotschafter_id}
+                onChange={handleChange}
+                className="select select-sm select-bordered w-full rounded-full"
+              >
+                <option value={adminId}>-- Standard: Admin --</option>
 
-  {filteredMarkenbotschafter.map((user) => (
-    <option key={user._id} value={user._id}>
-      {user.name} {user.surname} ({user.email})
-    </option>
-  ))}
-</select>
+                {filteredMarkenbotschafter.map((user) => (
+                  <option key={user._id} value={user._id}>
+                    {user.name} {user.surname} ({user.email})
+                  </option>
+                ))}
+              </select>
 
             </div>
           </div>
