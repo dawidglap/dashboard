@@ -4,6 +4,8 @@ import ProfileAvatar from "./ProfileAvatar";
 import ProfileForm from "./ProfileForm";
 import ProfileActions from "./ProfileActions";
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
@@ -22,12 +24,15 @@ const UserProfile = () => {
   const [toastMessage, setToastMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(true); // ✅ Track loading state
   const [copied, setCopied] = useState(false);
+  const { data: session } = useSession();
+  const sessionUser = session?.user;
+
 
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch("/api/users/me");
+        const res = await fetch("/api/users/me/populated");
         if (!res.ok) throw new Error("Fehler beim Laden des Profils");
         const data = await res.json();
         setUser(data.user);
@@ -161,9 +166,24 @@ const UserProfile = () => {
             </div>
 
             {/* Right Side: Avatar */}
-            <div className="flex flex-col space-y-4 items-center">
-              <ProfileAvatar user={user} />
+            <div className="relative h-full w-full">
+              {/* Business Partner Badge - top aligned */}
+              {user?.role === "markenbotschafter" && user.manager && (
+                <div className="justify-center flex mt-6   w-full px-2 mb-4">
+                  <div className="inline-block rounded-full bg-indigo-100 text-indigo-800 text-xs font-medium px-4 py-2 dark:bg-indigo-800 dark:text-white">
+                    <span className="font-semibold">Dein Business Partner:</span>{" "}
+                    {user.manager.name} {user.manager.surname}  <span className="font-semibold ms-2">e-mail:</span> {user.manager.email}
+                  </div>
+                </div>
+              )}
+
+              {/* Centered Avatar */}
+              <div className="flex items-center justify-center h-full mt-[-24px]">
+                <ProfileAvatar user={user} />
+              </div>
             </div>
+
+
           </div>
 
           {/* Actions */}
