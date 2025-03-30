@@ -3,6 +3,9 @@ import { useSession } from "next-auth/react";
 import { motion } from "framer-motion";
 import PaidStatusIcon from "./PaidStatusIcon";
 import PaidCommissionModal from "./PaidCommissionModal";
+import { Check, X } from "lucide-react";
+import { RotateCcw } from "lucide-react";
+
 
 const ProvisionenBreakdown = ({ commissions = [] }) => {
   const { data: session } = useSession();
@@ -143,9 +146,8 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
 
 
   // ✅ Calculate total commissions based on current filter (but from all commissions)
-  const totalCommissionsFiltered = commissions
-    .filter((c) => (filter ? c.userName.includes(filter) : true))
-    .reduce((sum, c) => sum + c.amount, 0);
+  const totalCommissionsFiltered = commissions.reduce((sum, c) => sum + c.amount, 0);
+
 
   // ✅ Load more commissions on scroll
   useEffect(() => {
@@ -184,17 +186,32 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
     <div className="bg-base-100 rounded-2xl w-full">
       {/* ✅ Header with filter & dynamic total commissions */}
       <div className="flex justify-between items-center mb-4">
-        <select
-          className="w-1/5 p-2 px-4 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
-          onChange={(e) => setFilter(e.target.value)}
-        >
-          <option value="">Alle Firmen</option>
-          {[...new Set(groupedCommissions.map((c) => c.companyName))].map((company, i) => (
-            <option key={i} value={company}>
-              {company}
-            </option>
-          ))}
-        </select>
+        <div className="flex items-center space-x-2">
+          <select
+            className="w-52 p-2 px-4 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
+            onChange={(e) => setFilter(e.target.value)}
+            value={filter}
+          >
+            <option value="">Alle Firmen</option>
+            {[...new Set(groupedCommissions.map((c) => c.companyName))].map((company, i) => (
+              <option key={i} value={company}>
+                {company}
+              </option>
+            ))}
+          </select>
+
+          {filter && (
+            <button
+              onClick={() => setFilter("")}
+              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
+              title="Filter zurücksetzen"
+            >
+              <RotateCcw className="w-8 h-4 text-gray-600" />
+            </button>
+          )}
+        </div>
+
+
 
 
         {/* 🔹 Total Commissions Amount (Static & Dynamic) */}
@@ -274,7 +291,7 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
 
                   {/* ✅ Nuova colonna "Bezahlt" */}
                   <td className="py-4 px-4">
-                    {session?.user?.role === "admin" ? (
+                    {isAdmin ? (
                       <PaidStatusIcon
                         status={item.statusProvisionen === true}
                         onClick={() => {
@@ -282,15 +299,26 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
                           setShowModal(true);
                         }}
                       />
-
                     ) : (
-                      <span
-                        className={`badge ${item.statusProvisionen ? "badge-success" : "badge-neutral"
+                      <motion.div
+                        className={`mx-auto w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300 ${item.statusProvisionen ? "border-green-500" : "border-gray-400"
                           }`}
+                        aria-label="Bezahlt Status (readonly)"
                       >
-                        {item.statusProvisionen ? "Ja" : "Nein"}
-                      </span>
+                        <motion.div
+                          variants={{
+                            unchecked: { rotate: 0, scale: 1 },
+                            checked: { rotate: 360, scale: 1.2 },
+                          }}
+                          animate={item.statusProvisionen ? "checked" : "unchecked"}
+                          transition={{ duration: 0.4 }}
+                          className={`text-sm ${item.statusProvisionen ? "text-green-500" : "text-gray-500"}`}
+                        >
+                          {item.statusProvisionen ? <Check size={18} /> : <X size={18} />}
+                        </motion.div>
+                      </motion.div>
                     )}
+
                   </td>
                 </tr>
               );
