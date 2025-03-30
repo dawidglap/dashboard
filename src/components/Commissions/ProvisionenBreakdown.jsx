@@ -7,6 +7,8 @@ import PaidCommissionModal from "./PaidCommissionModal";
 const ProvisionenBreakdown = ({ commissions = [] }) => {
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "admin";
+  const isManager = session?.user?.role === "manager";
+  const managerName = `${session?.user?.name || "Manager"}`;
   const [filter, setFilter] = useState("");
   const [displayedCommissions, setDisplayedCommissions] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
@@ -196,12 +198,36 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
 
 
         {/* 🔹 Total Commissions Amount (Static & Dynamic) */}
+        {/* 👇 Breakdown der Provisionen */}
+        {isManager && (
+          <p className="text-right  p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300">
+            {managerName}:{" "}
+            <span className="font-semibold text-green-600">
+              {commissions
+                .filter((c) => c.role === "manager")
+                .reduce((sum, c) => sum + c.amount, 0)
+                .toLocaleString("de-DE")}{" "}
+              CHF
+            </span>{" "}
+            | Markenbotschafter:{" "}
+            <span className="font-semibold text-green-600">
+              {commissions
+                .filter((c) => c.role === "markenbotschafter")
+                .reduce((sum, c) => sum + c.amount, 0)
+                .toLocaleString("de-DE")}{" "}
+              CHF
+            </span>
+          </p>
+        )}
+
+
         <p className="p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300">
           Gesamtprovisionen:{" "}
           <span className="text-green-600 font-bold">
             {totalCommissionsFiltered.toLocaleString("de-DE")} CHF
           </span>
         </p>
+
       </div>
 
       {/* ✅ Scrollable Table with Sticky Header */}

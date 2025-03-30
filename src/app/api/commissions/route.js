@@ -97,8 +97,9 @@ export async function GET(req) {
             zahlungsdatum: zahlungsdatum,
           }
         );
-      } else {
+      } else if (user.role === "manager") {
         if (managerId === userId) {
+          // Push manager's commission
           commissions.push({
             userName: `${user.name} ${user.surname}`,
             companyName: company.company_name,
@@ -107,22 +108,23 @@ export async function GET(req) {
             startDatum: startDate,
             zahlungsdatum: zahlungsdatum,
             status_provisionen: company.status_provisionen || false,
-
           });
-        }
-        if (markenbotschafterId === userId) {
-          commissions.push({
-            userName: `${user.name} ${user.surname}`,
-            companyName: company.company_name,
-            amount: 1000,
-            role: "markenbotschafter",
-            startDatum: startDate,
-            zahlungsdatum: zahlungsdatum,
-            status_provisionen: company.status_provisionen || false,
-
-          });
+      
+          // 🔍 Also include the markenbotschafter commission (if any)
+          if (markenbotschafter) {
+            commissions.push({
+              userName: `${markenbotschafter.name} ${markenbotschafter.surname}`,
+              companyName: company.company_name,
+              amount: 1000,
+              role: "markenbotschafter",
+              startDatum: startDate,
+              zahlungsdatum: zahlungsdatum,
+              status_provisionen: company.status_provisionen || false,
+            });
+          }
         }
       }
+      
     }
 
     return NextResponse.json({ success: true, commissions }, { status: 200 });
