@@ -5,6 +5,8 @@ import PaidStatusIcon from "./PaidStatusIcon";
 import PaidCommissionModal from "./PaidCommissionModal";
 import { Check, X } from "lucide-react";
 import { RotateCcw } from "lucide-react";
+import { FiRefreshCw } from "react-icons/fi";
+
 
 
 const ProvisionenBreakdown = ({ commissions = [] }) => {
@@ -203,10 +205,10 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
           {filter && (
             <button
               onClick={() => setFilter("")}
-              className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
+              className="px-4 h-10 w-16 border rounded-full btn-outline  transition"
               title="Filter zurücksetzen"
             >
-              <RotateCcw className="w-8 h-4 text-gray-600" />
+              <FiRefreshCw className="mx-auto w-4 h-4 " />
             </button>
           )}
         </div>
