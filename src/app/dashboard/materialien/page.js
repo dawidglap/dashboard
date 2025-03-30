@@ -4,16 +4,31 @@ import { motion } from "framer-motion";
 import { GoDownload } from "react-icons/go";
 import materials from "@/data/materials.json";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
+
 
 export default function Materialien() {
   const [data, setData] = useState([]);
   const [downloading, setDownloading] = useState(null); // Tracks downloading item
   const [completed, setCompleted] = useState({}); // Tracks completed downloads
   const [imageLoaded, setImageLoaded] = useState({}); // Tracks loaded images
+  const { data: session } = useSession();
+const userRole = session?.user?.role;
+const [adminFilterRole, setAdminFilterRole] = useState("manager");
 
-  useEffect(() => {
-    setData(materials);
-  }, []);
+
+
+useEffect(() => {
+  if (!userRole) return;
+
+  if (userRole === "admin") {
+    setData(materials.filter((item) => item.role === adminFilterRole));
+  } else {
+    setData(materials.filter((item) => item.role === userRole));
+  }
+}, [userRole, adminFilterRole]);
+
+
 
   const handleDownload = (url, index) => {
     if (downloading !== null) return; // Prevent multiple clicks
@@ -43,15 +58,34 @@ export default function Materialien() {
 
   return (
     <div className="px-4 md:px-12">
+      
       {/* Title */}
-      <motion.h1
-        className="text-3xl md:text-4xl mt-8 mb-8 font-extrabold text-base-content"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+     {/* Titel + Admin-Filter nebeneinander */}
+<motion.div
+  className="flex flex-col md:flex-row md:items-center justify-between mt-8 mb-8"
+  initial={{ opacity: 0, y: -20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6, ease: "easeOut" }}
+>
+  <h1 className="text-3xl md:text-4xl font-extrabold text-base-content">
+    Materialien <span className="font-normal text-xl">(Downloads)</span>
+  </h1>
+
+  {/* Admin Filter Dropdown */}
+  {userRole === "admin" && (
+    <div className="mt-4 md:mt-0">
+      <select
+        value={adminFilterRole}
+        onChange={(e) => setAdminFilterRole(e.target.value)}
+        className="select select-sm select-bordered rounded-full bg-indigo-100 text-sm"
       >
-        Materialien <span className="font-normal text-xl">(Downloads)</span>
-      </motion.h1>
+        <option value="manager">Nur für Manager</option>
+        <option value="markenbotschafter">Nur für Markenbotschafter</option>
+      </select>
+    </div>
+  )}
+</motion.div>
+
 
       {/* Grid Container */}
       <motion.div
