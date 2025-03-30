@@ -32,6 +32,28 @@ const MemberCompanies = ({ companies, userId }) => {
     fetchUserAndBotschafters();
   }, [userId]);
 
+  // 🔐 Funzione per obfuscazione email
+  // 🔐 Offusca sia il nome che il dominio
+  const obfuscateEmail = (email) => {
+    const [name, domain] = email.split("@");
+    if (!name || !domain) return email;
+
+    // Mask name: mostra prima e ultima lettera
+    const visibleName = name.length > 2
+      ? name[0] + "*".repeat(name.length - 2) + name[name.length - 1]
+      : name[0] + "*";
+
+    // Mask domain: mostra prima e ultima lettera prima del punto (es. gmail), lascia il TLD visibile
+    const [domainName, tld] = domain.split(".");
+    const visibleDomain = domainName.length > 2
+      ? domainName[0] + "*".repeat(domainName.length - 2) + domainName[domainName.length - 1]
+      : domainName[0] + "*";
+
+    return `${visibleName}@${visibleDomain}.${tld}`;
+  };
+
+
+
   if (loading) {
     return (
       <div className="text-center text-sm py-4 text-gray-500">
@@ -77,16 +99,14 @@ const MemberCompanies = ({ companies, userId }) => {
                   {/* E-Mail */}
                   <td className="py-4 px-4 text-sm">
                     {user.email ? (
-                      <a
-                        href={`mailto:${user.email}`}
-                        className="text-indigo-600 hover:underline"
-                      >
-                        {user.email}
-                      </a>
+                      <span className="text-gray-600">
+                        {obfuscateEmail(user.email)}
+                      </span>
                     ) : (
                       "—"
                     )}
                   </td>
+
 
 
 
