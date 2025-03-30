@@ -97,26 +97,53 @@ export async function GET(req) {
             zahlungsdatum: zahlungsdatum,
           }
         );
-      } else if (user.role === "manager") {
+      }else if (user.role === "manager") {
         if (managerId === userId) {
-          // Push manager's commission
           commissions.push({
             userName: `${user.name} ${user.surname}`,
             companyName: company.company_name,
             amount: 1000,
             role: "manager",
+            userRole: user.role, // ✅ aggiunto
             startDatum: startDate,
             zahlungsdatum: zahlungsdatum,
             status_provisionen: company.status_provisionen || false,
           });
       
-          // 🔍 Also include the markenbotschafter commission (if any)
           if (markenbotschafter) {
             commissions.push({
               userName: `${markenbotschafter.name} ${markenbotschafter.surname}`,
               companyName: company.company_name,
               amount: 1000,
               role: "markenbotschafter",
+              userRole: "markenbotschafter", // ✅ aggiunto
+              startDatum: startDate,
+              zahlungsdatum: zahlungsdatum,
+              status_provisionen: company.status_provisionen || false,
+            });
+          }
+        }
+      } else if (user.role === "markenbotschafter") {
+        if (markenbotschafterId === userId) {
+          commissions.push({
+            userName: `${user.name} ${user.surname}`,
+            companyName: company.company_name,
+            amount: 1000,
+            role: "markenbotschafter",
+            userRole: "markenbotschafter", // ✅ importante
+            startDatum: startDate,
+            zahlungsdatum: zahlungsdatum,
+            status_provisionen: company.status_provisionen || false,
+          });
+      
+          // Se vogliamo includere anche il manager associato per completezza:
+          if (manager) {
+            commissions.push({
+              userName: `${manager.name} ${manager.surname}`,
+              companyName: company.company_name,
+              amount: 1000,
+              role: "manager",
+              userRole: "manager", // ✅ aggiunto
               startDatum: startDate,
               zahlungsdatum: zahlungsdatum,
               status_provisionen: company.status_provisionen || false,
@@ -124,6 +151,7 @@ export async function GET(req) {
           }
         }
       }
+      
       
     }
 

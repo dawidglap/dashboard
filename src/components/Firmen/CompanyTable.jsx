@@ -123,38 +123,41 @@ const CompanyTable = ({ onEdit, onDelete }) => {
   });
 
 
+
   return (
     <div className="overflow-x-auto rounded-xl">
       {/* ✅ Company Filter Dropdown */}
       <div className="flex justify-between items-center mb-4">
-        <select
-          className="p-2 px-4 my-2 ms-1 w-36 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
-          value={selectedCompany}
-          onChange={(e) => setSelectedCompany(e.target.value)}
-        >
-          <option value="">Alle Kunden</option>
-          {[...new Set(companies.map((c) => c.company_name))].map((name, i) => (
-            <option key={i} value={name}>
-              {name}
-            </option>
-          ))}
-        </select>
+        {/* Mostra solo il filtro delle compagnie per Manager/Markenbotschafter */}
+        {companies.length > 0 && (
+          <select
+            className="p-2 px-4 my-2 ms-1 w-36 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
+            value={selectedCompany}
+            onChange={(e) => setSelectedCompany(e.target.value)}
+          >
+            <option value="">Alle Kunden</option>
+            {[...new Set(companies.map((c) => c.company_name))].map((name, i) => (
+              <option key={i} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+        )}
 
-        {/* ✅ Dynamic Total Count (Filtered/All) */}
-        {/* <p className="p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300">
-          Gesamtfirmen:{" "}
-          <span className="text-indigo-600 font-bold">
-            {filteredCompanies.length}
-          </span>
-        </p> */}
-        <CompanyFilters
-          users={users}
-          selectedManager={selectedManager}
-          selectedMarkenbotschafter={selectedMarkenbotschafter}
-          onManagerChange={setSelectedManager}
-          onMarkenbotschafterChange={setSelectedMarkenbotschafter}
-        />
+
+        {/* Filtro per Manager o Markenbotschafter */}
+        {userRole === "admin" && (
+          <CompanyFilters
+            users={users}
+            selectedManager={selectedManager}
+            selectedMarkenbotschafter={selectedMarkenbotschafter}
+            onManagerChange={setSelectedManager}
+            onMarkenbotschafterChange={setSelectedMarkenbotschafter}
+          />
+        )}
+
       </div>
+
       {/* ✅ New CompanyFilters Component */}
 
 
