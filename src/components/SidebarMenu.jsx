@@ -41,41 +41,22 @@ const SidebarMenu = () => {
 
   const isAdmin = user?.role === "admin";
 
-  const menuItems = [
-    { title: "Home", href: "/dashboard", icon: <FaHome /> },
-    {
-      title: "Kunden",
-      href: "/dashboard/firmen",
-      icon: <FaBuilding />,
-    },
-    {
-      title: "Demo Calls",
-      href: "/dashboard/demo-calls",
-      icon: <FaVideo />,
+  let menuItems = [];
 
-    },
-    {
-      title: "Umsatz",
-      href: "/dashboard/umsatz",
-      icon: <FaChartBar />,
-    },
-    {
-      title: "Team",
-      href: "/dashboard/team",
-      icon: <FaUsers />,
+  if (!loading && user) {
+    menuItems = [
+      { title: "Home", href: "/dashboard", icon: <FaHome /> },
+      { title: "Kunden", href: "/dashboard/firmen", icon: <FaBuilding /> },
+      { title: "Demo Calls", href: "/dashboard/demo-calls", icon: <FaVideo /> },
+      { title: "Umsatz", href: "/dashboard/umsatz", icon: <FaChartBar /> },
+      ...(user.role !== "markenbotschafter"
+        ? [{ title: "Team", href: "/dashboard/team", icon: <FaUsers /> }]
+        : []),
+      { title: "Aufgaben", href: "/dashboard/aufgaben", icon: <FaTasks /> },
+      { title: "Materialien", href: "/dashboard/materialien", icon: <GoDownload /> },
+    ];
+  }
 
-    },
-    {
-      title: "Aufgaben",
-      href: "/dashboard/aufgaben",
-      icon: <FaTasks />,
-    },
-    {
-      title: "Materialien",
-      href: "/dashboard/materialien",
-      icon: <GoDownload />,
-    },
-  ];
 
   // Funzione per determinare se l’item è attivo
   const isActive = (href) => pathname?.startsWith(href);

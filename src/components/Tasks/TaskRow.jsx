@@ -51,8 +51,8 @@ const TaskRow = ({
     return Array.isArray(task.assignedTo)
       ? task.assignedTo
       : task.assignedTo
-      ? [task.assignedTo]
-      : [];
+        ? [task.assignedTo]
+        : [];
   }, [task.assignedTo]);
 
   // ✅ Ensure actions only appear for the first assigned user
@@ -143,7 +143,7 @@ const TaskRow = ({
     <>
       {/* Task Row */}
       <tr
-        className="border-b hover:bg-indigo-100 transition text-sm cursor-pointer group"
+        className="border-b hover:bg-indigo-100 transition text-sm cursor-pointer group min-h-[80px]"
         onClick={(e) => {
           if (e.target.type !== "checkbox") {
             handleRowClick();
@@ -165,9 +165,8 @@ const TaskRow = ({
         <td className="py-0 px-2 text-center w-6">
           <div className="relative">
             <span
-              className={`opacity-0 group-hover:opacity-100 transition ${
-                PRIORITY_ICONS[task.priority]?.color
-              }`}
+              className={`opacity-0 group-hover:opacity-100 transition ${PRIORITY_ICONS[task.priority]?.color
+                }`}
             >
               {PRIORITY_ICONS[task.priority]?.icon || ""}
             </span>
@@ -180,25 +179,24 @@ const TaskRow = ({
         {/* Status Column */}
         <td className="py-2 px-4">
           <span
-            className={`text-xs font-medium px-2 py-1 rounded-full ${
-              task.status === "pending"
-                ? " text-gray-500"
-                : task.status === "in_progress"
+            className={`text-xs font-medium px-2 py-1 rounded-full ${task.status === "pending"
+              ? " text-gray-500"
+              : task.status === "in_progress"
                 ? " text-blue-500"
                 : task.status === "done"
-                ? " text-green-500"
-                : task.status === "cannot_complete"
-                ? " text-red-500"
-                : " text-gray-500"
-            }`}
+                  ? " text-green-500"
+                  : task.status === "cannot_complete"
+                    ? " text-red-500"
+                    : " text-gray-500"
+              }`}
           >
             {task.status === "pending"
               ? "Ausstehend"
               : task.status === "in_progress"
-              ? "In Bearbeitung"
-              : task.status === "done"
-              ? "Erledigt"
-              : "Nicht abgeschlossen"}
+                ? "In Bearbeitung"
+                : task.status === "done"
+                  ? "Erledigt"
+                  : "Nicht abgeschlossen"}
           </span>
         </td>
 
@@ -216,10 +214,10 @@ const TaskRow = ({
         <td className="py-2 px-4 font-semibold">
           {task.dueDate
             ? new Date(task.dueDate).toLocaleDateString("de-DE", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "2-digit",
-              })
+              day: "2-digit",
+              month: "2-digit",
+              year: "2-digit",
+            })
             : "Kein Datum"}
         </td>
 
@@ -227,10 +225,10 @@ const TaskRow = ({
         <td className="py-2 px-4">
           {task.createdAt
             ? new Date(task.createdAt).toLocaleDateString("de-DE", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "2-digit",
-              })
+              day: "2-digit",
+              month: "2-digit",
+              year: "2-digit",
+            })
             : "Unbekannt"}
         </td>
 
@@ -250,7 +248,7 @@ const TaskRow = ({
             {isDropdownOpen && (
               <ul
                 ref={dropdownRef}
-                className="absolute right-0 mt-2 w-56 bg-white border rounded-2xl shadow-lg z-50"
+                className="absolute right-0 bottom-[-8px] mt-2 w-56 bg-white border rounded-2xl shadow-lg z-[9999]"
               >
                 <>
                   {user?.role === "admin" && (

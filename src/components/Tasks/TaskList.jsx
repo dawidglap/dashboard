@@ -32,7 +32,7 @@ const TaskList = () => {
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-6">Aufgaben</h1>
       <div className="rounded-lg shadow-md bg-white overflow-hidden">
-        <table className="table w-full">
+        <table className="table w-full min-h-screen">
           <thead>
             <tr className="bg-gray-200 text-left">
               <th className="py-4 px-6">Titel</th>
@@ -41,7 +41,7 @@ const TaskList = () => {
               <th className="py-4 px-6">Aktionen</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="">
             {tasks.map((task) => (
               <TaskRow key={task._id} task={task} />
             ))}

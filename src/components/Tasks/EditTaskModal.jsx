@@ -91,13 +91,13 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
   };
 
   return (
-    <div className="modal modal-open flex items-center justify-center ">
+    <div className="modal modal-open flex items-center justify-center">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="modal-box max-w-4xl w-full bg-base-100 shadow-lg rounded-2xl p-8"
+        className="modal-box max-w-4xl w-full bg-base-100 shadow-lg rounded-2xl p-8 "
       >
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-4">
@@ -138,7 +138,7 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="select select-sm select-bordered w-full rounded-full"
+              className="select select-sm select-bordered w-full rounded-full "
             >
               <option value="pending">Ausstehend</option>
               <option value="in_progress">In Bearbeitung</option>
