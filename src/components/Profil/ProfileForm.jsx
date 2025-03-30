@@ -1,7 +1,9 @@
 import React from "react";
 
+
 const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
   // Convert date format to YYYY-MM-DD for display in input fields
+
   const formatDateForDisplay = (date) =>
     date ? new Date(date).toISOString().split("T")[0] : "";
 
@@ -20,9 +22,8 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
             value={formData.email}
             onChange={handleChange}
             disabled={!isEditing}
-            className={`input input-bordered rounded-full  w-full ${
-              isEditing ? "" : "bg-white"
-            }`}
+            className={`input input-bordered rounded-full  w-full ${isEditing ? "" : "bg-white"
+              }`}
           />
         </div>
 
@@ -47,9 +48,8 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
             value={formData.phone_number}
             onChange={handleChange}
             disabled={!isEditing}
-            className={`input input-bordered rounded-full w-full ${
-              isEditing ? "" : "bg-gray-100"
-            }`}
+            className={`input input-bordered rounded-full w-full ${isEditing ? "" : "bg-gray-100"
+              }`}
           />
         </div>
 
@@ -65,9 +65,8 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
               value={formData.user_street}
               onChange={handleChange}
               disabled={!isEditing}
-              className={`input input-bordered rounded-full w-full ${
-                isEditing ? "" : "bg-gray-100"
-              }`}
+              className={`input input-bordered rounded-full w-full ${isEditing ? "" : "bg-gray-100"
+                }`}
             />
           </div>
           <div>
@@ -80,9 +79,8 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
               value={formData.user_street_number}
               onChange={handleChange}
               disabled={!isEditing}
-              className={`input input-bordered rounded-full w-full ${
-                isEditing ? "" : "bg-gray-100"
-              }`}
+              className={`input input-bordered rounded-full w-full ${isEditing ? "" : "bg-gray-100"
+                }`}
             />
           </div>
         </div>
@@ -98,9 +96,8 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
               value={formData.user_city}
               onChange={handleChange}
               disabled={!isEditing}
-              className={`input input-bordered rounded-full w-full ${
-                isEditing ? "" : "bg-gray-100"
-              }`}
+              className={`input input-bordered rounded-full w-full ${isEditing ? "" : "bg-gray-100"
+                }`}
             />
           </div>
           <div>
@@ -113,9 +110,8 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
               value={formData.user_postcode}
               onChange={handleChange}
               disabled={!isEditing}
-              className={`input input-bordered rounded-full w-full ${
-                isEditing ? "" : "bg-gray-100"
-              }`}
+              className={`input input-bordered rounded-full w-full ${isEditing ? "" : "bg-gray-100"
+                }`}
             />
           </div>
         </div>
@@ -124,21 +120,27 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
       {/* Right Side: Subscription Info */}
       <div className="space-y-6">
         {/* Subscription Expiration (Read-Only for Regular Users) */}
+        {/* Subscription Expiration (Visible only for non-admin users) */}
+
         <div>
           <label className="block text-gray-700 text-sm font-medium">
-            Abo gültig bis
+
           </label>
           <input
             type="date"
             name="subscription_expiration"
             value={formatDateForDisplay(formData.subscription_expiration)}
-            disabled // ❌ Always disabled for all users here
+            disabled={user?.role !== "admin"} // ❌ Always disabled for all users here
             className="input input-bordered rounded-full w-full bg-gray-100"
           />
-          <p className="text-xs text-gray-500 mt-1">
-            Nur der Admin kann dieses Datum ändern.
-          </p>
+          {user?.role !== "admin" && (
+            <p className="text-xs text-gray-500 mt-1">
+              Nur der Admin kann dieses Datum ändern.
+            </p>
+          )}
         </div>
+
+
 
         {/* Account Status Toggle (Only for Admins) */}
         {user?.role === "admin" && (

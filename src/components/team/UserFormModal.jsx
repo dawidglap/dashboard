@@ -71,7 +71,7 @@ const UserFormModal = ({ isOpen, onClose, onSave, user }) => {
       });
     }
   }, [user]);
-  
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -122,19 +122,19 @@ const UserFormModal = ({ isOpen, onClose, onSave, user }) => {
 
   const [allUsers, setAllUsers] = useState([]);
 
-useEffect(() => {
-  const fetchUsers = async () => {
-    const res = await fetch("/api/users");
-    const data = await res.json();
-    setAllUsers(data.users || []);
-  };
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const res = await fetch("/api/users");
+      const data = await res.json();
+      setAllUsers(data.users || []);
+    };
 
-  fetchUsers();
-}, []);
+    fetchUsers();
+  }, []);
 
-const managerList = allUsers.filter(
-  (u) => u.role === "manager" || u.role === "admin"
-);
+  const managerList = allUsers.filter(
+    (u) => u.role === "manager" || u.role === "admin"
+  );
 
 
   return (
@@ -161,11 +161,11 @@ const managerList = allUsers.filter(
             {/* Form Layout */}
             <div className="grid grid-cols-4 gap-3 mt-6">
               <div className="col-span-2">
-              <UserBasicInfo
-  newUser={newUser}
-  handleChange={handleChange}
-  managers={managerList}
-/>
+                <UserBasicInfo
+                  newUser={newUser}
+                  handleChange={handleChange}
+                  managers={managerList}
+                />
 
               </div>
               <div className="col-span-2">

@@ -107,7 +107,7 @@ const UserProfile = () => {
 
   return (
     <div className="p-6 max-w-6xl mx-auto bg-white  rounded-lg">
-      <h2 className="text-2xl font-semibold mb-6">Mein Profil</h2>
+      <h2 className="text-4xl font-extrabold mb-6">Mein Profil</h2>
 
       {isLoading ? (
         // ✅ DaisyUI Skeleton Loader
