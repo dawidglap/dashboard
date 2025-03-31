@@ -131,7 +131,7 @@ const CompanyTable = ({ onEdit, onDelete }) => {
         {/* Mostra solo il filtro delle compagnie per Manager/Markenbotschafter */}
         {companies.length > 0 && (
           <select
-            className="p-2 px-4 my-2 ms-1 w-36 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
+            className="p-2 px-4 my-2 ms-1 w-72 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
             value={selectedCompany}
             onChange={(e) => setSelectedCompany(e.target.value)}
           >

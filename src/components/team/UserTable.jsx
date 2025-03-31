@@ -91,8 +91,9 @@ const UserTable = ({ onDelete }) => {
   // ✅ Apply Filtering on Already Loaded Data (No API call needed for now)
   const filteredUsers = users.filter((user) => {
     const matchesName = filter
-      ? user.name.toLowerCase().includes(filter.toLowerCase())
+      ? `${user.name} ${user.surname}`.toLowerCase().includes(filter.toLowerCase())
       : true;
+
 
     const matchesRole = roleFilter ? user.role === roleFilter : true;
 
@@ -107,14 +108,14 @@ const UserTable = ({ onDelete }) => {
         <div className="flex items-center space-x-2">
           {/* 🔹 Dropdown for user names */}
           <select
-            className="p-2 px-4 my-2 ms-1 w-44 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
+            className="p-2 px-4 my-2 ms-1 w-72 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           >
             <option value="">Alle Mitglieder</option>
-            {[...new Set(users.map((u) => u.name))].map((name, i) => (
-              <option key={i} value={name}>
-                {name}
+            {[...new Set(users.map((u) => `${u.name} ${u.surname}`))].map((fullName, i) => (
+              <option key={i} value={fullName}>
+                {fullName}
               </option>
             ))}
           </select>
@@ -136,21 +137,19 @@ const UserTable = ({ onDelete }) => {
         <div className="flex space-x-2">
           <button
             onClick={() => setRoleFilter("")}
-            className={`p-2 px-4 text-sm rounded-full border ${
-              roleFilter === ""
-                ? "bg-indigo-600 text-white"
-                : "bg-indigo-50 text-gray-700"
-            }`}
+            className={`p-2 px-4 text-sm rounded-full border ${roleFilter === ""
+              ? "bg-indigo-600 text-white"
+              : "bg-indigo-50 text-gray-700"
+              }`}
           >
             Alle Mitglieder: <span className="font-bold">{users.length}</span>
           </button>
           <button
             onClick={() => setRoleFilter("manager")}
-            className={`p-2 px-4 text-sm rounded-full border ${
-              roleFilter === "manager"
-                ? "bg-indigo-600 text-white"
-                : "bg-indigo-50 text-gray-700"
-            }`}
+            className={`p-2 px-4 text-sm rounded-full border ${roleFilter === "manager"
+              ? "bg-indigo-600 text-white"
+              : "bg-indigo-50 text-gray-700"
+              }`}
           >
             Business Partners:{" "}
             <span className="font-bold">
@@ -159,11 +158,10 @@ const UserTable = ({ onDelete }) => {
           </button>
           <button
             onClick={() => setRoleFilter("markenbotschafter")}
-            className={`p-2 px-4 text-sm rounded-full border ${
-              roleFilter === "markenbotschafter"
-                ? "bg-indigo-600 text-white"
-                : "bg-indigo-50 text-gray-700"
-            }`}
+            className={`p-2 px-4 text-sm rounded-full border ${roleFilter === "markenbotschafter"
+              ? "bg-indigo-600 text-white"
+              : "bg-indigo-50 text-gray-700"
+              }`}
           >
             Markenbotschafter:{" "}
             <span className="font-bold">

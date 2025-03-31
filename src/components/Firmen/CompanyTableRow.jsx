@@ -58,7 +58,7 @@ const CompanyTableRow = ({
         <td className="py-5 px-4">{company.plan}</td>
 
         {/* ✅ Formatted Plan-Preis */}
-        <td className="py-5 px-4 text-center">
+        <td className="py-5 px-4 ">
           {company.plan_price
             ? formatNumber(company.plan_price)
             : "Nicht verfügbar"}
@@ -90,7 +90,7 @@ const CompanyTableRow = ({
         </td>
 
         {/* ✅ Formatted Provisionen */}
-        <td className="py-5 px-4 text-center">
+        <td className="py-5 px-4 ">
           {formatNumber(calculateCommission())}
         </td>
 
