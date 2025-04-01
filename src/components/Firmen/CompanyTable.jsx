@@ -5,6 +5,8 @@ import { getSession } from "next-auth/react";
 import CompanyTableRow from "./CompanyTableRow";
 import EditCompanyModal from "./EditCompanyModal";
 import CompanyFilters from "./CompanyFilters";
+import { FiRefreshCw } from "react-icons/fi";
+
 
 
 const CompanyTable = ({ onEdit, onDelete }) => {
@@ -128,22 +130,34 @@ const CompanyTable = ({ onEdit, onDelete }) => {
     <div className="overflow-x-auto rounded-xl">
       {/* ✅ Company Filter Dropdown */}
       <div className="flex justify-between items-center mb-4">
-        {/* Mostra solo il filtro delle compagnie per Manager/Markenbotschafter */}
-        {companies.length > 0 && (
-          <select
-            className="p-2 px-4 my-2 ms-1 w-72 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
-            value={selectedCompany}
-            onChange={(e) => setSelectedCompany(e.target.value)}
+        <div>
+          {/* Mostra solo il filtro delle compagnie per Manager/Markenbotschafter */}
+          {companies.length > 0 && (
+            <select
+              className="p-2 px-4 my-2 ms-1 w-72 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
+              value={selectedCompany}
+              onChange={(e) => setSelectedCompany(e.target.value)}
+            >
+              <option value="">Alle Kunden</option>
+              {[...new Set(companies.map((c) => c.company_name))].map((name, i) => (
+                <option key={i} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          )}
+          <button
+            onClick={() => {
+              setSelectedCompany("");
+              setSelectedManager("");
+              setSelectedMarkenbotschafter("");
+            }}
+            className="p-2 px-4 my-2 relative top-1 ms-2 rounded-full border-neutral-800 border  hover:bg-black hover:text-gray-200 transition duration-150"
+            title="Filter zurücksetzen"
           >
-            <option value="">Alle Kunden</option>
-            {[...new Set(companies.map((c) => c.company_name))].map((name, i) => (
-              <option key={i} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
-        )}
-
+            <FiRefreshCw size={20} />
+          </button>
+        </div>
 
         {/* Filtro per Manager o Markenbotschafter */}
         {userRole === "admin" && (
@@ -155,6 +169,8 @@ const CompanyTable = ({ onEdit, onDelete }) => {
             onMarkenbotschafterChange={setSelectedMarkenbotschafter}
           />
         )}
+        {/* 🔄 Pulsante di reset filtri */}
+
 
       </div>
 
