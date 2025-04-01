@@ -15,7 +15,7 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
   const isManager = session?.user?.role === "manager";
   const isMarkenbotschafter = session?.user?.role === "markenbotschafter";
 
-  const managerName = `${session?.user?.name || "Manager"}`;
+  const managerName = `${session?.user?.name || "Deine Provisionen"}`;
   const [filter, setFilter] = useState("");
   const [displayedCommissions, setDisplayedCommissions] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
@@ -220,56 +220,60 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
 
         {/* 🔹 Total Commissions Amount (Static & Dynamic) */}
         {/* 👇 Breakdown der Provisionen */}
-        <p className="p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300">
+        <div className="p-0 px-0 text-sm rounded-full text-gray-700  bg-indigo-50 focus:ring focus:ring-indigo-300">
           {isMarkenbotschafter ? (
             <>
-              Deine Provisionen:{" "}
-              <span className="font-semibold text-green-600">
-                {commissions
-                  .filter((c) => c.role === "markenbotschafter")
-                  .reduce((sum, c) => sum + c.amount, 0)
-                  .toLocaleString("de-DE")}{" "}
-                CHF
-              </span>
+              <div className="px-4 py-2">
+                Deine Provisionen:{" "}
+                <span className="font-semibold text-green-600">
+                  {commissions
+                    .filter((c) => c.role === "markenbotschafter")
+                    .reduce((sum, c) => sum + c.amount, 0)
+                    .toLocaleString("de-DE")}{" "}
+                  CHF
+                </span>
+              </div>
             </>
           ) : isManager ? (
             <>
-              {managerName}:{" "}
-              <span className="font-semibold text-green-600">
-                {commissions
-                  .filter((c) => c.role === "manager")
-                  .reduce((sum, c) => sum + c.amount, 0)
-                  .toLocaleString("de-DE")}{" "}
-                CHF
-              </span>{" "}
-              | Markenbotschafter:{" "}
-              <span className="font-semibold text-green-600">
-                {commissions
-                  .filter((c) => c.role === "markenbotschafter")
-                  .reduce((sum, c) => sum + c.amount, 0)
-                  .toLocaleString("de-DE")}{" "}
-                CHF
-              </span>
+              <div className="px-4 py-2">
+                {managerName}:{" "}
+                <span className="font-semibold text-green-600">
+                  {commissions
+                    .filter((c) => c.role === "manager")
+                    .reduce((sum, c) => sum + c.amount, 0)
+                    .toLocaleString("de-DE")}{" "}
+                  CHF
+                </span>{" "}
+                | Markenbotschafter:{" "}
+                <span className="font-semibold text-green-600">
+                  {commissions
+                    .filter((c) => c.role === "markenbotschafter")
+                    .reduce((sum, c) => sum + c.amount, 0)
+                    .toLocaleString("de-DE")}{" "}
+                  CHF
+                </span>
+              </div>
             </>
           ) : (
             <>
-              Gesamtprovisionen:{" "}
-              <span className="text-green-600 font-bold">
-                {totalCommissionsFiltered.toLocaleString("de-DE")} CHF
-              </span>
+              {!isMarkenbotschafter && (
+                <p className="p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300">
+                  Gesamtprovisionen:{" "}
+                  <span className="text-green-600 font-bold">
+                    {totalCommissionsFiltered.toLocaleString("de-DE")} CHF
+                  </span>
+                </p>
+              )}
+
             </>
           )}
-        </p>
+        </div>
 
 
 
 
-        <p className="p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300">
-          Gesamtprovisionen:{" "}
-          <span className="text-green-600 font-bold">
-            {totalCommissionsFiltered.toLocaleString("de-DE")} CHF
-          </span>
-        </p>
+
 
       </div>
 
@@ -306,11 +310,18 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
                   <td className="py-4 px-4">{item.managerName}</td>
                   <td className="py-4 px-4">{item.mbName}</td>
 
-                  <td className="py-6 px-4 text-green-500 font-semibold flex justify-center ">
-                    <div className="min-w-20 ">{item.managerAmount.toLocaleString("de-DE")} CHF</div>
-                    <div className="min-w-2 text-black">|</div>
-                    <div className="min-w-20 ps-4">{item.mbAmount.toLocaleString("de-DE")} CHF</div>
+                  <td className="py-6 px-4 text-green-500 font-semibold flex justify-center">
+                    {isMarkenbotschafter ? (
+                      <div className="min-w-20">{item.mbAmount.toLocaleString("de-DE")} CHF</div>
+                    ) : (
+                      <>
+                        <div className="min-w-20">{item.managerAmount.toLocaleString("de-DE")} CHF</div>
+                        <div className="min-w-2 text-black">|</div>
+                        <div className="min-w-20 ps-4">{item.mbAmount.toLocaleString("de-DE")} CHF</div>
+                      </>
+                    )}
                   </td>
+
 
                   <td className="py-4 px-4">{createdAt.toLocaleDateString("de-DE")}</td>
                   <td className="py-4 px-4">{payDate.toLocaleDateString("de-DE")}</td>
