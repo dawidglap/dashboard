@@ -11,13 +11,28 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { useSession } from "next-auth/react";
+
 
 const ProvisionenWidget = ({ commissions = [] }) => {
-  const totalCommissions = commissions.reduce((sum, c) => sum + c.amount, 0);
+  const { data: session } = useSession();
+  const isMarkenbotschafter = session?.user?.role === "markenbotschafter";
+
+  const totalCommissions = commissions.reduce((sum, c) => {
+    return sum + (isMarkenbotschafter ? c.amount / 2 : c.amount);
+  }, 0);
+
 
   const [timeframe, setTimeframe] = useState("monthly"); // Default view
   const { chartData, bruttoProvisionen, loading, error } =
     useFetchProvisionen(timeframe);
+  const adjustedChartData = isMarkenbotschafter
+    ? chartData.map((entry) => ({
+      ...entry,
+      earnings: Math.round(entry.earnings / 2),
+    }))
+    : chartData;
+
 
   useEffect(() => {
     // Auto-update data every minute
@@ -52,7 +67,8 @@ const ProvisionenWidget = ({ commissions = [] }) => {
         <div className="mt-auto h-24">
           {chartData && chartData.length >= 3 ? (
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData}>
+              <AreaChart data={adjustedChartData}>
+
                 <XAxis dataKey="period" hide />
                 <YAxis hide />
                 {/* <Tooltip

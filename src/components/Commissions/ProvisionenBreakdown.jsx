@@ -312,12 +312,12 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
 
                   <td className="py-6 px-4 text-green-500 font-semibold flex justify-center">
                     {isMarkenbotschafter ? (
-                      <div className="min-w-20">{item.mbAmount.toLocaleString("de-DE")} CHF</div>
+                      <div className="min-w-16">{item.mbAmount.toLocaleString("de-DE")} CHF</div>
                     ) : (
                       <>
-                        <div className="min-w-20">{item.managerAmount.toLocaleString("de-DE")} CHF</div>
+                        <div className="min-w-16">{item.managerAmount.toLocaleString("de-DE")} CHF</div>
                         <div className="min-w-2 text-black">|</div>
-                        <div className="min-w-20 ps-4">{item.mbAmount.toLocaleString("de-DE")} CHF</div>
+                        <div className="min-w-16 ps-4">{item.mbAmount.toLocaleString("de-DE")} CHF</div>
                       </>
                     )}
                   </td>

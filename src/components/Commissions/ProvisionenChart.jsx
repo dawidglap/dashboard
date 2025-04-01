@@ -8,8 +8,20 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { useSession } from "next-auth/react";
+
 
 const ProvisionenChart = ({ chartData, timeframe }) => {
+  const { data: session } = useSession();
+  const isMarkenbotschafter = session?.user?.role === "markenbotschafter";
+  // ✅ Adatta i dati se l'utente è ein Markenbotschafter
+  const adjustedChartData = isMarkenbotschafter
+    ? chartData.map((entry) => ({
+      ...entry,
+      earnings: Math.round(entry.earnings / 2), // oppure .earnings / 2 senza arrotondamento
+    }))
+    : chartData;
+
   if (!chartData || chartData.length < 2) {
     return (
       <div className="border-2 border-white  p-4 bg-transparent rounded-xl shadow-xl text-center">
@@ -24,19 +36,20 @@ const ProvisionenChart = ({ chartData, timeframe }) => {
     timeframe === "Täglich"
       ? "Tag"
       : timeframe === "Wöchentlich"
-      ? "Woche"
-      : timeframe === "Monatlich"
-      ? "Monat"
-      : "Jahr";
+        ? "Woche"
+        : timeframe === "Monatlich"
+          ? "Monat"
+          : "Jahr";
 
   return (
     <div className="border-2 border-white   p-4 bg-transparent rounded-xl shadow-xl">
       <h2 className="text-xl font-bold mb-4">Provisionen über die Zeit</h2>
       <ResponsiveContainer width="100%" height={500}>
         <AreaChart
-          data={chartData}
+          data={adjustedChartData}
           margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
         >
+
           {/* Soft Background Grid */}
           <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
 
