@@ -204,15 +204,15 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
             ))}
           </select>
 
-          {filter && (
-            <button
-              onClick={() => setFilter("")}
-              className="px-4 h-10 w-16 border rounded-full btn-outline  transition"
-              title="Filter zurücksetzen"
-            >
-              <FiRefreshCw className="mx-auto w-4 h-4 " />
-            </button>
-          )}
+
+          <button
+            onClick={() => setFilter("")}
+            className="px-4 h-10 w-16 border rounded-full btn-outline  transition"
+            title="Filter zurücksetzen"
+          >
+            <FiRefreshCw className="mx-auto w-4 h-4 " />
+          </button>
+
         </div>
 
 
