@@ -315,9 +315,9 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
                       <div className="min-w-16">{item.mbAmount.toLocaleString("de-DE")} CHF</div>
                     ) : (
                       <>
-                        <div className="min-w-16">{item.managerAmount.toLocaleString("de-DE")} CHF</div>
+                        <div className="min-w-20">{item.managerAmount.toLocaleString("de-DE")} CHF</div>
                         <div className="min-w-2 text-black">|</div>
-                        <div className="min-w-16 ps-4">{item.mbAmount.toLocaleString("de-DE")} CHF</div>
+                        <div className="min-w-20 ps-4">{item.mbAmount.toLocaleString("de-DE")} CHF</div>
                       </>
                     )}
                   </td>
