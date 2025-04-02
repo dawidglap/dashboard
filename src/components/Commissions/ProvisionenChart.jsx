@@ -14,8 +14,10 @@ import { useSession } from "next-auth/react";
 const ProvisionenChart = ({ chartData, timeframe }) => {
   const { data: session } = useSession();
   const isMarkenbotschafter = session?.user?.role === "markenbotschafter";
+  const isManager = session?.user?.role === "manager";
+
   // ✅ Adatta i dati se l'utente è ein Markenbotschafter
-  const adjustedChartData = isMarkenbotschafter
+  const adjustedChartData = isManager || isMarkenbotschafter
     ? chartData.map((entry) => ({
       ...entry,
       earnings: Math.round(entry.earnings / 2), // oppure .earnings / 2 senza arrotondamento

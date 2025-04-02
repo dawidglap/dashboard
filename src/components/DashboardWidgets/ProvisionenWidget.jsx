@@ -16,22 +16,36 @@ import { useSession } from "next-auth/react";
 
 const ProvisionenWidget = ({ commissions = [] }) => {
   const { data: session } = useSession();
+
+  // if (!session) {
+  //   return (
+  //     <div className="flex justify-center py-4">
+  //       <span className="loading loading-spinner loading-lg"></span>
+  //     </div>
+  //   );
+  // }
+
   const isMarkenbotschafter = session?.user?.role === "markenbotschafter";
+  const isManager = session?.user?.role === "manager";
+
 
   const totalCommissions = commissions.reduce((sum, c) => {
-    return sum + (isMarkenbotschafter ? c.amount / 2 : c.amount);
+    const isHalf = isManager || isMarkenbotschafter;
+    return sum + (isHalf ? c.amount / 2 : c.amount);
   }, 0);
+
 
 
   const [timeframe, setTimeframe] = useState("monthly"); // Default view
   const { chartData, bruttoProvisionen, loading, error } =
     useFetchProvisionen(timeframe);
-  const adjustedChartData = isMarkenbotschafter
+  const adjustedChartData = (isManager || isMarkenbotschafter)
     ? chartData.map((entry) => ({
       ...entry,
       earnings: Math.round(entry.earnings / 2),
     }))
     : chartData;
+
 
 
   useEffect(() => {
