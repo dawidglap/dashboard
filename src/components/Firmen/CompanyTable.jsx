@@ -20,6 +20,8 @@ const CompanyTable = ({ onEdit, onDelete }) => {
   const [toastMessage, setToastMessage] = useState(null); // ✅ New state for toast
   const [selectedManager, setSelectedManager] = useState("");
   const [selectedMarkenbotschafter, setSelectedMarkenbotschafter] = useState("");
+  const [session, setSession] = useState(null);
+
 
 
   // ✅ Auto-clear toast after 2 seconds
@@ -36,14 +38,16 @@ const CompanyTable = ({ onEdit, onDelete }) => {
   // ✅ Fetch session for user role
   useEffect(() => {
     const fetchSession = async () => {
-      const session = await getSession();
-      if (session?.user?.role) {
-        setUserRole(session.user.role);
+      const sessionData = await getSession();
+      if (sessionData?.user?.role) {
+        setUserRole(sessionData.user.role);
       }
+      setSession(sessionData); // ✅ salva sessione
     };
 
     fetchSession();
   }, []);
+
 
   // ✅ Fetch users
   useEffect(() => {
@@ -160,15 +164,18 @@ const CompanyTable = ({ onEdit, onDelete }) => {
         </div>
 
         {/* Filtro per Manager o Markenbotschafter */}
-        {userRole === "admin" && (
+        {(userRole === "admin" || userRole === "manager") && (
           <CompanyFilters
             users={users}
             selectedManager={selectedManager}
             selectedMarkenbotschafter={selectedMarkenbotschafter}
             onManagerChange={setSelectedManager}
             onMarkenbotschafterChange={setSelectedMarkenbotschafter}
+            userRole={userRole}
+            currentUserId={users.find(u => u.email === session?.user?.email)?._id} // serve per manager
           />
         )}
+
         {/* 🔄 Pulsante di reset filtri */}
 
 
