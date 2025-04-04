@@ -388,7 +388,9 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
               <input
                 type="number"
                 name="plan_price"
-                value={formData.plan_price}
+                step="1"
+                inputMode="numeric"
+                value={Math.floor(formData.plan_price)}
                 onChange={handleChange}
                 className="input input-sm input-bordered w-full rounded-full"
               />
