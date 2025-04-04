@@ -21,7 +21,7 @@ const [adminFilterRole, setAdminFilterRole] = useState("manager");
 useEffect(() => {
   if (!userRole) return;
 
-  if (userRole === "admin") {
+  if (userRole === "admin" || userRole === "manager") {
     setData(materials.filter((item) => item.role === adminFilterRole));
   } else {
     setData(materials.filter((item) => item.role === userRole));
@@ -72,7 +72,7 @@ useEffect(() => {
   </h1>
 
   {/* Admin Filter Dropdown */}
-  {userRole === "admin" && (
+  {(userRole === "admin" || userRole === "manager") &&  (
     <div className="mt-4 md:mt-0">
       <select
         value={adminFilterRole}

@@ -90,9 +90,13 @@ const CompanyTableRow = ({
         </td>
 
         {/* ✅ Formatted Provisionen */}
+        {/* ✅ Formatted Provisionen - Split for markenbotschafter */}
         <td className="py-5 px-4 ">
-          {formatNumber(calculateCommission())}
+          {userRole === "markenbotschafter"
+            ? formatNumber(calculateCommission() / 2)
+            : formatNumber(calculateCommission())}
         </td>
+
 
         {/* Aktionen */}
         {userRole === "admin" && (
