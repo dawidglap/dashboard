@@ -24,7 +24,7 @@ const Earnings = () => {
   // ✅ Convert timeframe to German for widget titles
   const timeframeLabel =
     {
-      daily: "Tag",
+      // daily: "Tag",
       weekly: "Woche",
       monthly: "Monat",
       yearly: "Jahr",
@@ -39,7 +39,7 @@ const Earnings = () => {
         </h1>
         <div className="my-auto">
           <div className="flex space-x-2 bg-base-200 p-2 px-6 rounded-full shadow">
-            {["daily", "weekly", "monthly", "yearly"].map((option) => (
+            {["weekly", "monthly", "yearly"].map((option) => (
               <motion.button
                 key={option}
                 className={`badge px-4 py-2 text-sm font-semibold rounded-full transition-colors ${
@@ -51,9 +51,8 @@ const Earnings = () => {
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
               >
-                {option === "daily"
-                  ? "Täglich"
-                  : option === "weekly"
+                {
+                  option === "weekly"
                   ? "Wöchentlich"
                   : option === "monthly"
                   ? "Monatlich"

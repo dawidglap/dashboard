@@ -25,7 +25,7 @@ const Provisionen = () => {
   if (error) return <p className="text-red-500">Error: {error}</p>;
 
   const timeframeLabel = {
-    daily: "Täglich",
+    
     weekly: "Wöchentlich",
     monthly: "Monatlich",
     yearly: "Jährlich",
@@ -40,7 +40,7 @@ const Provisionen = () => {
         </h1>
         <div className="my-auto">
           <div className="flex h-10 space-x-2 bg-base-200 p-2 px-6 rounded-full shadow">
-            {["daily", "weekly", "monthly", "yearly"].map((option) => (
+            {[ "weekly", "monthly", "yearly"].map((option) => (
               <button
                 key={option}
                 className={`badge px-4 py-2 text-sm font-semibold rounded-full transition-all duration-200 ${
@@ -50,9 +50,7 @@ const Provisionen = () => {
                 }`}
                 onClick={() => setTimeframe(option)}
               >
-                {option === "daily"
-                  ? "Täglich"
-                  : option === "weekly"
+                { option === "weekly"
                   ? "Wöchentlich"
                   : option === "monthly"
                   ? "Monatlich"
