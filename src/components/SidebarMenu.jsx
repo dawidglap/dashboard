@@ -20,6 +20,7 @@ import { GoDownload } from "react-icons/go";
 
 const SidebarMenu = () => {
   const [user, setUser] = useState(null);
+  const [pendingCount, setPendingCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const pathname = usePathname();
 
@@ -39,6 +40,17 @@ const SidebarMenu = () => {
     fetchUser();
   }, []);
 
+  useEffect(() => {
+    const handleUpdate = () => {
+      // Richiama la funzione per aggiornare il contatore
+      fetchPendingCount();
+    };
+
+    window.addEventListener("taskStatusUpdated", handleUpdate);
+    return () => window.removeEventListener("taskStatusUpdated", handleUpdate);
+  }, []);
+
+
   const isAdmin = user?.role === "admin";
 
   let menuItems = [];
@@ -52,10 +64,46 @@ const SidebarMenu = () => {
       ...(user.role !== "markenbotschafter"
         ? [{ title: "Team", href: "/dashboard/team", icon: <FaUsers /> }]
         : []),
-      { title: "Aufgaben", href: "/dashboard/aufgaben", icon: <FaTasks /> },
+      {
+        title: (
+          <div className="flex items-center gap-2">
+            <span>Aufgaben</span>
+            {pendingCount > 0 && (
+              <span className="ml-1 bg-red-500 text-white text-[10px] min-w-[18px] h-[18px] rounded-full flex items-center justify-center font-bold">
+                {pendingCount}
+              </span>
+
+            )}
+          </div>
+        ),
+        href: "/dashboard/aufgaben",
+        icon: <FaTasks />,
+      },
+
       { title: "Materialien", href: "/dashboard/materialien", icon: <GoDownload /> },
     ];
   }
+
+  const fetchPendingCount = async () => {
+    try {
+      const res = await fetch("/api/notifications/tasks-pending");
+      const data = await res.json();
+      if (res.ok) {
+        setPendingCount(data.count || 0);
+      } else {
+        console.warn("❌ Failed to load pending tasks notification");
+      }
+    } catch (err) {
+      console.error("❌ Error loading notification:", err);
+    }
+  };
+
+  useEffect(() => {
+
+    if (!loading && user) {
+      fetchPendingCount();
+    }
+  }, [loading, user]);
 
 
   // Funzione per determinare se l’item è attivo

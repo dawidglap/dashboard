@@ -104,6 +104,8 @@ const TaskRow = ({
 
       // ✅ Replace the old task with fresh data
       onUpdate(task._id, updatedTaskData.task);
+      window.dispatchEvent(new Event("taskStatusUpdated"));
+
     } catch (error) {
       console.error("❌ Fehler beim Aktualisieren der Aufgabe:", error);
     } finally {
