@@ -165,11 +165,12 @@ const TaskRow = ({
         <td className="py-0 px-2 text-center w-6">
           <div className="relative">
             <span
-              className={`opacity-0 group-hover:opacity-100 transition ${PRIORITY_ICONS[task.priority]?.color
-                }`}
+              className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ease-in-out transform opacity-0 translate-y-[2px] group-hover:opacity-100 group-hover:translate-y-0 ${PRIORITY_ICONS[task.priority]?.color}`}
             >
               {PRIORITY_ICONS[task.priority]?.icon || ""}
             </span>
+
+
           </div>
         </td>
 
