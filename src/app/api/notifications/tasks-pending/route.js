@@ -25,27 +25,22 @@ export async function GET() {
     if (role === "admin") {
       query = {
         status: "pending",
-        locked: { $in: [false, null] }, // ✅ solo se non è ancora locked
+        locked: { $in: [false, null] }, // ✅ solo se non è locked
       };
     } else if (role === "manager") {
-      const team = await db.collection("users").find({ managerId: userId }).toArray();
-      const teamIds = team.map((u) => u._id);
-
       query = {
         status: "pending",
-        $expr: {
-          $in: ["$assignedTo._id", [userId, ...teamIds]],
-        },
+        locked: { $in: [false, null] },
+        "assignedTo._id": userId, // ✅ solo i task assegnati al manager stesso
       };
     } else if (role === "markenbotschafter") {
       query = {
         status: "pending",
-        $expr: {
-          $eq: ["$assignedTo._id", new ObjectId(userId)],
-        },
+        locked: { $in: [false, null] },
+        "assignedTo._id": userId,
       };
     } else {
-      query = { status: "pending", $expr: { $eq: [false, true] } }; // no results fallback
+      query = { status: "pending", $expr: { $eq: [false, true] } }; // fallback: nessun risultato
     }
 
     const count = await db.collection("tasks").countDocuments(query);

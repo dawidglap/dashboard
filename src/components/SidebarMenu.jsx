@@ -40,15 +40,7 @@ const SidebarMenu = () => {
     fetchUser();
   }, []);
 
-  useEffect(() => {
-    const handleUpdate = () => {
-      // Richiama la funzione per aggiornare il contatore
-      fetchPendingCount();
-    };
 
-    window.addEventListener("taskStatusUpdated", handleUpdate);
-    return () => window.removeEventListener("taskStatusUpdated", handleUpdate);
-  }, []);
 
 
   const isAdmin = user?.role === "admin";
@@ -85,6 +77,8 @@ const SidebarMenu = () => {
   }
 
   const fetchPendingCount = async () => {
+    if (!user) return; // 👈 evita fetch se user non è ancora pronto
+
     try {
       const res = await fetch("/api/notifications/tasks-pending");
       const data = await res.json();
@@ -98,12 +92,35 @@ const SidebarMenu = () => {
     }
   };
 
+
   useEffect(() => {
 
     if (!loading && user) {
       fetchPendingCount();
     }
   }, [loading, user]);
+
+  useEffect(() => {
+    const handleStatusChange = () => {
+      if (user) {
+        fetchPendingCount(); // ✅ ora user è accessibile
+      } else {
+        // ⏳ Se user non è ancora pronto, ritenta tra 100ms
+        const retryInterval = setInterval(() => {
+          if (user) {
+            fetchPendingCount();
+            clearInterval(retryInterval);
+          }
+        }, 100);
+      }
+    };
+
+    window.addEventListener("taskStatusUpdated", handleStatusChange);
+    return () => {
+      window.removeEventListener("taskStatusUpdated", handleStatusChange);
+    };
+  }, [user]); // ✅ aggiunto user nelle dipendenze
+
 
 
   // Funzione per determinare se l’item è attivo
