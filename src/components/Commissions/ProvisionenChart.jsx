@@ -35,13 +35,9 @@ const ProvisionenChart = ({ chartData, timeframe }) => {
 
   // ✅ Ensure X-Axis labels are readable
   const xAxisLabel =
-    timeframe === "Täglich"
-      ? "Tag"
-      : timeframe === "Wöchentlich"
-        ? "Woche"
-        : timeframe === "Monatlich"
-          ? "Monat"
-          : "Jahr";
+    timeframe === "Monatlich"
+      ? "Monat"
+      : "Jahr";
 
   return (
     <div className="border-2 border-white   p-4 bg-transparent rounded-xl shadow-xl">

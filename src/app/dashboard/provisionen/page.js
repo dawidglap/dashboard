@@ -26,7 +26,7 @@ const Provisionen = () => {
 
   const timeframeLabel = {
     
-    weekly: "Wöchentlich",
+    
     monthly: "Monatlich",
     yearly: "Jährlich",
   }[timeframe];
@@ -40,7 +40,7 @@ const Provisionen = () => {
         </h1>
         <div className="my-auto">
           <div className="flex h-10 space-x-2 bg-base-200 p-2 px-6 rounded-full shadow">
-            {[ "weekly", "monthly", "yearly"].map((option) => (
+            {[  "monthly", "yearly"].map((option) => (
               <button
                 key={option}
                 className={`badge px-4 py-2 text-sm font-semibold rounded-full transition-all duration-200 ${
@@ -50,9 +50,8 @@ const Provisionen = () => {
                 }`}
                 onClick={() => setTimeframe(option)}
               >
-                { option === "weekly"
-                  ? "Wöchentlich"
-                  : option === "monthly"
+                { 
+                  option === "monthly"
                   ? "Monatlich"
                   : "Jährlich"}
               </button>

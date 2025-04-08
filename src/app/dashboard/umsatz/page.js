@@ -25,7 +25,7 @@ const Earnings = () => {
   const timeframeLabel =
     {
       // daily: "Tag",
-      weekly: "Woche",
+      
       monthly: "Monat",
       yearly: "Jahr",
     }[timeframe] || "Zeitraum"; // ✅ Default fallback
@@ -39,7 +39,7 @@ const Earnings = () => {
         </h1>
         <div className="my-auto">
           <div className="flex space-x-2 bg-base-200 p-2 px-6 rounded-full shadow">
-            {["weekly", "monthly", "yearly"].map((option) => (
+            {[ "monthly", "yearly"].map((option) => (
               <motion.button
                 key={option}
                 className={`badge px-4 py-2 text-sm font-semibold rounded-full transition-colors ${
@@ -52,9 +52,7 @@ const Earnings = () => {
                 transition={{ duration: 0.2, ease: "easeOut" }}
               >
                 {
-                  option === "weekly"
-                  ? "Wöchentlich"
-                  : option === "monthly"
+                 option === "monthly"
                   ? "Monatlich"
                   : "Jährlich"}
               </motion.button>
