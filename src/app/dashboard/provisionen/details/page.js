@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import ProvisionenBreakdown from "@/components/Commissions/ProvisionenBreakdown";
 import { useRouter } from "next/navigation";
+import MarkenbotschafterProvisionenTable from "@/components/Commissions/MarkenbotschafterProvisionenTable";
+import { motion } from "framer-motion";
 
 const ProvisionenDetails = () => {
   const [commissions, setCommissions] = useState([]);
@@ -10,6 +12,16 @@ const ProvisionenDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
+  const [selectedMB, setSelectedMB] = useState(null);
+
+  const [showAllCompanies, setShowAllCompanies] = useState(true);
+
+  const handleResetToCompanies = () => {
+    setSelectedMB(null); // <- questo riporta alla vista iniziale (companie)
+  };
+  
+  
+
 
   useEffect(() => {
     const fetchUserAndCommissions = async () => {
@@ -70,7 +82,30 @@ const ProvisionenDetails = () => {
       </div>
 
       {/* ✅ Commission Breakdown Table */}
-      <ProvisionenBreakdown commissions={commissions} />
+      <motion.div
+  key={selectedMB ? "mb-table" : "company-table"}
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  exit={{ opacity: 0, y: -20 }}
+  transition={{ duration: 0.3 }}
+>
+{selectedMB !== null ? (
+  <MarkenbotschafterProvisionenTable
+    selectedMB={selectedMB}
+    setSelectedMB={setSelectedMB}
+    onResetToCompanies={handleResetToCompanies}
+  />
+) : (
+  <ProvisionenBreakdown
+    commissions={commissions}
+    selectedMB={selectedMB}
+    setSelectedMB={setSelectedMB}
+  />
+)}
+
+
+</motion.div>
+
     </div>
   );
 };

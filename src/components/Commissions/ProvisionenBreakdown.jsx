@@ -9,7 +9,7 @@ import { FiRefreshCw } from "react-icons/fi";
 
 
 
-const ProvisionenBreakdown = ({ commissions = [] }) => {
+const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB }) => {
 
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "admin";
@@ -28,7 +28,7 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
   const perPage = 1020;
   const tableContainerRef = useRef(null);
 
-  const [selectedMB, setSelectedMB] = useState("");
+  // const [selectedMB, setSelectedMB] = useState("");
   const [markenbotschafterList, setMarkenbotschafterList] = useState([]);
 
 
@@ -236,33 +236,20 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
             </select>
 
             {/* 🧑‍🤝‍🧑 Select placeholder per Markenbotschafter — logica sarà aggiunta in step 3 */}
-            <select
-              className="w-52 p-2 px-4 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
-              onChange={(e) => setSelectedMB(e.target.value)}
-              value={selectedMB}
-            >
-              <option value="">Alle Markenbotschafter</option>
-              {markenbotschafterList.map((mb) => (
-                <option key={mb._id} value={mb._id}>
-                  {mb.name} {mb.surname}
-                </option>
-              ))}
-            </select>
-
-            {selectedMB && (
-              <p className="text-sm text-indigo-600 font-semibold mt-2">
-                📌 Selezionato:{" "}
-                {
-                  markenbotschafterList.find((mb) => mb._id === selectedMB)?.name
-                }{" "}
-                {
-                  markenbotschafterList.find((mb) => mb._id === selectedMB)?.surname
-                }{" "}
-                (ID: {selectedMB})
-              </p>
+            {!isMarkenbotschafter && (
+              <select
+                className="w-56 p-2 px-4 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
+                onChange={(e) => setSelectedMB(e.target.value)}
+                value={selectedMB}
+              >
+                <option value="">Alle Markenbotschafter</option>
+                {markenbotschafterList.map((mb) => (
+                  <option key={mb._id} value={mb._id}>
+                    {mb.name} {mb.surname}
+                  </option>
+                ))}
+              </select>
             )}
-
-
 
             {/* 🔄 Reset button */}
             <button
