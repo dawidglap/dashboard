@@ -10,6 +10,7 @@ import { FiRefreshCw } from "react-icons/fi";
 
 
 const ProvisionenBreakdown = ({ commissions = [] }) => {
+
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "admin";
   const isManager = session?.user?.role === "manager";
@@ -26,6 +27,10 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
   const [page, setPage] = useState(1);
   const perPage = 1020;
   const tableContainerRef = useRef(null);
+
+  const [selectedMB, setSelectedMB] = useState("");
+  const [markenbotschafterList, setMarkenbotschafterList] = useState([]);
+
 
   const groupedCommissions = [];
 
@@ -148,6 +153,30 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
     setPage(1);
   }, [filter, commissions]);
 
+  useEffect(() => {
+    const fetchMBList = async () => {
+      try {
+        const res = await fetch("/api/users");
+        const data = await res.json();
+
+        if (data.success && Array.isArray(data.users)) {
+          const allMBs = data.users.filter((u) => u.role === "markenbotschafter");
+
+          const filteredMBs = isAdmin
+            ? allMBs
+            : isManager
+              ? allMBs.filter((mb) => mb.manager_id === session?.user?._id)
+              : [];
+
+          setMarkenbotschafterList(filteredMBs);
+        }
+      } catch (error) {
+        console.error("❌ Fehler beim Laden der Markenbotschafter:", error);
+      }
+    };
+
+    fetchMBList();
+  }, [session?.user?._id, isAdmin, isManager]);
 
   // ✅ Calculate total commissions based on current filter (but from all commissions)
   const totalCommissionsFiltered = commissions.reduce((sum, c) => sum + c.amount, 0);
@@ -191,27 +220,69 @@ const ProvisionenBreakdown = ({ commissions = [] }) => {
       {/* ✅ Header with filter & dynamic total commissions */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center space-x-2">
-          <select
-            className="w-52 p-2 px-4 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
-            onChange={(e) => setFilter(e.target.value)}
-            value={filter}
-          >
-            <option value="">Alle Firmen</option>
-            {[...new Set(groupedCommissions.map((c) => c.companyName))].map((company, i) => (
-              <option key={i} value={company}>
-                {company}
-              </option>
-            ))}
-          </select>
+          <div className="flex gap-2">
+            {/* 🏢 Select per le Firmen */}
+            <select
+              className="w-52 p-2 px-4 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
+              onChange={(e) => setFilter(e.target.value)}
+              value={filter}
+            >
+              <option value="">Alle Firmen</option>
+              {[...new Set(groupedCommissions.map((c) => c.companyName))].map((company, i) => (
+                <option key={i} value={company}>
+                  {company}
+                </option>
+              ))}
+            </select>
+
+            {/* 🧑‍🤝‍🧑 Select placeholder per Markenbotschafter — logica sarà aggiunta in step 3 */}
+            <select
+              className="w-52 p-2 px-4 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
+              onChange={(e) => setSelectedMB(e.target.value)}
+              value={selectedMB}
+            >
+              <option value="">Alle Markenbotschafter</option>
+              {markenbotschafterList.map((mb) => (
+                <option key={mb._id} value={mb._id}>
+                  {mb.name} {mb.surname}
+                </option>
+              ))}
+            </select>
+
+            {selectedMB && (
+              <p className="text-sm text-indigo-600 font-semibold mt-2">
+                📌 Selezionato:{" "}
+                {
+                  markenbotschafterList.find((mb) => mb._id === selectedMB)?.name
+                }{" "}
+                {
+                  markenbotschafterList.find((mb) => mb._id === selectedMB)?.surname
+                }{" "}
+                (ID: {selectedMB})
+              </p>
+            )}
 
 
-          <button
-            onClick={() => setFilter("")}
-            className="px-4 h-10 w-16 border rounded-full btn-outline  transition"
-            title="Filter zurücksetzen"
-          >
-            <FiRefreshCw className="mx-auto w-4 h-4 " />
-          </button>
+
+            {/* 🔄 Reset button */}
+            <button
+
+
+              onClick={() => {
+                setFilter("");         // resetta "Alle Firmen"
+                setSelectedMB("");     // resetta anche "Alle markenbotschafter"
+              }}
+              className="px-4 h-10 w-16 border rounded-full btn-outline transition"
+              title="Alle Filter zurücksetzen"
+
+            >
+              <FiRefreshCw className="mx-auto w-4 h-4" />
+            </button>
+          </div>
+
+
+
+
 
         </div>
 
