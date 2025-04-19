@@ -83,28 +83,27 @@ const ProvisionenDetails = () => {
 
       {/* ✅ Commission Breakdown Table */}
       <motion.div
-  key={selectedMB ? "mb-table" : "company-table"}
+  key={selectedMB === null ? "company-table" : "mb-table"} // 👈 importantissimo
   initial={{ opacity: 0, y: 20 }}
   animate={{ opacity: 1, y: 0 }}
   exit={{ opacity: 0, y: -20 }}
   transition={{ duration: 0.3 }}
 >
-{selectedMB !== null ? (
-  <MarkenbotschafterProvisionenTable
-    selectedMB={selectedMB}
-    setSelectedMB={setSelectedMB}
-    onResetToCompanies={handleResetToCompanies}
-  />
-) : (
-  <ProvisionenBreakdown
-    commissions={commissions}
-    selectedMB={selectedMB}
-    setSelectedMB={setSelectedMB}
-  />
-)}
-
-
+  {selectedMB === null ? (
+    <ProvisionenBreakdown
+      commissions={commissions}
+      selectedMB={selectedMB}
+      setSelectedMB={setSelectedMB}
+    />
+  ) : (
+    <MarkenbotschafterProvisionenTable
+      selectedMB={selectedMB}
+      setSelectedMB={setSelectedMB}
+      onResetToCompanies={handleResetToCompanies}
+    />
+  )}
 </motion.div>
+
 
     </div>
   );

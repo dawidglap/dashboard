@@ -81,7 +81,7 @@ const MarkenbotschafterProvisionenTable = ({ selectedMB, setSelectedMB, onResetT
   return (
     <div className="bg-base-100 p-6 rounded-2xl mt-12 w-full">
       <h3 className="text-xl font-bold mb-4 border-b-2 border-indigo-300 pb-2 text-base-content">
-        {selectedMB === ""
+        {selectedMB === "all"
           ? `Provisionen pro Markenbotschafter – Jahr ${new Date().getFullYear()}`
           : `Provision für ${markenbotschafter.find((m) => m._id === selectedMB)?.name || ""}`}
       </h3>
@@ -94,13 +94,12 @@ const MarkenbotschafterProvisionenTable = ({ selectedMB, setSelectedMB, onResetT
               className="w-56 p-2 px-4 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
               onChange={(e) => {
                 const value = e.target.value;
-                setSelectedMB(value);
-                setShowAllCompanies(value === "");
+                setSelectedMB(value === "all" ? "all" : value); // 👈
               }}
 
               value={selectedMB || ""}
             >
-              <option value="">Alle Markenbotschafter</option>
+              <option value="all">Alle Markenbotschafter</option>
               {markenbotschafter.map((mb) => (
                 <option key={mb._id} value={mb._id}>
                   {mb.name} {mb.surname}
@@ -163,7 +162,9 @@ const MarkenbotschafterProvisionenTable = ({ selectedMB, setSelectedMB, onResetT
           </thead>
           <tbody>
             {markenbotschafter
-              .filter((mb) => selectedMB === "" || mb._id === selectedMB)
+
+              .filter((mb) => selectedMB === "all" || mb._id === selectedMB)
+
               .map((mb, index) => {
 
                 const createdAt = new Date(mb.createdAt);
