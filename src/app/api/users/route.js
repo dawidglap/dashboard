@@ -27,6 +27,7 @@ export async function GET(request) {
             subscription_expiration: 1, // ✅ Include subscription expiration
             is_active: 1, // ✅ Include account status
             manager_id: 1,
+            status_provisionen_markenbotschafter: 1,
           },
         }
       )
@@ -258,6 +259,9 @@ export async function PUT(request) {
     ...(body.user_city && { user_city: body.user_city }),
     ...(body.subscription_expiration && {
       subscription_expiration: new Date(body.subscription_expiration),
+    }),
+    ...(typeof body.status_provisionen_markenbotschafter === "boolean" && {
+      status_provisionen_markenbotschafter: body.status_provisionen_markenbotschafter,
     }),
     is_active: body.is_active ?? true, // Ensure boolean values
   };

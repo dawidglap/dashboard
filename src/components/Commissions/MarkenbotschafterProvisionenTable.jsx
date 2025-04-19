@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Check, X } from "lucide-react";
 import { motion } from "framer-motion";
-import PaidCommissionModal from "./PaidCommissionModal";
+import PaidMBCommissionModal from "./PaidMBCommissionModal";
 import { FiRefreshCw } from "react-icons/fi";
 
 const MarkenbotschafterProvisionenTable = ({ selectedMB, setSelectedMB, onResetToCompanies }) => {
@@ -47,24 +47,25 @@ const MarkenbotschafterProvisionenTable = ({ selectedMB, setSelectedMB, onResetT
   }, [isAdmin, isManager, session?.user?._id]);
 
   const handleToggleStatus = async () => {
-    if (!selectedMB) return;
+    const mb = markenbotschafter.find((m) => m._id === selectedMB);
+    if (!mb) return;
 
     try {
       const res = await fetch("/api/users", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          id: selectedMB._id,
-          status_provisionen_markenbotschafter: !selectedMB.status_provisionen_markenbotschafter,
+          id: mb._id,
+          status_provisionen_markenbotschafter: !mb.status_provisionen_markenbotschafter,
         }),
       });
 
       if (!res.ok) throw new Error("Update failed");
 
-      const updated = markenbotschafter.map((mb) =>
-        mb._id === selectedMB._id
-          ? { ...mb, status_provisionen_markenbotschafter: !mb.status_provisionen_markenbotschafter }
-          : mb
+      const updated = markenbotschafter.map((m) =>
+        m._id === mb._id
+          ? { ...m, status_provisionen_markenbotschafter: !m.status_provisionen_markenbotschafter }
+          : m
       );
 
       setMarkenbotschafter(updated);
@@ -72,9 +73,10 @@ const MarkenbotschafterProvisionenTable = ({ selectedMB, setSelectedMB, onResetT
       console.error("❌ Fehler beim Update:", err);
     } finally {
       setShowModal(false);
-      setSelectedMB(null);
+      // setSelectedMB("");
     }
   };
+
 
   return (
     <div className="bg-base-100 p-6 rounded-2xl mt-12 w-full">
@@ -219,15 +221,16 @@ const MarkenbotschafterProvisionenTable = ({ selectedMB, setSelectedMB, onResetT
       </div>
 
       {showModal && selectedMB && (
-        <PaidCommissionModal
-          company={selectedMB}
+        <PaidMBCommissionModal
+          markenbotschafter={markenbotschafter.find((mb) => mb._id === selectedMB)}
           onConfirm={handleToggleStatus}
           onCancel={() => {
             setShowModal(false);
-            setSelectedMB(null);
+            setSelectedMB("");
           }}
         />
       )}
+
     </div>
   );
 };
