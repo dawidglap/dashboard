@@ -110,14 +110,14 @@ const MarkenbotschafterProvisionenTable = ({ selectedMB, setSelectedMB, onResetT
             {/* 🔄 Reset */}
             <button
               onClick={() => {
-                setSelectedMB(null);
-                setShowAllCompanies(true);
+                onResetToCompanies?.(); // usa la funzione passata dal parent
               }}
               className="px-4 h-10 w-16 border rounded-full btn-outline transition"
               title="Alle Filter zurücksetzen"
             >
               <FiRefreshCw className="mx-auto w-4 h-4" />
             </button>
+
 
           </div>
         </div>
@@ -130,22 +130,7 @@ const MarkenbotschafterProvisionenTable = ({ selectedMB, setSelectedMB, onResetT
           </span>
         </div>
       </div>
-      {/* 
-      {!showAllCompanies && (
-        <div className="mb-4">
-          <button
-            onClick={() => {
-              setSelectedMB(null);
-              setShowAllCompanies(true);
-              onResetToCompanies?.(); // esegue la callback dal componente genitore, se esiste
-            }}
 
-            className="btn btn-outline btn-sm rounded-full text-sm"
-          >
-            ← Zurück zur Firmenübersicht
-          </button>
-        </div>
-      )} */}
 
       <div className="overflow-x-auto max-h-[80vh] rounded-lg">
         <table className="table table-xs w-full text-left">

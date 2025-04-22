@@ -12,12 +12,16 @@ const ProvisionenDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
-  const [selectedMB, setSelectedMB] = useState(null);
+  const [selectedMB, setSelectedMB] = useState("__none__");
+  const [filterCompany, setFilterCompany] = useState("");
+
+
+
 
   const [showAllCompanies, setShowAllCompanies] = useState(true);
 
   const handleResetToCompanies = () => {
-    setSelectedMB(null); // <- questo riporta alla vista iniziale (companie)
+    setSelectedMB("__none__");
   };
   
   
@@ -83,26 +87,32 @@ const ProvisionenDetails = () => {
 
       {/* ✅ Commission Breakdown Table */}
       <motion.div
-  key={selectedMB === null ? "company-table" : "mb-table"} // 👈 importantissimo
+  key={selectedMB && selectedMB !== null ? "mb-table" : "company-table"} // aggiorna key
   initial={{ opacity: 0, y: 20 }}
   animate={{ opacity: 1, y: 0 }}
   exit={{ opacity: 0, y: -20 }}
   transition={{ duration: 0.3 }}
 >
-  {selectedMB === null ? (
-    <ProvisionenBreakdown
-      commissions={commissions}
-      selectedMB={selectedMB}
-      setSelectedMB={setSelectedMB}
-    />
-  ) : (
-    <MarkenbotschafterProvisionenTable
-      selectedMB={selectedMB}
-      setSelectedMB={setSelectedMB}
-      onResetToCompanies={handleResetToCompanies}
-    />
-  )}
+{selectedMB === "__none__" ? (
+ <ProvisionenBreakdown
+ commissions={commissions}
+ selectedMB={selectedMB}
+ setSelectedMB={setSelectedMB}
+//  onResetToCompanies={() => setSelectedMB("__none__")} // ✅ aggiunto
+ onResetCompaniesFilter={() => setFilterCompany("")}
+ 
+/>
+
+) : (
+  <MarkenbotschafterProvisionenTable
+    selectedMB={selectedMB}
+    setSelectedMB={setSelectedMB}
+    onResetToCompanies={handleResetToCompanies}
+  />
+)}
+
 </motion.div>
+
 
 
     </div>

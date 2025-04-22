@@ -9,7 +9,7 @@ import { FiRefreshCw } from "react-icons/fi";
 
 
 
-const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB }) => {
+const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onResetToCompanies }) => {
 
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "admin";
@@ -239,10 +239,21 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB }) =
             {!isMarkenbotschafter && (
               <select
                 className="w-56 p-2 px-4 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
-                onChange={(e) => setSelectedMB(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === "all") {
+                    setSelectedMB("all");
+                  } else {
+                    setSelectedMB(value);
+                  }
+                }}
+
                 value={selectedMB}
               >
-                <option value="">Alle Markenbotschafter</option>
+                <option value="__none__" disabled>
+                  Markenbotschafter wählen...
+                </option>
+                <option value="all">Alle Markenbotschafter</option>
                 {markenbotschafterList.map((mb) => (
                   <option key={mb._id} value={mb._id}>
                     {mb.name} {mb.surname}
@@ -253,18 +264,15 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB }) =
 
             {/* 🔄 Reset button */}
             <button
-
-
               onClick={() => {
-                setFilter("");         // resetta "Alle Firmen"
-                setSelectedMB("");     // resetta anche "Alle markenbotschafter"
+                setFilter(""); // ✅ resetta solo il filtro delle compagnie
               }}
               className="px-4 h-10 w-16 border rounded-full btn-outline transition"
               title="Alle Filter zurücksetzen"
-
             >
               <FiRefreshCw className="mx-auto w-4 h-4" />
             </button>
+
           </div>
 
 
