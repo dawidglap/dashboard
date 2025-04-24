@@ -108,7 +108,7 @@ const UserTable = ({ onDelete }) => {
         <div className="flex items-center space-x-2">
           {/* 🔹 Dropdown for user names */}
           <select
-            className="p-2 px-4 my-2 ms-1 w-72 select select-sm select-bordered rounded-full bg-indigo-100 text-smf"
+            className="px-4 my-2 ms-1 w-72 select select-sm select-bordered rounded-full bg-indigo-100 text-smf"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           >
@@ -126,7 +126,7 @@ const UserTable = ({ onDelete }) => {
               setFilter("");
               setRoleFilter("");
             }}
-            className="btn btn-outline btn-sm rounded-full flex items-center justify-center w-16 px-4 h-[38px]"
+            className="btn btn-outline btn-sm rounded-full flex items-center justify-center w-16 px-4 h-8"
             title="Filter zurücksetzen"
           >
             <FaSyncAlt className="w-4 h-4" />

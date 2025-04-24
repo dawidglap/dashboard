@@ -138,7 +138,7 @@ const CompanyTable = ({ onEdit, onDelete }) => {
           {/* Mostra solo il filtro delle compagnie per Manager/Markenbotschafter */}
           {companies.length > 0 && (
             <select
-              className="p-2 px-4 my-2 ms-1 w-72 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
+              className=" px-4 my-2  ms-1 w-72 select select-sm select-bordered rounded-full bg-indigo-100 text-sm"
               value={selectedCompany}
               onChange={(e) => setSelectedCompany(e.target.value)}
             >
@@ -156,7 +156,7 @@ const CompanyTable = ({ onEdit, onDelete }) => {
               setSelectedManager("");
               setSelectedMarkenbotschafter("");
             }}
-            className="p-2 px-4 my-2 relative top-1 ms-2 rounded-full border-neutral-800 border  hover:bg-black hover:text-gray-200 transition duration-150"
+            className="my-2  h-8 px-4  relative top-[10px] ms-2 rounded-full border-neutral-800 border  hover:bg-black hover:text-gray-200 transition duration-150"
             title="Filter zurücksetzen"
           >
             <FiRefreshCw size={20} />

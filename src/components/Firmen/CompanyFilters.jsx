@@ -29,7 +29,7 @@ const CompanyFilters = ({
             {/* Manager Filter */}
             {userRole === "admin" && (
                 <select
-                    className="p-2 px-4 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
+                    className=" px-4 select select-sm select-bordered rounded-full bg-indigo-100 text-sm"
                     value={selectedManager}
                     onChange={(e) => onManagerChange(e.target.value)}
                 >
@@ -45,7 +45,7 @@ const CompanyFilters = ({
 
             {/* Markenbotschafter Filter */}
             <select
-                className="p-2 px-4 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
+                className=" px-4 select select-sm select-bordered rounded-full bg-indigo-100 text-sm"
                 value={selectedMarkenbotschafter}
                 onChange={(e) => onMarkenbotschafterChange(e.target.value)}
             >
