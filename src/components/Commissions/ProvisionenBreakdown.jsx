@@ -223,7 +223,7 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
           <div className="flex gap-2">
             {/* 🏢 Select per le Firmen */}
             <select
-              className="w-52 p-2 px-4 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
+              className="w-52  px-4 select select-sm select-bordered rounded-full bg-indigo-100 text-sm"
               onChange={(e) => setFilter(e.target.value)}
               value={filter}
             >
@@ -238,7 +238,7 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
             {/* 🧑‍🤝‍🧑 Select placeholder per Markenbotschafter — logica sarà aggiunta in step 3 */}
             {!isMarkenbotschafter && (
               <select
-                className="w-56 p-2 px-4 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
+                className="w-64  px-4 select select-sm select-bordered rounded-full bg-indigo-100 text-sm"
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value === "all") {
@@ -267,7 +267,7 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
               onClick={() => {
                 setFilter(""); // ✅ resetta solo il filtro delle compagnie
               }}
-              className="px-4 h-10 w-16 border rounded-full btn-outline transition"
+              className="px-4 h-8 w-16 border rounded-full btn-outline transition"
               title="Alle Filter zurücksetzen"
             >
               <FiRefreshCw className="mx-auto w-4 h-4" />

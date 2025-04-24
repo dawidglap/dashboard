@@ -108,7 +108,7 @@ const UserTable = ({ onDelete }) => {
         <div className="flex items-center space-x-2">
           {/* 🔹 Dropdown for user names */}
           <select
-            className="p-2 px-4 my-2 ms-1 w-72 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
+            className="p-2 px-4 my-2 ms-1 w-72 select select-sm select-bordered rounded-full bg-indigo-100 text-smf"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           >
