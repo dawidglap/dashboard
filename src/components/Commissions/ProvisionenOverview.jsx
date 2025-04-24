@@ -1,5 +1,6 @@
 const ProvisionenOverview = ({
   commissions = [],
+  markenbotschafter = [],
   timeframeLabel,
   timeframe,
 }) => {
@@ -12,6 +13,10 @@ const ProvisionenOverview = ({
     return createdAt >= startOfYear && c.amount > 0;
   });
 
+  const fixedCommission = markenbotschafter.length * 300;
+  const totalWithFixed = total + fixedCommission;
+
+
   const total = filteredCommissions.reduce((sum, c) => sum + c.amount, 0);
 
   const elapsedDays =
@@ -20,10 +25,11 @@ const ProvisionenOverview = ({
   const elapsedMonths = currentDate.getMonth() + 1;
 
   let valuePerPeriod = 0;
-  if (timeframe === "daily") valuePerPeriod = total / elapsedDays;
-  else if (timeframe === "weekly") valuePerPeriod = total / elapsedWeeks;
-  else if (timeframe === "monthly") valuePerPeriod = total / elapsedMonths;
-  else valuePerPeriod = total;
+  if (timeframe === "daily") valuePerPeriod = totalWithFixed / elapsedDays;
+  else if (timeframe === "weekly") valuePerPeriod = totalWithFixed / elapsedWeeks;
+  else if (timeframe === "monthly") valuePerPeriod = totalWithFixed / elapsedMonths;
+  else valuePerPeriod = totalWithFixed;
+
 
   return (
     <div className="border-2 border-white p-4 bg-transparent rounded-xl shadow-xl h-full flex flex-col justify-between">

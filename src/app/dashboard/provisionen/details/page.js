@@ -65,10 +65,10 @@ const ProvisionenDetails = () => {
     user?.role === "manager" || user?.role === "markenbotschafter";
   const backButtonText = isRestricted
     ? "← Zurück zu den Aufgaben"
-    : "← Zurück zur Übersicht";
+    : "← Zurück zu den Aufgaben";
   const backButtonLink = isRestricted
     ? "/dashboard/aufgaben"
-    : "/dashboard/provisionen";
+    : "/dashboard/aufgaben";
 
   return (
     <div className="p-6">
