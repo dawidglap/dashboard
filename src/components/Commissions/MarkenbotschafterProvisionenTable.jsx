@@ -7,12 +7,14 @@ import { motion } from "framer-motion";
 import PaidMBCommissionModal from "./PaidMBCommissionModal";
 import { FiRefreshCw } from "react-icons/fi";
 
-const MarkenbotschafterProvisionenTable = ({ selectedMB, setSelectedMB, onResetToCompanies }) => {
+const MarkenbotschafterProvisionenTable = ({ onResetToCompanies }) => {
 
 
   const { data: session } = useSession();
   const isAdmin = session?.user?.role === "admin";
   const isManager = session?.user?.role === "manager";
+  const [selectedMB, setSelectedMB] = useState("all");
+
 
 
 
@@ -79,12 +81,12 @@ const MarkenbotschafterProvisionenTable = ({ selectedMB, setSelectedMB, onResetT
 
 
   return (
-    <div className="bg-base-100 p-6 rounded-2xl mt-12 w-full">
-      <h3 className="text-xl font-bold mb-4 border-b-2 border-indigo-300 pb-2 text-base-content">
+    <div className="bg-base-100  rounded-2xl  w-full">
+      {/* <h3 className="text-xl font-bold mb-4 border-b-2 border-indigo-300 pb-2 text-base-content">
         {selectedMB === "all"
           ? `Provisionen pro Markenbotschafter – Jahr ${new Date().getFullYear()}`
           : `Provision für ${markenbotschafter.find((m) => m._id === selectedMB)?.name || ""}`}
-      </h3>
+      </h3> */}
 
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center space-x-2">
@@ -110,7 +112,7 @@ const MarkenbotschafterProvisionenTable = ({ selectedMB, setSelectedMB, onResetT
             {/* 🔄 Reset */}
             <button
               onClick={() => {
-                onResetToCompanies?.(); // usa la funzione passata dal parent
+                setSelectedMB("all");
               }}
               className="px-4 h-10 w-16 border rounded-full btn-outline transition"
               title="Alle Filter zurücksetzen"

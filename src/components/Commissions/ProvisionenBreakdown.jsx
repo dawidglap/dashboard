@@ -236,7 +236,7 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
             </select>
 
             {/* 🧑‍🤝‍🧑 Select placeholder per Markenbotschafter — logica sarà aggiunta in step 3 */}
-            {!isMarkenbotschafter && (
+            {/* {!isMarkenbotschafter && (
               <select
                 className="w-64  px-4 select select-sm select-bordered rounded-full bg-indigo-100 text-sm"
                 onChange={(e) => {
@@ -260,7 +260,7 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
                   </option>
                 ))}
               </select>
-            )}
+            )} */}
 
             {/* 🔄 Reset button */}
             <button

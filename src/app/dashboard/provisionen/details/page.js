@@ -12,7 +12,7 @@ const ProvisionenDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const router = useRouter();
-  const [selectedMB, setSelectedMB] = useState("__none__");
+  // const [selectedMB, setSelectedMB] = useState("__none__");
   const [filterCompany, setFilterCompany] = useState("");
 
 
@@ -21,7 +21,7 @@ const ProvisionenDetails = () => {
   const [showAllCompanies, setShowAllCompanies] = useState(true);
 
   const handleResetToCompanies = () => {
-    setSelectedMB("__none__");
+    setShowAllCompanies(true);
   };
   
   
@@ -73,43 +73,63 @@ const ProvisionenDetails = () => {
   return (
     <div className="p-6">
       {/* ✅ Back Button (Dynamic based on user role) */}
-      <div className="flex justify-between mb-4">
+      <div className="flex justify-between mb-2">
         <h2 className="text-3xl md:text-4xl mt-8 mb-8 font-extrabold text-base-content">
           Detaillierte Provisionsübersicht
         </h2>
-        <button
+        
+        {/* <button
           onClick={() => router.push(backButtonLink)}
           className="btn btn-sm btn-neutral rounded-full px-4 mt-8 mb-8"
         >
           {backButtonText}
-        </button>
+        </button> */}
       </div>
+      <div className="flex space-x-2 mb-2 justify-end">
+  <button
+    onClick={() => setShowAllCompanies(true)}
+    className={`p-2 px-4 text-sm rounded-full border ${
+      showAllCompanies
+        ? "bg-indigo-600 text-white"
+        : "bg-indigo-50 text-gray-700"
+    }`}
+  >
+    Alle Firmen
+  </button>
+  <button
+    onClick={() => setShowAllCompanies(false)}
+    className={`p-2 px-4 text-sm rounded-full border ${
+      !showAllCompanies
+        ? "bg-indigo-600 text-white"
+        : "bg-indigo-50 text-gray-700"
+    }`}
+  >
+    Alle Markenbotschafter
+  </button>
+</div>
+
+
 
       {/* ✅ Commission Breakdown Table */}
       <motion.div
-  key={selectedMB && selectedMB !== null ? "mb-table" : "company-table"} // aggiorna key
+  key={showAllCompanies ? "company-table" : "mb-table"}// aggiorna key
   initial={{ opacity: 0, y: 20 }}
   animate={{ opacity: 1, y: 0 }}
   exit={{ opacity: 0, y: -20 }}
   transition={{ duration: 0.3 }}
 >
-{selectedMB === "__none__" ? (
- <ProvisionenBreakdown
- commissions={commissions}
- selectedMB={selectedMB}
- setSelectedMB={setSelectedMB}
-//  onResetToCompanies={() => setSelectedMB("__none__")} // ✅ aggiunto
- onResetCompaniesFilter={() => setFilterCompany("")}
- 
+{showAllCompanies ? (
+  <ProvisionenBreakdown
+  commissions={commissions}
+  onResetCompaniesFilter={() => setFilterCompany("")}
 />
 
 ) : (
-  <MarkenbotschafterProvisionenTable
-    selectedMB={selectedMB}
-    setSelectedMB={setSelectedMB}
-    onResetToCompanies={handleResetToCompanies}
-  />
+<MarkenbotschafterProvisionenTable
+  onResetToCompanies={handleResetToCompanies}
+/>
 )}
+
 
 </motion.div>
 
