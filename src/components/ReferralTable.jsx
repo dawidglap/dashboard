@@ -1,19 +1,23 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { FaSyncAlt } from "react-icons/fa";
 
+const PAGE_SIZE = 40;
+
 const ReferralTable = () => {
     const [referrals, setReferrals] = useState([]);
+    const [displayed, setDisplayed] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const observerRef = useRef(null);
     const containerRef = useRef(null);
 
     const deduplicateByQuarterSecond = (entries) => {
         const seen = new Set();
         return entries.filter((ref) => {
             const timestamp = new Date(ref.timestamp).getTime();
-            // Normalizza a blocchi da 250ms (es. 12:00:00.000 → 12:00:00.250)
             const rounded = Math.floor(timestamp / 250);
             const key = `${ref.userId}_${rounded}`;
             if (seen.has(key)) return false;
@@ -22,13 +26,14 @@ const ReferralTable = () => {
         });
     };
 
-
     const fetchReferrals = async () => {
         try {
             const res = await fetch("/api/referrals");
             const data = await res.json();
             const cleaned = deduplicateByQuarterSecond(data.referrals || []);
             setReferrals(cleaned);
+            setDisplayed(cleaned.slice(0, PAGE_SIZE));
+            setPage(1);
         } catch (err) {
             console.error("❌ Fehler beim Laden der Referral-Daten:", err);
         } finally {
@@ -40,19 +45,47 @@ const ReferralTable = () => {
         fetchReferrals();
     }, []);
 
+    const loadMore = useCallback(() => {
+        const nextPage = page + 1;
+        const nextSlice = referrals.slice(0, nextPage * PAGE_SIZE);
+        setDisplayed(nextSlice);
+        setPage(nextPage);
+    }, [page, referrals]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const [entry] = entries;
+                if (entry.isIntersecting) {
+                    loadMore();
+                }
+            },
+            {
+                root: containerRef.current,
+                threshold: 1.0,
+            }
+        );
+
+        const el = observerRef.current;
+        if (el) observer.observe(el);
+        return () => {
+            if (el) observer.unobserve(el);
+        };
+    }, [loadMore]);
+
     return (
         <div>
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold">
                     Referral-Klicks: {referrals.length}
                 </h2>
-                <button
+                {/* <button
                     onClick={fetchReferrals}
                     className="btn btn-outline btn-sm rounded-full flex items-center justify-center w-16 px-4 h-8"
                     title="Aktualisieren"
                 >
                     <FaSyncAlt className="w-4 h-4" />
-                </button>
+                </button> */}
             </div>
 
             <motion.div
@@ -71,7 +104,7 @@ const ReferralTable = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {referrals.map((ref) => (
+                        {displayed.map((ref) => (
                             <tr
                                 key={ref._id}
                                 className="border-b border-gray-200 dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition text-sm"
@@ -92,6 +125,7 @@ const ReferralTable = () => {
                                 </td>
                             </tr>
                         ))}
+                        <tr ref={observerRef}></tr>
                     </tbody>
                 </table>
             </motion.div>

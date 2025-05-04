@@ -14,6 +14,7 @@ import {
   FaTasks,
   FaVideo,
   FaQuestionCircle,
+  FaLink
 } from "react-icons/fa";
 import SidebarLogout from "./Sidebar/SidebarLogout";
 import { GoDownload } from "react-icons/go";
@@ -70,7 +71,11 @@ const SidebarMenu = () => {
         ),
         href: "/dashboard/aufgaben",
         icon: <FaTasks />,
+
       },
+      ...(user.role === "admin"
+        ? [{ title: "Affiliate-Klicks", href: "/dashboard/ref", icon: <FaLink /> }]
+        : []),
 
       { title: "Materialien", href: "/dashboard/materialien", icon: <GoDownload /> },
     ];

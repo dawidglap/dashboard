@@ -25,6 +25,7 @@ export async function GET() {
         $project: {
           _id: 1,
           timestamp: 1,
+          userId: 1,
           ip: 1,
           userAgent: 1,
           "user.email": 1,
