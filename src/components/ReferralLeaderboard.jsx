@@ -92,21 +92,21 @@ const ReferralLeaderboard = () => {
             case 0:
                 return "text-yellow-500 font-bold";
             case 1:
-                return "text-gray-400 font-medium";
+                return "text-gray-400 font-bold";
             case 2:
-                return "text-amber-600 font-medium";
+                return "text-amber-600 font-bold";
             default:
                 return "text-gray-600";
         }
     };
 
     return (
-        <div className="bg-indigo-50 dark:bg-gray-900 rounded-lg shadow p-4 mt-12 max-h-[80vh] overflow-y-auto">
-            <h3 className="text-lg font-bold mb-4">Affiliate-Rangliste</h3>
+        <div className="bg-indigo-50 dark:bg-gray-900 rounded-lg shadow p-4 mt-11 max-h-[80vh] overflow-y-auto">
+            <h3 className="text-sm font-bold pb-4 mt-[-4px]">Affiliate-Rangliste</h3>
             {displayedRanking.length === 0 ? (
                 <p className="text-gray-500 text-sm">Keine Daten vorhanden.</p>
             ) : (
-                <ul className="space-y-2 text-sm">
+                <ul className="space-y-4 text-sm mt-1">
                     {displayedRanking.map((entry, i) => (
                         <li
                             key={i}
