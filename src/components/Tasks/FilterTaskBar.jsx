@@ -113,7 +113,7 @@ const FilterTaskBar = ({ onFilterChange, user }) => {
           <option value="">Zugewiesen an</option>
           {users.map((user) => (
             <option key={user._id} value={user._id}>
-              {user.name}
+              {user.name} {" "}{user.surname}
             </option>
           ))}
         </select>
