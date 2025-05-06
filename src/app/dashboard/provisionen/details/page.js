@@ -94,7 +94,7 @@ const ProvisionenDetails = () => {
         : "bg-indigo-50 text-gray-700"
     }`}
   >
-    Alle Firmen
+    Alle Kunden
   </button>
   <button
     onClick={() => setShowAllCompanies(false)}

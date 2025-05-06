@@ -112,7 +112,7 @@ const UserTable = ({ onDelete }) => {
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           >
-            <option value="">Alle Mitglieder</option>
+            <option value="">Mitglieder</option>
             {[...new Set(users.map((u) => `${u.name} ${u.surname}`))].map((fullName, i) => (
               <option key={i} value={fullName}>
                 {fullName}

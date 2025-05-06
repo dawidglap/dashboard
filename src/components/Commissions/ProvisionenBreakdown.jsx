@@ -214,6 +214,8 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
       }
     };
   }, [loading, hasMore, page, commissions]);
+  const kundenCount = displayedCommissions.length;
+
 
   return (
     <div className="bg-base-100 rounded-2xl w-full">
@@ -227,7 +229,7 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
               onChange={(e) => setFilter(e.target.value)}
               value={filter}
             >
-              <option value="">Alle Firmen</option>
+              <option value="">Kunden</option>
               {[...new Set(groupedCommissions.map((c) => c.companyName))].map((company, i) => (
                 <option key={i} value={company}>
                   {company}
@@ -351,7 +353,10 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
         <table className="table table-xs w-full text-left">
           <thead className="sticky top-0 bg-white dark:bg-gray-900 z-50 shadow-sm">
             <tr className="text-sm text-base-content border-b border-indigo-300">
-              <th className="w-2/12 py-3 px-4 text-left text-xs">Kunden</th>
+              <th className="w-2/12 py-3 px-4 text-left text-xs">
+                Kunden <span className="text-gray-400">({kundenCount})</span>
+              </th>
+
               <th className="w-2/12 py-3 px-4 text-left text-xs">Business Partner</th>
               <th className="w-2/12 py-3 px-4 text-left text-xs">Markenbotschafter</th>
               <th className="w-2/12 py-3 px-4 text-center text-xs">Provision</th>

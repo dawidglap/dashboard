@@ -150,18 +150,18 @@ const CompanyTable = ({ onEdit, onDelete }) => {
               ))}
             </select>
           )}
-          <button
-            onClick={() => {
-              setSelectedCompany("");
-              setSelectedManager("");
-              setSelectedMarkenbotschafter("");
-            }}
-            className="my-2  h-8 px-4  relative top-[10px] ms-2 rounded-full border-neutral-800 border  hover:bg-black hover:text-gray-200 transition duration-150"
-            title="Filter zurücksetzen"
-          >
-            <FiRefreshCw size={20} />
-          </button>
         </div>
+        <button
+          onClick={() => {
+            setSelectedCompany("");
+            setSelectedManager("");
+            setSelectedMarkenbotschafter("");
+          }}
+          className="btn btn-outline btn-sm me-auto ms-2 rounded-full flex items-center justify-center w-16 px-4 h-8"
+          title="Filter zurücksetzen"
+        >
+          <FiRefreshCw size={20} />
+        </button>
 
         {/* Filtro per Manager o Markenbotschafter */}
         {(userRole === "admin" || userRole === "manager") && (

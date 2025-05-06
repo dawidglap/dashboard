@@ -9,7 +9,7 @@ import EarningsBreakdown from "@/components/Earnings/EarningsBreakdown";
 import GrowthRateWidget from "@/components/Earnings/GrowthRateWidget";
 
 const Earnings = () => {
-  const [timeframe, setTimeframe] = useState("yearly"); // Default to monthly
+  const [timeframe, setTimeframe] = useState("monthly"); // Default to monthly
   const { chartData, bruttoUmsatz, lastMonthUmsatz, loading, error } =
     useFetchEarnings(timeframe);
 

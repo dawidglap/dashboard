@@ -8,7 +8,7 @@ import ProvisionenChart from "@/components/Commissions/ProvisionenChart";
 import ProvisionenGrowth from "@/components/Commissions/ProvisionenGrowth";
 
 const Provisionen = () => {
-  const [timeframe, setTimeframe] = useState("yearly"); // Default to monthly
+  const [timeframe, setTimeframe] = useState("monthly"); // Default to monthly
   const { chartData, bruttoProvisionen, commissions, loading, error } =
     useFetchProvisionen(timeframe);
 

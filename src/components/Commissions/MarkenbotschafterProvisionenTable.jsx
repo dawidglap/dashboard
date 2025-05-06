@@ -79,6 +79,9 @@ const MarkenbotschafterProvisionenTable = ({ onResetToCompanies }) => {
     }
   };
 
+  const filteredMBs = markenbotschafter.filter((mb) => selectedMB === "all" || mb._id === selectedMB);
+  const mbCount = filteredMBs.length;
+
 
   return (
     <div className="bg-base-100  rounded-2xl  w-full">
@@ -93,7 +96,7 @@ const MarkenbotschafterProvisionenTable = ({ onResetToCompanies }) => {
           <div className="flex gap-2">
             {/* 🔄 Select Markenbotschafter */}
             <select
-              className="w-56 p-2 px-4 rounded-full text-gray-700 text-sm border bg-indigo-50 focus:ring focus:ring-indigo-300"
+              className="w-56  px-4 select select-sm select-bordered rounded-full bg-indigo-100 text-sm"
               onChange={(e) => {
                 const value = e.target.value;
                 setSelectedMB(value === "all" ? "all" : value); // 👈
@@ -109,12 +112,12 @@ const MarkenbotschafterProvisionenTable = ({ onResetToCompanies }) => {
               ))}
             </select>
 
-            {/* 🔄 Reset */}
+
             <button
               onClick={() => {
                 setSelectedMB("all");
               }}
-              className="px-4 h-10 w-16 border rounded-full btn-outline transition"
+              className="px-4 h-8 w-16 border rounded-full btn-outline transition"
               title="Alle Filter zurücksetzen"
             >
               <FiRefreshCw className="mx-auto w-4 h-4" />
@@ -138,7 +141,7 @@ const MarkenbotschafterProvisionenTable = ({ onResetToCompanies }) => {
         <table className="table table-xs w-full text-left">
           <thead className="sticky top-0 bg-white dark:bg-gray-900 z-50 shadow-sm">
             <tr className="text-sm text-base-content border-b border-indigo-300">
-              <th className="py-3 px-4 text-left text-xs">Name</th>
+              <th className="py-3 px-4 text-left text-xs">Name <span className="text-gray-400">({mbCount})</span> </th>
               {/* <th className="py-3 px-4 text-left text-xs">Email</th> */}
               <th className="py-3 px-4 text-center text-xs">Provision</th>
 
@@ -148,62 +151,58 @@ const MarkenbotschafterProvisionenTable = ({ onResetToCompanies }) => {
             </tr>
           </thead>
           <tbody>
-            {markenbotschafter
+            {filteredMBs.map((mb, index) => {
 
-              .filter((mb) => selectedMB === "all" || mb._id === selectedMB)
+              const createdAt = new Date(mb.createdAt);
+              const zahlungsdatum = new Date(createdAt.getFullYear(), createdAt.getMonth() + 1, 25);
 
-              .map((mb, index) => {
+              return (
+                <tr
+                  key={index}
+                  className="hover:bg-indigo-50 dark:hover:bg-indigo-900 border-b border-gray-200 text-slate-700 dark:text-slate-200"
+                >
+                  <td className="py-4 px-4 font-medium">{mb.name}{" "} {mb.surname}</td>
+                  <td className="py-6 px-4 text-green-500 font-semibold text-center min-w-16">
+                    300 CHF
+                  </td>
 
-                const createdAt = new Date(mb.createdAt);
-                const zahlungsdatum = new Date(createdAt.getFullYear(), createdAt.getMonth() + 1, 25);
-
-                return (
-                  <tr
-                    key={index}
-                    className="hover:bg-indigo-50 dark:hover:bg-indigo-900 border-b border-gray-200 text-slate-700 dark:text-slate-200"
-                  >
-                    <td className="py-4 px-4 font-medium">{mb.name}{" "} {mb.surname}</td>
-                    <td className="py-6 px-4 text-green-500 font-semibold text-center min-w-16">
-                      300 CHF
-                    </td>
-
-                    {/* <td className="py-4 px-4">{mb.email}</td> */}
-                    <td className="py-4 px-4">{createdAt.toLocaleDateString("de-DE")}</td>
-                    <td className="py-4 px-4">{zahlungsdatum.toLocaleDateString("de-DE")}</td>
-                    <td className="py-4 px-4 text-center">
-                      {isAdmin ? (
-                        <motion.button
-                          className={`mx-auto w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300 ${mb.status_provisionen_markenbotschafter ? "border-green-500" : "border-gray-400"
-                            }`}
-                          onClick={() => {
-                            setSelectedMB(mb._id);
-                            setShowModal(true);
-                          }}
-                          aria-label="Toggle Bezahlt"
-                        >
-                          {mb.status_provisionen_markenbotschafter ? (
-                            <Check className="text-green-600" size={18} />
-                          ) : (
-                            <X className="text-gray-500" size={18} />
-                          )}
-                        </motion.button>
-                      ) : (
-                        <motion.div
-                          className={`mx-auto w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300 ${mb.status_provisionen_markenbotschafter ? "border-green-500" : "border-gray-400"
-                            }`}
-                          aria-label="Bezahlt Status (readonly)"
-                        >
-                          {mb.status_provisionen_markenbotschafter ? (
-                            <Check className="text-green-500" size={18} />
-                          ) : (
-                            <X className="text-gray-500" size={18} />
-                          )}
-                        </motion.div>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
+                  {/* <td className="py-4 px-4">{mb.email}</td> */}
+                  <td className="py-4 px-4">{createdAt.toLocaleDateString("de-DE")}</td>
+                  <td className="py-4 px-4">{zahlungsdatum.toLocaleDateString("de-DE")}</td>
+                  <td className="py-4 px-4 text-center">
+                    {isAdmin ? (
+                      <motion.button
+                        className={`mx-auto w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300 ${mb.status_provisionen_markenbotschafter ? "border-green-500" : "border-gray-400"
+                          }`}
+                        onClick={() => {
+                          setSelectedMB(mb._id);
+                          setShowModal(true);
+                        }}
+                        aria-label="Toggle Bezahlt"
+                      >
+                        {mb.status_provisionen_markenbotschafter ? (
+                          <Check className="text-green-600" size={18} />
+                        ) : (
+                          <X className="text-gray-500" size={18} />
+                        )}
+                      </motion.button>
+                    ) : (
+                      <motion.div
+                        className={`mx-auto w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300 ${mb.status_provisionen_markenbotschafter ? "border-green-500" : "border-gray-400"
+                          }`}
+                        aria-label="Bezahlt Status (readonly)"
+                      >
+                        {mb.status_provisionen_markenbotschafter ? (
+                          <Check className="text-green-500" size={18} />
+                        ) : (
+                          <X className="text-gray-500" size={18} />
+                        )}
+                      </motion.div>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
