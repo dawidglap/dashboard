@@ -86,8 +86,8 @@ const ProvisionenWidget = ({ commissions = [] }) => {
                 <XAxis dataKey="period" hide />
                 <YAxis hide />
                 {/* <Tooltip
-                  formatter={(value) => `CHF ${value.toLocaleString("de-DE")}`}
-                /> */}
+                    formatter={(value) => `CHF ${value.toLocaleString("de-DE")}`}
+                  /> */}
                 <defs>
                   <linearGradient
                     id="colorCommissions"
