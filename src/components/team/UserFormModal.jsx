@@ -111,6 +111,28 @@ const UserFormModal = ({ isOpen, onClose, onSave, user }) => {
       const savedUser = data.data; // ✅ Extract new user from response
 
       onSave(savedUser); // ✅ Pass the created user back
+      // 🎁 Crea codice sconto con nome e cognome
+      try {
+        const res = await fetch("/api/stripe/create-discount", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: savedUser.name,
+            surname: savedUser.surname,
+          }),
+        });
+
+        const discountData = await res.json();
+        if (discountData.success) {
+          console.log("✅ Codice sconto creato:", discountData.code);
+          // 👉 Se vuoi, puoi mostrarlo in UI o salvarlo in stato
+        } else {
+          console.warn("⚠️ Codice sconto non creato:", discountData.message);
+        }
+      } catch (err) {
+        console.error("❌ Errore nella creazione del codice sconto:", err);
+      }
+
       setShowToast(true); // ✅ Show toast
       setTimeout(() => onClose(), 1000); // ✅ Close modal after toast disappears
     } catch (error) {
