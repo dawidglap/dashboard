@@ -11,7 +11,7 @@ import {
   Legend,
 } from "recharts";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 const ProvisionenChart = ({ chartData, timeframe }) => {
   const { data: session } = useSession();
@@ -27,30 +27,37 @@ const ProvisionenChart = ({ chartData, timeframe }) => {
         const data = await res.json();
 
         if (data.success && Array.isArray(data.users)) {
-          const mbs = data.users.filter((u) => u.role === "markenbotschafter");
-
-          const earningsMap = {};
           const monthNames = [
             "Jan", "Feb", "Mär", "Apr", "Mai", "Jun",
-            "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"
+            "Jul", "Aug", "Sep", "Okt", "Nov", "Dez",
           ];
+
+          const mbs = data.users.filter((u) => u.role === "markenbotschafter");
+          const earningsMap = {};
+          const now = new Date();
+          const nowYear = now.getFullYear();
+          const nowMonth = now.getMonth();
 
           for (const mb of mbs) {
             const createdAt = new Date(mb.createdAt);
             const year = createdAt.getFullYear();
             const month = createdAt.getMonth(); // 0-based
-            let key = "";
 
-            if (timeframe === "Jährlich") {
-              key = `${year}`;
-            } else if (timeframe === "Monatlich") {
-              key = monthNames[month]; // es. "Mär"
+            console.log("🧑‍💼", mb.name, mb.surname, "→ CreatedAt:", createdAt.toISOString());
+
+            if (timeframe === "Monatlich") {
+              const key = monthNames[month]; // Esempio: "Apr"
+              if (!earningsMap[key]) earningsMap[key] = 0;
+              earningsMap[key] += 300;
+            } else if (timeframe === "Jährlich") {
+              const key = `${year}`;
+              if (!earningsMap[key]) earningsMap[key] = 0;
+              earningsMap[key] += 300;
             }
-
-            if (!earningsMap[key]) earningsMap[key] = 0;
-            earningsMap[key] += 300;
           }
 
+
+          console.log("📊 MB earnings map (da mostrare nel grafico):", earningsMap);
           setMbEarningsMap(earningsMap);
         }
       } catch (err) {
@@ -58,27 +65,38 @@ const ProvisionenChart = ({ chartData, timeframe }) => {
       }
     };
 
-    if (!isManager && !isMarkenbotschafter) {
+    // ✅ Esegui fetch solo se sessione è pronta E ruolo ≠ manager o markenbotschafter
+    if (
+      session?.user?.role &&
+      session.user.role !== "manager" &&
+      session.user.role !== "markenbotschafter"
+    ) {
       fetchMB();
     }
-  }, [isManager, isMarkenbotschafter, timeframe]);
+  }, [session?.user?.role, timeframe]);
 
-  const adjustedChartData = chartData.map((entry) => {
-    const base =
-      isManager || isMarkenbotschafter
-        ? Math.round(entry.earnings / 2)
-        : entry.earnings;
 
-    const mbE = !isManager && !isMarkenbotschafter
-      ? mbEarningsMap[entry.period] || 0
-      : 0;
+  // ✅ calcolo solo quando la mappa è pronta
+  const adjustedChartData = useMemo(() => {
+    return chartData.map((entry) => {
+      const base =
+        isManager || isMarkenbotschafter
+          ? Math.round(entry.earnings / 2)
+          : entry.earnings;
 
-    return {
-      ...entry,
-      earnings: base,
-      mbEarnings: mbE,
-    };
-  });
+      const mbE = !isManager && !isMarkenbotschafter
+        ? mbEarningsMap[entry.period] || 0
+        : 0;
+
+      console.log("📅 entry.period:", entry.period, "→ mbEarnings:", mbE);
+
+      return {
+        ...entry,
+        earnings: base,
+        mbEarnings: mbE,
+      };
+    });
+  }, [chartData, mbEarningsMap, isManager, isMarkenbotschafter]);
 
   if (!adjustedChartData || adjustedChartData.length < 2) {
     return (
@@ -117,10 +135,15 @@ const ProvisionenChart = ({ chartData, timeframe }) => {
               boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
               padding: "10px",
             }}
-            formatter={(value) => `CHF ${value.toLocaleString("de-DE")}`}
+            formatter={(value, name) => {
+              const labelMap = {
+                earnings: "Provisionen",
+                mbEarnings: "MB Fixe Provisionen",
+              };
+              return [`CHF ${value.toLocaleString("de-DE")}`, labelMap[name] || name];
+            }}
             labelFormatter={(label) => `${xAxisLabel}: ${label}`}
           />
-
           <defs>
             <linearGradient id="colorCommissions" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#55e389" stopOpacity={0.6} />
@@ -131,7 +154,6 @@ const ProvisionenChart = ({ chartData, timeframe }) => {
               <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1} />
             </linearGradient>
           </defs>
-
           <Area
             type="monotone"
             dataKey="earnings"
@@ -141,7 +163,6 @@ const ProvisionenChart = ({ chartData, timeframe }) => {
             dot={{ r: 4, strokeWidth: 2, fill: "#16a34a" }}
             activeDot={{ r: 6, fill: "#166534" }}
           />
-
           {!isManager && !isMarkenbotschafter && (
             <Area
               type="monotone"
@@ -153,7 +174,6 @@ const ProvisionenChart = ({ chartData, timeframe }) => {
               activeDot={{ r: 6, fill: "#1d4ed8" }}
             />
           )}
-
           <Legend
             wrapperStyle={{ paddingTop: 10 }}
             formatter={(value) =>
