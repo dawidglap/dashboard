@@ -4,7 +4,7 @@ const ProfileDetails = ({ user }) => {
   if (!user) return <div className="text-gray-500">Kein Benutzer gefunden</div>;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {/* Email */}
       <div>
         <label className="block text-gray-700 text-sm font-medium pb-1">
@@ -101,8 +101,8 @@ const ProfileDetails = ({ user }) => {
           value={
             user?.subscription_expiration
               ? new Date(user.subscription_expiration)
-                  .toISOString()
-                  .split("T")[0]
+                .toISOString()
+                .split("T")[0]
               : ""
           }
           disabled

@@ -9,7 +9,28 @@ const TeamMemberProfile = ({ userId }) => {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
+
+  const [copiedReferral, setCopiedReferral] = useState(false);
+  const [copiedPromo, setCopiedPromo] = useState(false);
+
+  // state + fetch for promo code
+  const [promoCode, setPromoCode] = useState("");
+
+  useEffect(() => {
+    if (user?.name && user?.surname) {
+      fetch("/api/stripe/get-discount", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: user.name, surname: user.surname }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) setPromoCode(data.code);
+        })
+        .catch((err) => console.error("Fehler beim Laden des Promo-Codes:", err));
+    }
+  }, [user]);
+
 
   useEffect(() => {
     if (!userId) {
@@ -74,6 +95,33 @@ const TeamMemberProfile = ({ userId }) => {
         {/* Left Side - User Details */}
         <div>
           <ProfileDetails user={user} />
+          {promoCode && (
+            <div className="mb-6">
+              <label className="mt-4 block text-gray-700 text-sm font-medium pb-1">
+                Dein Promo-Code
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={promoCode}
+                  disabled
+                  className="input input-bordered rounded-full w-full bg-gray-100 text-gray-700 dark:text-gray-300 dark:bg-gray-800"
+                />
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(promoCode);
+                    setCopiedPromo(true);
+                    setTimeout(() => setCopiedPromo(false), 2000);
+                  }}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 badge badge-soft badge-primary"
+                >
+                  {copiedPromo ? "Kopiert!" : "Kopieren"}
+                </button>
+
+              </div>
+            </div>
+          )}
+
           {user?.referralLink && (
             <div className="mb-6">
               <label className="mt-4 block text-gray-700 text-sm font-medium pb-1">
@@ -87,19 +135,25 @@ const TeamMemberProfile = ({ userId }) => {
                   className="input input-bordered rounded-full w-full bg-gray-100 text-gray-700 dark:text-gray-300 dark:bg-gray-800"
                 />
                 <button
-                  onClick={copyToClipboard}
+                  onClick={() => {
+                    navigator.clipboard.writeText(user?.referralLink);
+                    setCopiedReferral(true);
+                    setTimeout(() => setCopiedReferral(false), 2000);
+                  }}
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 badge badge-soft badge-primary"
                 >
-                  {copied ? "Kopiert!" : "Kopieren"}
+                  {copiedReferral ? "Kopiert!" : "Kopieren"}
                 </button>
               </div>
             </div>
           )}
+
+
         </div>
 
         {/* Right Side - Assigned Companies */}
         {/* Right Side - Dynamic Section */}
-        <div className="space-y-4">
+        <div className="space-y-2">
           {user?.role === "markenbotschafter" && user.manager ? (
             <div className="bg-gradient-to-r mt-5  from-indigo-600 to-purple-500 p-4 px-8 rounded-full shadow-xl">
               <div className="flex">
