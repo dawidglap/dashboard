@@ -115,9 +115,9 @@ export async function POST(req) {
     if (!plan_price) {
       calculatedPlanPrice =
         plan === "BASIC"
-          ? 799 * 12 * 1.081
+          ? 299 * 12 * 1.081
           : plan === "PRO"
-          ? 899 * 12 * 1.081
+          ? 399 * 12 * 1.081
           : null;
     }
 

@@ -95,8 +95,8 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
           company.plan === "BUSINESS"
             ? company.plan_price || ""
             : company.plan === "PRO"
-              ? 899 * 12 * 1.081
-              : 799 * 12 * 1.081,
+              ? 399 * 12 * 1.081
+              : 299 * 12 * 1.081,
         company_owner: company.company_owner || "", // ✅ Added Inhaber
         plan_price: company.plan_price || "",
         expiration_date: company.expiration_date
@@ -174,8 +174,8 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
         formData.plan === "BUSINESS"
           ? formData.plan_price || null
           : formData.plan === "PRO"
-            ? 899 * 12 * 1.081
-            : 799 * 12 * 1.081,
+            ? 399 * 12 * 1.081
+            : 299 * 12 * 1.081,
     };
 
     console.log("Submitting update with data:", updatedData);

@@ -21,8 +21,8 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
   // ✅ Function to calculate price based on the selected plan
   function calculatePlanPrice(plan) {
     const PREDEFINED_PRICES = {
-      BASIC: 799 * 12 * 1.081,
-      PRO: 899 * 12 * 1.081,
+      BASIC: 299 * 12 * 1.081,
+      PRO: 399 * 12 * 1.081,
       BUSINESS: "", // Empty for manual input
     };
     return PREDEFINED_PRICES[plan] || "";
