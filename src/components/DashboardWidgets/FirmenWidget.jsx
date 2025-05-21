@@ -54,21 +54,21 @@ const FirmenWidget = () => {
         companies.forEach((company) => {
           const earnings =
             company.plan === "BASIC"
-              ? 799 * 12 * 1.081
+              ? 299 * 12 * 1.081
               : company.plan === "PRO"
-              ? 899 * 12 * 1.081
-              : company.plan === "BUSINESS" && company.plan_price
-              ? parseFloat(company.plan_price)
-              : 0;
+                ? 399 * 12 * 1.081
+                : company.plan === "BUSINESS" && company.plan_price
+                  ? parseFloat(company.plan_price)
+                  : 0;
 
           const commission =
             company.plan === "BASIC"
               ? 1000
               : company.plan === "PRO"
-              ? 1000
-              : company.plan === "BUSINESS"
-              ? 1000
-              : 0;
+                ? 1000
+                : company.plan === "BUSINESS"
+                  ? 1000
+                  : 0;
 
           totalEarnings += earnings;
           totalNetEarnings += earnings - commission;

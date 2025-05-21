@@ -7,8 +7,8 @@ const useBreakdownByPlan = (timeframe = "monthly") => {
   const [error, setError] = useState(null);
 
   const getPlanPrice = (plan, planPrice) => {
-    if (plan === "BASIC") return 799 * 12 * 1.081;
-    if (plan === "PRO") return 899 * 12 * 1.081;
+    if (plan === "BASIC") return 299 * 12 * 1.081;
+    if (plan === "PRO") return 399 * 12 * 1.081;
     if (plan === "BUSINESS" && planPrice) return parseFloat(planPrice);
     return 0;
   };

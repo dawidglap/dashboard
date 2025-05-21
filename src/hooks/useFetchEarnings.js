@@ -92,9 +92,9 @@ const useFetchEarnings = (timeframe = "monthly") => {
 
           const earnings =
             company.plan === "BASIC"
-              ? 799 * 12 * 1.081
+              ? 299 * 12 * 1.081
               : company.plan === "PRO"
-              ? 899 * 12 * 1.081
+              ? 399 * 12 * 1.081
               : company.plan === "BUSINESS" && company.plan_price
               ? parseFloat(company.plan_price)
               : 0;
