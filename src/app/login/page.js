@@ -86,7 +86,7 @@ const SignIn = () => {
             Webomo Business
           </h1> */}
           <Image
-            src="/logo/webomo_white_4kpx.png" // ✅ Correct path
+            src="/logo/logo_white_new.png" // ✅ Correct path
             alt="Webomo Logo"
             width={1000}
             height={500}
