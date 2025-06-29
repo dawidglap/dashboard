@@ -17,7 +17,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="de" className={montserrat.variable}>
       <body className={`font-montserrat antialiased ml-64 flex-grow`}>
-        <DesktopOnly />{" "}
+        {/* <DesktopOnly />{" "} */}
         {/* ✅ This will ensure the check is applied globally */}
         {children}
       </body>

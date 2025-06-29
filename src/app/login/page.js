@@ -48,20 +48,8 @@ const SignIn = () => {
   };
 
   return (
-    <div className="ml-[-16rem] relative flex min-h-screen items-center justify-center overflow-hidden">
-      {/* Logo at Top-Left */}
-      {/* <div className="absolute top-6 left-6 z-50">
-        <Image
-          src="/logo/webomo_white_4kpx.png" // ✅ Correct path
-          alt="Webomo Logo"
-          width={150}
-          height={50}
-          className="w-auto h-12 sm:h-16"
-          priority
-        />
-      </div> */}
-
-      {/* Animated Gradient Background */}
+    <div className="ml-[-16rem] px-4 md:px-0 relative flex min-h-screen items-center justify-center overflow-hidden">
+    
       <div
         className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-pink-300 to-indigo-300 
                   bg-[length:400%_400%] animate-gradientMorph"
