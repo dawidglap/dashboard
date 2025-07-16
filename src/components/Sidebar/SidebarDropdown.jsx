@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FaMoneyBillWave } from "react-icons/fa";
 
-const SidebarDropdown = () => {
+const SidebarDropdown = ({ onClose }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -27,6 +27,7 @@ const SidebarDropdown = () => {
       {/* ✅ Provisionen main link */}
       <Link
         href="/dashboard/provisionen"
+        onClick={onClose}
         className="flex items-center w-full px-4 py-2 rounded-full transition-all text-sm hover:bg-indigo-50 dark:hover:bg-gray-800"
       >
         <FaMoneyBillWave className="text-lg" />
@@ -38,6 +39,7 @@ const SidebarDropdown = () => {
         <li>
           <Link
             href="/dashboard/provisionen/details"
+            onClick={onClose}
             className="block px-4 py-2 rounded-full transition-all text-sm hover:bg-indigo-50 dark:hover:bg-gray-800"
           >
             Details

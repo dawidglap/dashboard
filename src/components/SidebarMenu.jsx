@@ -176,7 +176,8 @@ const SidebarMenu = ({ isOpen, onClose }) => {
           ))}
 
 
-          <SidebarDropdown />
+          <SidebarDropdown onClose={onClose} />
+
 
           <SidebarItem
             title="Support"
