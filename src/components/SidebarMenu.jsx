@@ -141,30 +141,30 @@ const SidebarMenu = ({ isOpen, onClose }) => {
       transition={{ duration: 0.175 }}
       className={`
       fixed top-0 left-0 h-screen 
-      w-full sm:w-64 
+      w-full md:w-64 
       z-[100]
       bg-base-100
       border-r shadow-lg 
       flex flex-col overflow-y-auto 
-      sm:translate-x-0
+      md:translate-x-0
     `}
     >
 
 
       {/* 👤 Profilo utente in alto su mobile */}
-      <div className="sm:hidden pt-16 pb-4 px-4 border-b">
+      <div className="md:hidden pt-16 pb-4 px-4 border-b">
         <SidebarProfile user={user} loading={loading} />
       </div>
 
       {/* 🖋️ Branding desktop */}
-      <div className="hidden sm:flex items-center justify-center pt-6">
+      <div className="hidden md:flex items-center justify-center pt-6">
         <h2 className="text-xl font-extrabold text-base-content">
           Webomo Business
         </h2>
       </div>
 
       {/* 📌 Navigazione */}
-      <nav className="mt-4 sm:mt-6 flex-grow px-2 sm:px-0">
+      <nav className="mt-4 md:mt-6 flex-grow px-2 md:px-0">
         <ul className="flex flex-col space-y-1">
           {menuItems.map((item, index) => (
             <SidebarItem
@@ -186,13 +186,13 @@ const SidebarMenu = ({ isOpen, onClose }) => {
           />
         </ul>
 
-        <div className="mt-4 sm:mt-6">
+        <div className="mt-4 md:mt-6">
           <SidebarLogout />
         </div>
       </nav>
 
       {/* 👤 Profilo in basso solo su desktop */}
-      <div className="hidden sm:block mt-auto px-4 pb-4">
+      <div className="hidden md:block mt-auto px-4 pb-4">
         <SidebarProfile user={user} loading={loading} />
       </div>
     </motion.div>

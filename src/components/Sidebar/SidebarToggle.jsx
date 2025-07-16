@@ -7,7 +7,7 @@ const SidebarToggle = ({ isOpen, toggle }) => {
     return (
         <button
             onClick={toggle}
-            className="sm:hidden fixed top-4 left-4 z-[999] bg-white p-2 rounded-md shadow-lg"
+            className="md:hidden fixed top-4 left-4 z-[999] bg-white p-2 rounded-md shadow-lg"
         >
             <AnimatePresence mode="wait">
                 {isOpen ? (

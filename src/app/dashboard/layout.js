@@ -23,12 +23,12 @@ const DashboardLayout = ({ children }) => {
       </AnimatePresence>
 
       {/* Sidebar desktop fissa */}
-      <div className="hidden sm:block">
+      <div className="hidden md:block">
         <SidebarMenu isOpen={true} />
       </div>
 
       {/* Contenuto principale */}
-      <main className="flex-1 sm:ml-64">{children}</main>
+      <main className="flex-1 md:ml-64">{children}</main>
     </SessionProvider>
   );
 };
