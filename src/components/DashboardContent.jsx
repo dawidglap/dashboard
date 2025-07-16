@@ -80,7 +80,7 @@ const DashboardContent = ({ user, companies, commissions }) => {
             hidden: { opacity: 0, y: 20 },
             visible: { opacity: 1, y: 0 },
           }}
-          className="col-span-12 md:col-span-6 xl:col-span-5"
+          className="col-span-12 lg:col-span-6 xl:col-span-5"
         >
           <UmsatzWidget />
         </motion.div>
@@ -91,7 +91,7 @@ const DashboardContent = ({ user, companies, commissions }) => {
             hidden: { opacity: 0, y: 20 },
             visible: { opacity: 1, y: 0 },
           }}
-          className="col-span-12 md:col-span-6 xl:col-span-4"
+          className="col-span-12 lg:col-span-6 xl:col-span-4"
         >
           <ProvisionenWidget commissions={commissions} />
         </motion.div>
@@ -102,9 +102,18 @@ const DashboardContent = ({ user, companies, commissions }) => {
             hidden: { opacity: 0, y: 20 },
             visible: { opacity: 1, y: 0 },
           }}
-          className="col-span-12 sm:col-span-6 md:col-span-3"
+          className="col-span-12 sm:col-span-6 lg:col-span-7 xl:col-span-3"
         >
           <FirmenWidget companies={companies} />
+        </motion.div>
+        <motion.div
+          variants={{
+            hidden: { opacity: 0, y: 20 },
+            visible: { opacity: 1, y: 0 },
+          }}
+          className="col-span-12 sm:col-span-6 md:col-span-6 lg:col-span-4 xl:col-span-3  lg:hidden"
+        >
+          <TeamWidget />
         </motion.div>
 
         {/* Demo Calls (Only for Admins) */}
@@ -114,7 +123,7 @@ const DashboardContent = ({ user, companies, commissions }) => {
               hidden: { opacity: 0, y: 20 },
               visible: { opacity: 1, y: 0 },
             }}
-            className="col-span-12 sm:col-span-6 md:col-span-4"
+            className="col-span-12 sm:col-span-12 lg:col-span-5 xl:col-span-4"
           >
             <DemoCallsWidget />
           </motion.div>
@@ -126,7 +135,7 @@ const DashboardContent = ({ user, companies, commissions }) => {
             hidden: { opacity: 0, y: 20 },
             visible: { opacity: 1, y: 0 },
           }}
-          className="col-span-12 sm:col-span-6 md:col-span-3"
+          className="col-span-12 sm:col-span-6 md:col-span-6 lg:col-span-4 xl:col-span-3 sm:hidden md:hidden lg:block"
         >
           <TeamWidget />
         </motion.div>
@@ -137,7 +146,7 @@ const DashboardContent = ({ user, companies, commissions }) => {
             hidden: { opacity: 0, y: 20 },
             visible: { opacity: 1, y: 0 },
           }}
-          className="col-span-12 sm:col-span-6 md:col-span-5"
+          className="col-span-12 md:col-span-12 lg:col-span-8 xl:col-span-5"
         >
           <TasksWidget />
         </motion.div>
