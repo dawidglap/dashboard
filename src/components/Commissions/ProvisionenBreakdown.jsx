@@ -6,6 +6,7 @@ import PaidCommissionModal from "./PaidCommissionModal";
 import { Check, X } from "lucide-react";
 import { RotateCcw } from "lucide-react";
 import { FiRefreshCw } from "react-icons/fi";
+import ProvisionenCard from "./ProvisionenCard";
 
 
 
@@ -131,7 +132,7 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
 
     return (
       <div className="bg-base-100 p-6 rounded-2xl shadow-lg text-center">
-        <h2 className="text-xl font-bold mb-4 border-b-2 border-indigo-300 pb-2">
+        <h2 className="text-xl  font-bold mb-4 border-b-2 border-indigo-300 pb-2">
           Detaillierte Provisionsübersicht
         </h2>
         <p className="text-gray-500">Noch keine Provisionen verfügbar.</p>
@@ -237,32 +238,8 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
               ))}
             </select>
 
-            {/* 🧑‍🤝‍🧑 Select placeholder per Markenbotschafter — logica sarà aggiunta in step 3 */}
-            {/* {!isMarkenbotschafter && (
-              <select
-                className="w-64  px-4 select select-sm select-bordered rounded-full bg-indigo-100 text-sm"
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (value === "all") {
-                    setSelectedMB("all");
-                  } else {
-                    setSelectedMB(value);
-                  }
-                }}
 
-                value={selectedMB}
-              >
-                <option value="__none__" disabled>
-                  Markenbotschafter wählen...
-                </option>
-                <option value="all">Alle Markenbotschafter</option>
-                {markenbotschafterList.map((mb) => (
-                  <option key={mb._id} value={mb._id}>
-                    {mb.name} {mb.surname}
-                  </option>
-                ))}
-              </select>
-            )} */}
+
 
             {/* 🔄 Reset button */}
             <button
@@ -348,7 +325,7 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
       {/* ✅ Scrollable Table with Sticky Header */}
       <div
         ref={tableContainerRef}
-        className="overflow-x-auto max-h-[80vh] overflow-auto rounded-lg "
+        className="hidden lg:block overflow-x-auto max-h-[80vh] overflow-auto rounded-lg "
       >
         <table className="table table-xs w-full text-left">
           <thead className="sticky top-0 bg-white dark:bg-gray-900 z-50 shadow-sm">
@@ -360,8 +337,8 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
               <th className="w-2/12 py-3 px-4 text-left text-xs">Business Partner</th>
               <th className="w-2/12 py-3 px-4 text-left text-xs">Markenbotschafter</th>
               <th className="w-2/12 py-3 px-4 text-center text-xs">Provision</th>
-              <th className="w-1/12 py-3 px-4 text-left text-xs">Startdatum</th>
-              <th className="w-1/12 py-3 px-4  text-left text-xs">Zahlungsdatum</th>
+              <th className="w-1/12 py-3 px-4 text-left text-xs">Beginn</th>
+              <th className="w-1/12 py-3 px-4  text-left text-xs">Zahl.-Dat.</th>
               <th className="w-1/12 py-3 px-4 text-center text-xs">Bezahlt</th> {/* ✅ nuova colonna */}
             </tr>
           </thead>
@@ -434,6 +411,7 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
           </tbody>
 
         </table>
+
         {showModal && selectedCompany && (
           <PaidCommissionModal
             company={selectedCompany}
@@ -445,6 +423,11 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
           />
         )}
 
+      </div>
+      <div className="lg:hidden space-y-4">
+        {displayedCommissions.map((item, index) => (
+          <ProvisionenCard key={index} provision={item} />
+        ))}
       </div>
 
       {/* ✅ Show Loading Indicator when fetching more */}

@@ -71,10 +71,10 @@ const ProvisionenDetails = () => {
     : "/dashboard/provisionen";
 
   return (
-    <div className="p-6">
+    <div className="px-6 lg:px-4 xl:px-6 2xl:px-12">
       {/* ✅ Back Button (Dynamic based on user role) */}
       <div className="flex justify-between mb-2">
-        <h2 className="text-3xl md:text-4xl mt-8 mb-8 font-extrabold text-base-content">
+        <h2 className="text-xl md:text-4xl text-center sm:text-start mt-8 mb-8 font-extrabold text-base-content">
           Detaillierte Provisionsübersicht
         </h2>
         

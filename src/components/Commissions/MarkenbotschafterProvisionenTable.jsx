@@ -6,6 +6,7 @@ import { Check, X } from "lucide-react";
 import { motion } from "framer-motion";
 import PaidMBCommissionModal from "./PaidMBCommissionModal";
 import { FiRefreshCw } from "react-icons/fi";
+import MarkenbotschafterCard from "./MarkenbotschafterCard";
 
 const MarkenbotschafterProvisionenTable = ({ onResetToCompanies }) => {
 
@@ -136,8 +137,21 @@ const MarkenbotschafterProvisionenTable = ({ onResetToCompanies }) => {
         </div>
       </div>
 
+      <div className="grid sm:hidden gap-4">
+        {filteredMBs.map((mb) => (
+          <MarkenbotschafterCard
+            key={mb._id}
+            mb={mb}
+            isAdmin={isAdmin}
+            onOpenModal={(id) => {
+              setSelectedMB(id);
+              setShowModal(true);
+            }}
+          />
+        ))}
+      </div>
 
-      <div className="overflow-x-auto max-h-[80vh] rounded-lg">
+      <div className="hidden overflow-x-auto max-h-[80vh] rounded-lg">
         <table className="table table-xs w-full text-left">
           <thead className="sticky top-0 bg-white dark:bg-gray-900 z-50 shadow-sm">
             <tr className="text-sm text-base-content border-b border-indigo-300">
