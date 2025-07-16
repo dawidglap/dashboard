@@ -13,7 +13,8 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
       <div className="space-y-4">
         {/* Email */}
         <div>
-          <label className="block text-gray-700 text-sm font-medium pb-1">
+          <label className="block text-gray-700 text-xs md:text-sm
+ font-medium pb-1">
             E-Mail
           </label>
           <input
@@ -22,14 +23,15 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
             value={formData.email}
             onChange={handleChange}
             disabled={!isEditing}
-            className={`input input-bordered rounded-full  w-full ${isEditing ? "" : "bg-white"
+            className={`input input-bordered text-xs md:text-sm rounded-full  w-full ${isEditing ? "" : "bg-white"
               }`}
           />
         </div>
 
         {/* Password Info */}
         <div>
-          <label className="block text-gray-700 text-sm font-medium">
+          <label className="block text-gray-700 text-xs md:text-sm
+ font-medium">
             Passwort
           </label>
           <p className="text-gray-500 text-xs italic">
@@ -39,7 +41,8 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
 
         {/* Phone Number */}
         <div>
-          <label className="block text-gray-700 text-sm font-medium">
+          <label className="block text-gray-700 text-xs md:text-sm
+ font-medium">
             Mobile nr.
           </label>
           <input
@@ -48,7 +51,7 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
             value={formData.phone_number}
             onChange={handleChange}
             disabled={!isEditing}
-            className={`input input-bordered rounded-full w-full ${isEditing ? "" : "bg-gray-100"
+            className={`input input-bordered text-xs md:text-sm rounded-full w-full ${isEditing ? "" : "bg-gray-100"
               }`}
           />
         </div>
@@ -56,7 +59,8 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
         {/* Address Fields */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-gray-700 text-sm font-medium">
+            <label className="block text-gray-700 text-xs md:text-sm
+ font-medium">
               Strasse
             </label>
             <input
@@ -65,12 +69,13 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
               value={formData.user_street}
               onChange={handleChange}
               disabled={!isEditing}
-              className={`input input-bordered rounded-full w-full ${isEditing ? "" : "bg-gray-100"
+              className={`input input-bordered text-xs md:text-sm rounded-full w-full ${isEditing ? "" : "bg-gray-100"
                 }`}
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm font-medium">
+            <label className="block text-gray-700 text-xs md:text-sm
+ font-medium">
               Nr.
             </label>
             <input
@@ -79,7 +84,7 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
               value={formData.user_street_number}
               onChange={handleChange}
               disabled={!isEditing}
-              className={`input input-bordered rounded-full w-full ${isEditing ? "" : "bg-gray-100"
+              className={`input input-bordered text-xs md:text-sm rounded-full w-full ${isEditing ? "" : "bg-gray-100"
                 }`}
             />
           </div>
@@ -87,7 +92,8 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-gray-700 text-sm font-medium">
+            <label className="block text-gray-700 text-xs md:text-sm
+ font-medium">
               Ort
             </label>
             <input
@@ -96,12 +102,13 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
               value={formData.user_city}
               onChange={handleChange}
               disabled={!isEditing}
-              className={`input input-bordered rounded-full w-full ${isEditing ? "" : "bg-gray-100"
+              className={`input input-bordered text-xs md:text-sm rounded-full w-full ${isEditing ? "" : "bg-gray-100"
                 }`}
             />
           </div>
           <div>
-            <label className="block text-gray-700 text-sm font-medium">
+            <label className="block text-gray-700 text-xs md:text-sm
+ font-medium">
               PLZ
             </label>
             <input
@@ -110,7 +117,7 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
               value={formData.user_postcode}
               onChange={handleChange}
               disabled={!isEditing}
-              className={`input input-bordered rounded-full w-full ${isEditing ? "" : "bg-gray-100"
+              className={`input input-bordered text-xs md:text-sm rounded-full w-full ${isEditing ? "" : "bg-gray-100"
                 }`}
             />
           </div>
@@ -123,7 +130,8 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
         {/* Subscription Expiration (Visible only for non-admin users) */}
 
         <div>
-          <label className="block text-gray-700 text-sm font-medium">
+          <label className="block text-gray-700 text-xs md:text-sm
+ font-medium">
 
           </label>
           <input
@@ -131,10 +139,11 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
             name="subscription_expiration"
             value={formatDateForDisplay(formData.subscription_expiration)}
             disabled={user?.role !== "admin"} // ❌ Always disabled for all users here
-            className="input input-bordered rounded-full w-full bg-gray-100"
+            className="input input-bordered text-xs md:text-sm rounded-full w-full bg-gray-100"
           />
           {user?.role !== "admin" && (
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-[10px] md:text-xs text-gray-500 mt-1">
+
               Nur der Admin kann dieses Datum ändern.
             </p>
           )}
@@ -146,7 +155,8 @@ const ProfileForm = ({ formData, handleChange, isEditing, user }) => {
         {user?.role === "admin" && (
           <div className="mt-4">
             <label className="label cursor-pointer">
-              <span className="text-gray-700 text-sm font-medium">
+              <span className="text-gray-700 text-xs md:text-sm
+ font-medium">
                 🟢 Konto aktiv
               </span>
               <input

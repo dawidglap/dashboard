@@ -84,7 +84,7 @@ const UserProfile = () => {
       setIsEditing(false);
 
       // ✅ Show success toast
-      setToastMessage("✅ Profil erfolgreich aktualisiert!");
+      setToastMessage("Profil erfolgreich aktualisiert!");
       setTimeout(() => setToastMessage(null), 2000);
     } catch (error) {
       console.error("❌ Fehler:", error.message);
@@ -106,12 +106,14 @@ const UserProfile = () => {
 
 
   return (
-    <div className="p-6 max-w-6xl mx-auto bg-white  rounded-lg">
-      <h2 className="text-4xl font-extrabold mb-6">Mein Profil</h2>
+    <div className="p-6 max-w-6xl mx-auto bg-white rounded-lg">
+      <h2 className="text-xl md:text-4xl font-extrabold mb-6 text-center md:text-left">
+        Mein Profil
+      </h2>
 
       {isLoading ? (
         // ✅ DaisyUI Skeleton Loader
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 md:flex-none">
           <div className="space-y-4">
             <div className="skeleton h-10 w-full"></div>
             <div className="skeleton h-10 w-full"></div>
@@ -135,16 +137,16 @@ const UserProfile = () => {
       ) : (
         <>
           {/* ✅ Responsive Two-Column Layout */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 md:flex-none">
             {/* Left Side: Form */}
-            <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-4 order-2 lg:order-1 text-xs md:text-sm">
               <ProfileForm
                 formData={formData}
                 handleChange={handleChange}
                 isEditing={isEditing}
               />
               <div className="w-full mt-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 ">
+                <label className="block text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Dein Empfehlungslink
                 </label>
                 <div className="relative">
@@ -152,27 +154,28 @@ const UserProfile = () => {
                     type="text"
                     value={`https://business.webomo.ch/ref/${user._id}`}
                     readOnly
-                    className="input py-6 input-sm input-bordered w-full rounded-full bg-indigo-100 ps-4 dark:bg-gray-800 text-sm"
+                    className="input py-5 input-sm input-bordered w-full rounded-full bg-indigo-100 ps-4 dark:bg-gray-800 text-xs md:text-sm"
                   />
                   <button
                     onClick={copyToClipboard}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 badge badge-primary"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 badge badge-primary text-[10px] md:text-xs"
                   >
                     {copied ? "Kopiert!" : "Kopieren"}
                   </button>
                 </div>
               </div>
-
             </div>
 
             {/* Right Side: Avatar */}
-            <div className="relative h-full w-full">
+            <div className="relative h-full w-full order-1 lg:order-2 md:mt-0 mt-6">
               {/* Business Partner Badge - top aligned */}
               {user?.role === "markenbotschafter" && user.manager && (
-                <div className="justify-center flex mt-6   w-full px-2 mb-4">
-                  <div className="inline-block rounded-full bg-indigo-100 text-indigo-800 text-xs font-medium px-4 py-2 dark:bg-indigo-800 dark:text-white">
+                <div className="justify-center flex mt-6 w-full px-2 mb-4">
+                  <div className="inline-block rounded-full bg-indigo-100 text-indigo-800 text-[10px] md:text-xs font-medium px-3 py-1.5 md:px-4 md:py-2 dark:bg-indigo-800 dark:text-white">
                     <span className="font-semibold">Dein Business Partner:</span>{" "}
-                    {user.manager.name} {user.manager.surname}  <span className="font-semibold ms-2">e-mail:</span> {user.manager.email}
+                    {user.manager.name} {user.manager.surname}
+                    <span className="font-semibold ms-2">e-mail:</span>{" "}
+                    {user.manager.email}
                   </div>
                 </div>
               )}
@@ -181,30 +184,43 @@ const UserProfile = () => {
               <div className="flex items-center justify-center h-full mt-[-24px]">
                 <ProfileAvatar user={user} />
               </div>
+              {/* Show Actions below avatar on mobile/tablet (md and smaller) */}
+              <div className="block lg:hidden mt-6 text-xs md:text-sm">
+                <ProfileActions
+                  isEditing={isEditing}
+                  setIsEditing={setIsEditing}
+                  handleSaveChanges={handleSaveChanges}
+                  isSaving={isSaving}
+                />
+              </div>
+
             </div>
-
-
           </div>
 
           {/* Actions */}
-          <ProfileActions
-            isEditing={isEditing}
-            setIsEditing={setIsEditing}
-            handleSaveChanges={handleSaveChanges}
-            isSaving={isSaving}
-          />
+          {/* Actions - shown only on lg+ at bottom */}
+          <div className="mt-6 text-xs md:text-sm hidden lg:block">
+            <ProfileActions
+              isEditing={isEditing}
+              setIsEditing={setIsEditing}
+              handleSaveChanges={handleSaveChanges}
+              isSaving={isSaving}
+            />
+          </div>
+
         </>
       )}
 
       {/* ✅ Toast Notification */}
       {toastMessage && (
         <div className="toast">
-          <div className="alert alert-success">
+          <div className="alert alert-success text-xs md:text-sm rounded-full">
             <span>{toastMessage}</span>
           </div>
         </div>
       )}
     </div>
+
   );
 };
 
