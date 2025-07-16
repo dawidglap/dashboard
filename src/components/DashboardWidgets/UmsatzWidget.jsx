@@ -81,34 +81,27 @@ const UmsatzWidget = () => {
   }, [timeframe]);
 
   return (
-    <div className="border-2 border-white p-4 rounded-xl shadow-xl flex flex-col h-full">
+    <div className="border-2 border-white p-3 md:p-4 rounded-xl shadow-xl flex flex-col h-full">
       <Link href="/dashboard/umsatz" className="flex flex-col space-y-4">
-        <h2 className="text-lg font-extrabold text-gray-800 dark:text-white">
+        <h2 className="text-md md:text-lg font-extrabold text-center md:text-left text-gray-800 dark:text-white">
           Umsatz
         </h2>
-        <p className="text-2xl font-bold text-green-500">
+        <p className="text-xl md:text-2xl font-bold text-green-500 text-center md:text-left">
           {loading
             ? "Loading..."
             : `CHF ${Math.round(bruttoUmsatz).toLocaleString("de-DE")}`}
         </p>
 
-        {/* <p className="text-sm text-gray-600">
-          Netto Umsatz:{" "}
-          {loading
-            ? "..."
-            : `CHF ${Math.round(nettoUmsatz).toLocaleString("de-DE")}`}
-        </p> */}
-
         {/* ✅ Grafico Mini come ProvisionenWidget */}
-        <div className="mt-auto h-24">
+        <div className="mt-auto h-20 md:h-24">
           {chartData && chartData.length >= 3 ? (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData}>
                 <XAxis dataKey="period" hide />
                 <YAxis hide />
                 {/* <Tooltip
-                  formatter={(value) => `CHF ${value.toLocaleString("de-DE")}`}
-                /> */}
+              formatter={(value) => `CHF ${value.toLocaleString("de-DE")}`}
+            /> */}
                 <defs>
                   <linearGradient id="colorUmsatz" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#10B981" stopOpacity={0.6} />
@@ -136,13 +129,22 @@ const UmsatzWidget = () => {
           )}
         </div>
       </Link>
+
       <Link
         href="/dashboard/umsatz"
-        className="mt-8 inline-flex items-center justify-center w-64 rounded-full bg-gradient-to-r from-indigo-600 to-purple-500 px-4 py-2 text-white shadow-lg transition-all duration-300 hover:bg-opacity-90 dark:from-indigo-500 dark:to-purple-400"
+        className="mt-6 inline-flex items-center justify-center w-full md:w-full lg:w-64 rounded-full bg-gradient-to-r from-indigo-600 to-purple-500 px-4 py-2 text-white shadow-lg transition-all duration-300 hover:bg-opacity-90 dark:from-indigo-500 dark:to-purple-400 text-center"
       >
-        Umsatz anzeigen →
+        <span className="block md:hidden lg:block">
+          Umsatz anzeigen →
+        </span>
+        <span className="hidden md:block lg:hidden leading-tight">
+          Umsatz<br />anzeigen
+        </span>
       </Link>
+
+
     </div>
+
   );
 };
 
