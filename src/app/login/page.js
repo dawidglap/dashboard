@@ -48,7 +48,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className="ml-[-16rem] px-4 md:px-0 relative flex min-h-screen items-start md:items-center justify-center pt-12 md:pt-0 overflow-hidden">
+    <div className=" px-4 md:px-0 relative flex min-h-screen items-start md:items-center justify-center pt-12 md:pt-0 overflow-hidden">
 
     
       <div
