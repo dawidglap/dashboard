@@ -16,7 +16,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="de" className={montserrat.variable}>
-      <body className={`font-montserrat antialiased ml-64 flex-grow`}>
+      <body className={`font-montserrat antialiased  flex-grow`}>
         {/* <DesktopOnly />{" "} */}
         {/* ✅ This will ensure the check is applied globally */}
         {children}

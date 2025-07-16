@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const SidebarItem = ({ title, href, icon, disabled }) => {
+const SidebarItem = ({ title, href, icon, disabled, onClick }) => {
   return (
     <li>
       {disabled ? (
@@ -13,6 +13,7 @@ const SidebarItem = ({ title, href, icon, disabled }) => {
       ) : (
         <Link
           href={href}
+          onClick={onClick}
           className="flex items-center px-4 py-2 rounded-full transition-all text-sm hover:bg-indigo-50 dark:hover:bg-gray-800"
         >
           <span className="text-lg">{icon}</span>

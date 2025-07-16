@@ -19,7 +19,9 @@ import {
 import SidebarLogout from "./Sidebar/SidebarLogout";
 import { GoDownload } from "react-icons/go";
 
-const SidebarMenu = () => {
+
+const SidebarMenu = ({ isOpen, onClose }) => {
+
   const [user, setUser] = useState(null);
   const [pendingCount, setPendingCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -132,26 +134,50 @@ const SidebarMenu = () => {
   const isActive = (href) => pathname?.startsWith(href);
 
   return (
-    <motion.div className="fixed top-0 left-0 h-screen w-64 z-[100] border-r shadow-lg flex flex-col p-4 overflow-y-auto">
-      <div className="flex items-center justify-center">
+    <motion.div
+      initial={{ x: "-100%" }}
+      animate={{ x: 0 }}
+      exit={{ x: "-100%" }}
+      transition={{ duration: 0.175 }}
+      className={`
+      fixed top-0 left-0 h-screen 
+      w-full sm:w-64 
+      z-[100]
+      bg-base-100
+      border-r shadow-lg 
+      flex flex-col overflow-y-auto 
+      sm:translate-x-0
+    `}
+    >
+
+
+      {/* 👤 Profilo utente in alto su mobile */}
+      <div className="sm:hidden pt-16 pb-4 px-4 border-b">
+        <SidebarProfile user={user} loading={loading} />
+      </div>
+
+      {/* 🖋️ Branding desktop */}
+      <div className="hidden sm:flex items-center justify-center pt-6">
         <h2 className="text-xl font-extrabold text-base-content">
           Webomo Business
         </h2>
       </div>
 
-      <nav className="mt-6 flex-grow">
+      {/* 📌 Navigazione */}
+      <nav className="mt-4 sm:mt-6 flex-grow px-2 sm:px-0">
         <ul className="flex flex-col space-y-1">
           {menuItems.map((item, index) => (
             <SidebarItem
               key={index}
               {...item}
               active={isActive(item.href)}
+              onClick={onClose} // ✅ chiude menu mobile
             />
           ))}
 
+
           <SidebarDropdown />
 
-          {/* ✅ Support sotto il dropdown */}
           <SidebarItem
             title="Support"
             href="/dashboard/hilfe"
@@ -160,12 +186,18 @@ const SidebarMenu = () => {
           />
         </ul>
 
-        <SidebarLogout />
+        <div className="mt-4 sm:mt-6">
+          <SidebarLogout />
+        </div>
       </nav>
 
-      <SidebarProfile user={user} loading={loading} />
+      {/* 👤 Profilo in basso solo su desktop */}
+      <div className="hidden sm:block mt-auto px-4 pb-4">
+        <SidebarProfile user={user} loading={loading} />
+      </div>
     </motion.div>
   );
+
 };
 
 export default SidebarMenu;
