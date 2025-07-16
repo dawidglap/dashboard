@@ -65,29 +65,23 @@ const ProvisionenWidget = ({ commissions = [] }) => {
   if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
 
   return (
-    <div className="border-2 border-white p-4 rounded-xl shadow-xl  flex flex-col h-full">
+    <div className="border-2 border-white p-3 md:p-4 rounded-xl shadow-xl flex flex-col h-full">
       <Link href="/dashboard/provisionen" className="flex flex-col space-y-4">
-        <h2 className="text-lg font-extrabold text-gray-800 dark:text-white">
+        <h2 className="text-md md:text-lg font-extrabold text-center md:text-left text-gray-800 dark:text-white">
           Provisionen
         </h2>
-        <p className="text-2xl font-bold text-indigo-500">
+        <p className="text-xl md:text-2xl font-bold text-indigo-500 text-center md:text-left">
           {totalCommissions > 0
             ? `${totalCommissions.toLocaleString("de-DE")} CHF`
             : "Keine Daten"}
         </p>
 
-
-        {/* ✅ Display Chart or "Not Enough Data" Message */}
-        <div className="mt-auto h-24">
+        <div className="mt-auto h-20 md:h-24">
           {chartData && chartData.length >= 3 ? (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={adjustedChartData}>
-
                 <XAxis dataKey="period" hide />
                 <YAxis hide />
-                {/* <Tooltip
-                    formatter={(value) => `CHF ${value.toLocaleString("de-DE")}`}
-                  /> */}
                 <defs>
                   <linearGradient
                     id="colorCommissions"
@@ -121,11 +115,17 @@ const ProvisionenWidget = ({ commissions = [] }) => {
           )}
         </div>
       </Link>
+
       <Link
         href="/dashboard/provisionen"
-        className="mt-8 inline-flex items-center justify-center w-64 rounded-full bg-gradient-to-r from-indigo-600 to-purple-500 px-4 py-2 text-white shadow-lg transition-all duration-300 hover:bg-opacity-90 dark:from-indigo-500 dark:to-purple-400"
+        className="mt-6 inline-flex items-center justify-center w-full md:w-full lg:w-64 rounded-full bg-gradient-to-r from-indigo-600 to-purple-500 px-4 py-2 text-white shadow-lg transition-all duration-300 hover:bg-opacity-90 dark:from-indigo-500 dark:to-purple-400 text-center"
       >
-        Provisionen anzeigen →
+        <span className="block md:hidden lg:block">
+          Provisionen anzeigen →
+        </span>
+        <span className="hidden md:block lg:hidden leading-tight">
+          Provisionen<br />anzeigen
+        </span>
       </Link>
     </div>
   );
