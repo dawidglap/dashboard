@@ -123,7 +123,8 @@ useEffect(() => {
                 alt={item.title}
                 width={270}
                 height={480}
-                className="w-full h-auto aspect-[3/4] object-cover transition-opacity duration-300"
+                className="w-full h-[240px] sm:h-auto object-cover transition-opacity duration-300"
+
                 loading="lazy"
                 onLoadingComplete={() =>
                   setImageLoaded((prev) => ({ ...prev, [index]: true }))
