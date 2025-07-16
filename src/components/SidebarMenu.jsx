@@ -153,7 +153,7 @@ const SidebarMenu = ({ isOpen, onClose }) => {
 
       {/* 👤 Profilo utente in alto su mobile */}
       <div className="md:hidden pt-16 pb-4 px-4 border-b">
-        <SidebarProfile user={user} loading={loading} />
+        <SidebarProfile user={user} loading={loading} onClose={onClose} />
       </div>
 
       {/* 🖋️ Branding desktop */}
