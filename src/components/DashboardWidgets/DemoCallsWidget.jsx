@@ -88,7 +88,7 @@ const DemoCallsWidget = () => {
       {/* ✅ Updated CTA Button */}
       <Link
         href="/dashboard/demo-calls"
-        className=" inline-flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-purple-500 px-4 py-2 text-white shadow-lg transition-all duration-300 hover:bg-opacity-90 dark:from-indigo-500 dark:to-purple-400"
+        className=" mt-4 md:mt-0 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-purple-500 px-4 py-2 text-white shadow-lg transition-all duration-300 hover:bg-opacity-90 dark:from-indigo-500 dark:to-purple-400"
       >
         Demo-calls anzeigen →
       </Link>
