@@ -210,7 +210,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
 
 
             {/* Firmen-Name */}
-            <div className="col-span-4 ">
+            <div className="col-span-4 lg:col-span-6 ">
               <label className="text-xs sm:text-sm font-medium"> Kunden Name</label>
               <input
                 type="text"
@@ -227,7 +227,7 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
 
             {/* Company Owner */}
-            <div className="col-span-4">
+            <div className="col-span-4  lg:col-span-6">
               <label className="text-xs sm:text-sm font-medium">
                 Inhaber (Firmenbesitzer)
               </label>

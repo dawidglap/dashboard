@@ -187,7 +187,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
 
       setTimeout(() => {
         setToastMessage(null);
-        setParentToast("Firma erfolgreich aktualisiert! ✅");
+        setParentToast("Firma erfolgreich aktualisiert!");
         onClose(); // Close immediately, but toast stays visible in parent
       }, 100);
     } catch (error) {
@@ -215,9 +215,10 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
           </h3>
         </div>
 
-        <div className="grid grid-cols-4 gap-3 mt-6">
+        <div className="grid grid-cols-4 md:grid-cols-2 xl:grid-cols-6 gap-4 mt-6">
+
           {/* Kunden Name */}
-          <div className="col-span-4">
+          <div className="col-span-4 md:col-span-6">
             <label className="text-sm font-medium">Kunden Name</label>
             <input
               type="text"
@@ -229,7 +230,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
           </div>
 
           {/* Strasse & Hausnummer */}
-          <div className="col-span-3">
+          <div className="col-span-4 md:col-span-2 xl:col-span-4">
             <label className="text-sm font-medium">Strasse</label>
             <input
               type="text"
@@ -239,7 +240,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
               className="input input-sm input-bordered w-full rounded-full"
             />
           </div>
-          <div className="col-span-1">
+          <div className="col-span-2 md:col-span-1 xl:col-span-1">
             <label className="text-sm font-medium">Nr.</label>
             <input
               type="text"
@@ -251,7 +252,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
           </div>
 
           {/* PLZ & Ort */}
-          <div className="col-span-1">
+          <div className="col-span-2 md:col-span-1 xl:col-span-1">
             <label className="text-sm font-medium">PLZ</label>
             <input
               type="text"
@@ -261,7 +262,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
               className="input input-sm input-bordered w-full rounded-full"
             />
           </div>
-          <div className="col-span-3">
+          <div className="col-span-4 md:col-span-2 xl:col-span-2">
             <label className="text-sm font-medium">Ort</label>
             <input
               type="text"
@@ -273,7 +274,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
           </div>
 
           {/* Inhaber */}
-          <div className="col-span-2">
+          <div className="col-span-4 md:col-span-2 xl:col-span-2">
             <label className="text-sm font-medium">Inhaber</label>
             <input
               type="text"
@@ -285,7 +286,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
           </div>
 
           {/* Kunden E-Mail */}
-          <div className="col-span-2">
+          <div className="col-span-4 md:col-span-2 xl:col-span-2">
             <label className="text-sm font-medium">Kunden E-Mail</label>
             <input
               type="email"
@@ -297,7 +298,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
           </div>
           {/* Ablaufdatum */}
           {/* Startdatum */}
-          <div className="col-span-1">
+          <div className="col-span-2 md:col-span-1 xl:col-span-1">
             <label className="text-sm font-medium">Startdatum</label>
             <input
               type="date"
@@ -312,7 +313,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
           </div>
 
 
-          <div className="col-span-1">
+          <div className="col-span-2 md:col-span-1 xl:col-span-1">
             <label className="text-sm font-medium">Ablaufdatum</label>
             <input
               type="date"
@@ -325,7 +326,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
 
 
           {/* Telefon & Mobile */}
-          <div className="col-span-2">
+          <div className="col-span-2 md:col-span-1 xl:col-span-2">
             <label className="text-sm font-medium">Telefon</label>
             <input
               type="tel"
@@ -335,7 +336,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
               className="input input-sm input-bordered w-full rounded-full"
             />
           </div>
-          <div className="col-span-2">
+          <div className="col-span-2 md:col-span-1 xl:col-span-2">
             <label className="text-sm font-medium">Mobil</label>
             <input
               type="tel"
@@ -347,7 +348,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
           </div>
 
           {/* Manager Selection */}
-          <div className="col-span-2">
+          <div className="col-span-4 md:col-span-2 xl:col-span-3">
             <label className="text-sm font-medium">Business Partner</label>
             <select
               name="manager_id"
@@ -368,7 +369,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
             </select>
           </div>
           {/* Plan Auswahl */}
-          <div className="col-span-2">
+          <div className="col-span-4 md:col-span-2 xl:col-span-3">
             <label className="text-sm font-medium">Paket</label>
             <select
               name="plan"
@@ -383,7 +384,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
           </div>
           {/* Plan Preis (Nur für BUSINESS) */}
           {formData.plan === "BUSINESS" && (
-            <div className="col-span-2">
+            <div className="col-span-4 md:col-span-2 xl:col-span-1">
               <label className="text-sm font-medium">Plan Preis (CHF)</label>
               <input
                 type="number"
@@ -398,7 +399,7 @@ const EditCompanyModal = ({ company, onClose, onSave, setParentToast }) => {
           )}
 
           {/* Markenbotschafter Selection */}
-          <div className="col-span-2">
+          <div className="col-span-4 md:col-span-2 xl:col-span-3">
             <label className="text-sm font-medium">Markenbotschafter</label>
             <select
               name="markenbotschafter_id"
