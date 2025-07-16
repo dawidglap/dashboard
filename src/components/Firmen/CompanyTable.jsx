@@ -138,53 +138,62 @@ const CompanyTable = ({ onEdit, onDelete }) => {
   return (
     <div className="overflow-x-auto rounded-xl">
       {/* ✅ Company Filter Dropdown */}
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          {/* Mostra solo il filtro delle compagnie per Manager/Markenbotschafter */}
-          {companies.length > 0 && (
-            <select
-              className=" px-4 my-2  ms-1 w-72 select select-sm select-bordered rounded-full bg-indigo-100 text-sm"
-              value={selectedCompany}
-              onChange={(e) => setSelectedCompany(e.target.value)}
-            >
-              <option value="">Alle Kunden</option>
-              {[...new Set(companies.map((c) => c.company_name))].map((name, i) => (
-                <option key={i} value={name}>
-                  {name}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
+      <div className="flex flex-col xl:flex-row xl:items-start xl:justify-start gap-4 mb-4 w-full xl:w-auto">
+        {/* Filtro compagnie (Alle Kunden) */}
+        {companies.length > 0 && (
+          <select
+            className="order-1 select select-sm select-bordered rounded-full bg-indigo-100 text-sm
+        w-full sm:w-2/3 md:w-1/2 xl:w-72 px-4 ms-0 "
+            value={selectedCompany}
+            onChange={(e) => setSelectedCompany(e.target.value)}
+          >
+            <option value="">Alle Kunden</option>
+            {[...new Set(companies.map((c) => c.company_name))].map((name, i) => (
+              <option key={i} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+        )}
+
+        {/* Bottone reset */}
         <button
           onClick={() => {
             setSelectedCompany("");
             setSelectedManager("");
             setSelectedMarkenbotschafter("");
           }}
-          className="btn btn-outline btn-sm me-auto ms-2 rounded-full flex items-center justify-center w-16 px-4 h-8"
+          className="order-3 xl:order-2 btn btn-outline btn-sm rounded-full
+      w-full sm:w-2/3 md:w-1/2 xl:w-16 xl:px-4 xl:h-8
+      flex items-center justify-center"
           title="Filter zurücksetzen"
         >
-          <FiRefreshCw size={20} />
+          <span className="xl:hidden">Filter zurücksetzen</span>
+          <span className="hidden xl:flex">
+            <FiRefreshCw size={20} />
+          </span>
         </button>
 
-        {/* Filtro per Manager o Markenbotschafter */}
+        {/* Filtri Manager e Markenbotschafter */}
         {(userRole === "admin" || userRole === "manager") && (
-          <CompanyFilters
-            users={users}
-            selectedManager={selectedManager}
-            selectedMarkenbotschafter={selectedMarkenbotschafter}
-            onManagerChange={setSelectedManager}
-            onMarkenbotschafterChange={setSelectedMarkenbotschafter}
-            userRole={userRole}
-            currentUserId={users.find(u => u.email === session?.user?.email)?._id} // serve per manager
-          />
+          <div className="order-2 xl:order-3 w-full xl:w-auto">
+            <CompanyFilters
+              users={users}
+              selectedManager={selectedManager}
+              selectedMarkenbotschafter={selectedMarkenbotschafter}
+              onManagerChange={setSelectedManager}
+              onMarkenbotschafterChange={setSelectedMarkenbotschafter}
+              userRole={userRole}
+              currentUserId={users.find(
+                (u) => u.email === session?.user?.email
+              )?._id}
+            />
+          </div>
         )}
-
-        {/* 🔄 Pulsante di reset filtri */}
-
-
       </div>
+
+
+
 
       {/* ✅ New CompanyFilters Component */}
 

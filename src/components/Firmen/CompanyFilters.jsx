@@ -25,11 +25,15 @@ const CompanyFilters = ({
 
 
     return (
-        <div className="flex flex-wrap gap-4 py-2">
+        <div className="w-full flex xl:flex-row flex-col gap-4 xl:items-center xl:justify-start">
+
+
             {/* Manager Filter */}
             {userRole === "admin" && (
                 <select
-                    className=" px-4 select select-sm select-bordered rounded-full bg-indigo-100 text-sm"
+                    className="select select-sm select-bordered rounded-full bg-indigo-100 text-sm
+  w-full sm:w-2/3 md:w-1/2 xl:w-auto"
+
                     value={selectedManager}
                     onChange={(e) => onManagerChange(e.target.value)}
                 >
@@ -45,7 +49,9 @@ const CompanyFilters = ({
 
             {/* Markenbotschafter Filter */}
             <select
-                className=" px-4 select select-sm select-bordered rounded-full bg-indigo-100 text-sm"
+                className="select select-sm select-bordered rounded-full bg-indigo-100 text-sm
+  w-full sm:w-2/3 md:w-1/2 xl:w-auto"
+
                 value={selectedMarkenbotschafter}
                 onChange={(e) => onMarkenbotschafterChange(e.target.value)}
             >
@@ -56,6 +62,8 @@ const CompanyFilters = ({
                     </option>
                 ))}
             </select>
+
+
         </div>
     );
 };
