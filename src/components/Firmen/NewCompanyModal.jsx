@@ -191,11 +191,12 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="modal-box max-w-5xl bg-base-100 shadow-lg rounded-2xl p-8   "
+        className="modal-box max-w-5xl bg-base-100 shadow-lg rounded-2xl p-4 sm:p-6 md:p-8"
+
       >
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-4">
-          <h3 className="text-2xl font-bold text-base-content">
+          <h3 className="text-xl mx-auto md:mx-0 md:text-2xl font-bold text-base-content">
             Neuen Kunden erstellen
           </h3>
         </div>
@@ -205,10 +206,12 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
         ) : error ? (
           <p className="text-red-500 text-center">{error}</p>
         ) : (
-          <div className="grid grid-cols-6 gap-3 mt-6">
+          <div className="grid grid-cols-4 md:grid-cols-2 xl:grid-cols-6 gap-4 mt-6">
+
+
             {/* Firmen-Name */}
-            <div className="col-span-3">
-              <label className="text-sm font-medium"> Kunden Name</label>
+            <div className="col-span-4 ">
+              <label className="text-xs sm:text-sm font-medium"> Kunden Name</label>
               <input
                 type="text"
                 name="company_name"
@@ -224,8 +227,8 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
 
             {/* Company Owner */}
-            <div className="col-span-3">
-              <label className="text-sm font-medium">
+            <div className="col-span-4">
+              <label className="text-xs sm:text-sm font-medium">
                 Inhaber (Firmenbesitzer)
               </label>
               <input
@@ -238,8 +241,8 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
 
             {/* Straße & Hausnummer */}
-            <div className="col-span-4">
-              <label className="text-sm font-medium"> Strasse</label>
+            <div className="col-span-4	md:col-span-2 xl:col-span-4">
+              <label className="text-xs sm:text-sm font-medium"> Strasse</label>
               <input
                 type="text"
                 name="company_street"
@@ -253,8 +256,8 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
                 </p>
               )}
             </div>
-            <div className="col-span-1">
-              <label className="text-sm font-medium">Nr.</label>
+            <div className="col-span-2 md:col-span-1 xl:col-span-1">
+              <label className="text-xs sm:text-sm font-medium">Nr.</label>
               <input
                 type="text"
                 maxlength="10"
@@ -266,8 +269,8 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
 
             {/* PLZ & Stadt */}
-            <div className="col-span-1">
-              <label className="text-sm font-medium"> PLZ</label>
+            <div className="col-span-2 md:col-span-1 xl:col-span-1">
+              <label className="text-xs sm:text-sm font-medium"> PLZ</label>
               <input
                 type="text"
                 name="company_post_code"
@@ -282,8 +285,8 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
                 </p>
               )}
             </div>
-            <div className="col-span-2">
-              <label className="text-sm font-medium"> Ort</label>
+            <div className="col-span-4 md:col-span-2 xl:col-span-2">
+              <label className="text-xs sm:text-sm font-medium"> Ort</label>
               <input
                 type="text"
                 name="company_city"
@@ -300,8 +303,8 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
 
             {/* Ablaufdatum */}
             {/* Startdatum */}
-            <div className="col-span-1">
-              <label className="text-sm font-medium">Startdatum</label>
+            <div className="col-span-2 md:col-span-1 xl:col-span-1">
+              <label className="text-xs sm:text-sm font-medium">Startdatum</label>
               <input
                 type="date"
                 value={today}
@@ -310,8 +313,8 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
               />
             </div>
 
-            <div className="col-span-1">
-              <label className="text-sm font-medium"> Ablaufdatum</label>
+            <div className="col-span-2 md:col-span-1 xl:col-span-1">
+              <label className="text-xs sm:text-sm font-medium"> Ablaufdatum</label>
               <input
                 type="date"
                 name="expiration_date"
@@ -323,8 +326,8 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
 
             {/* Firmen-E-Mail */}
-            <div className="col-span-2">
-              <label className="text-sm font-medium"> Kunden-E-Mail</label>
+            <div className="col-span-4 md:col-span-2 xl:col-span-2">
+              <label className="text-xs sm:text-sm font-medium"> Kunden-E-Mail</label>
               <input
                 type="email"
                 name="company_email"
@@ -340,19 +343,19 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
 
             {/* Telefon & Mobile */}
-            <div className="col-span-2">
-              <label className="text-sm font-medium"> Telefon</label>
+            <div className="col-span-2 md:col-span-1 xl:col-span-2">
+              <label className="text-xs sm:text-sm font-medium"> Telefon</label>
               <input
                 type="tel"
                 name="telephone"
                 value={formatSwissPhoneNumber(formData.telephone)}
                 onChange={handleChange}
                 maxLength={14}
-                className="input input-sm input-bordered w-full rounded-full"
+                className="input input-sm  input-bordered w-full rounded-full"
               />
             </div>
-            <div className="col-span-2">
-              <label className="text-sm font-medium"> Mobil</label>
+            <div className="col-span-2 md:col-span-1 xl:col-span-2">
+              <label className="text-xs sm:text-sm font-medium"> Mobil</label>
               <input
                 type="tel"
                 name="mobile"
@@ -364,8 +367,8 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
 
             {/* Plan Selection */}
-            <div className="col-span-1">
-              <label className="text-sm font-medium">Paket</label>
+            <div className="col-span-4 md:col-span-2 xl:col-span-1">
+              <label className="text-xs sm:text-sm font-medium">Paket</label>
               <select
                 name="plan"
                 value={formData.plan}
@@ -379,8 +382,8 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
 
             {/* Plan Price */}
-            <div className="col-span-1">
-              <label className="text-sm font-medium">Paket Preis (CHF)</label>
+            <div className="col-span-4 md:col-span-2 xl:col-span-1">
+              <label className="text-xs sm:text-sm font-medium">Paket Preis (CHF)</label>
               <input
                 type="number"
                 name="plan_price"
@@ -392,19 +395,18 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
             </div>
 
             {/* Manager Auswahl */}
-            <div className="col-span-2">
-              <label className="text-sm font-medium">Manager</label>
+            <div className="col-span-4  md:col-span-2 xl:col-span-3">
+              <label className="text-xs sm:text-sm font-medium">Manager</label>
               <select
                 name="manager_id"
                 value={formData.manager_id}
                 onChange={handleChange}
                 className="select select-sm select-bordered w-full rounded-full"
+
               >
                 <option value={adminId}>-- Standard: Admin --</option>
                 {users
-                  .filter(
-                    (user) => user.role === "manager" || user.role === "admin"
-                  )
+                  .filter((user) => user.role === "manager" || user.role === "admin")
                   .map((user) => (
                     <option key={user._id} value={user._id}>
                       {user.name} {user.surname} ({user.email})
@@ -413,9 +415,8 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
               </select>
             </div>
 
-            {/* Markenbotschafter Auswahl */}
-            <div className="col-span-2">
-              <label className="text-sm font-medium"> Markenbotschafter</label>
+            <div className="col-span-4 md:col-span-2 xl:col-span-3">
+              <label className="text-xs sm:text-sm font-medium">Markenbotschafter</label>
               <select
                 name="markenbotschafter_id"
                 value={formData.markenbotschafter_id}
@@ -423,15 +424,14 @@ const NewCompanyModal = ({ isOpen, onClose, onSubmit }) => {
                 className="select select-sm select-bordered w-full rounded-full"
               >
                 <option value={adminId}>-- Standard: Admin --</option>
-
                 {filteredMarkenbotschafter.map((user) => (
                   <option key={user._id} value={user._id}>
                     {user.name} {user.surname} ({user.email})
                   </option>
                 ))}
               </select>
-
             </div>
+
           </div>
         )}
 
