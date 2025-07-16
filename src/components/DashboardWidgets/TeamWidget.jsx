@@ -76,7 +76,7 @@ const TeamWidget = () => {
       {/* ✅ Updated CTA Button */}
       <Link
         href="/dashboard/team"
-        className=" inline-flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-purple-500 px-4 py-2 text-white shadow-lg transition-all duration-300 hover:bg-opacity-90 dark:from-indigo-500 dark:to-purple-400"
+        className="md:mt-0 mt-4 inline-flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-purple-500 px-4 py-2 text-white shadow-lg transition-all duration-300 hover:bg-opacity-90 dark:from-indigo-500 dark:to-purple-400"
       >
         Team anzeigen →
       </Link>
