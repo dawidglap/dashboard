@@ -48,8 +48,8 @@ const CompanyCard = ({
                 </div>
 
                 {userRole === "admin" && (
-                    <div className="flex gap-2">
-                        <button onClick={() => onEdit(company)} className="text-indigo-500 hover:text-indigo-700">
+                    <div className="flex gap-2 text-lg">
+                        <button onClick={() => onEdit(company)} className=" text-gray-500 hover:text-md -indigo-700">
                             <FaEdit />
                         </button>
                         <button onClick={() => onDelete(company)} className="text-red-500 hover:text-red-700">
