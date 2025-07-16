@@ -31,11 +31,19 @@ const DashboardContent = ({ user, companies, commissions }) => {
       className="min-h-screen p-6 flex-1 bg-gradient-to-br from-indigo-50 via-pink-50 to-blue-50 bg-white/30 dark:bg-slate-800/30 backdrop-blur-lg shadow-xl"
     >
       {/* Header Section */}
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">
+      <div className="mb-8 pt-0 md:pt-0 flex flex-col md:flex-row justify-between items-center md:items-center gap-2 md:gap-0">
+        {/* Titolo Mobile */}
+        <h1 className="w-full text-center md:hidden text-xl font-extrabold text-gray-900 dark:text-white">
+          Webomo Business
+        </h1>
+
+        {/* Titolo Desktop */}
+        <h1 className="hidden md:block text-3xl font-extrabold text-gray-900 dark:text-white">
           Willkommen zurück{user?.name ? `, ${user.name}` : ""}!
         </h1>
-        <div className="text-right">
+
+        {/* Ora + Data solo su desktop */}
+        <div className="hidden md:block text-right">
           <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
             {time.toLocaleTimeString("de-DE")}
           </p>
@@ -49,6 +57,9 @@ const DashboardContent = ({ user, companies, commissions }) => {
           </p>
         </div>
       </div>
+
+
+
 
       {/* 🚀 Bento Grid Layout */}
       <motion.div
