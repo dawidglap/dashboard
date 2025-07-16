@@ -5,7 +5,7 @@ import FaqSupport from "@/components/Support/FaqSupport";
 
 const HelpPage = () => {
   return (
-    <div className="px-4 md:px-12">
+    <div className="px-4 lg:px-4 xl:px-6 2xl:px-12">
       <h1 className="text-3xl mt-8 md:text-4xl font-extrabold text-base-content mb-6">
         Kontakt Support
       </h1>

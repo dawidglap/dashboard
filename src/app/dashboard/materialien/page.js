@@ -57,7 +57,7 @@ useEffect(() => {
   };
 
   return (
-    <div className="px-4 md:px-12">
+    <div className="px-4 lg:px-4 xl:px-6 2xl:px-12">
       
       {/* Title */}
      {/* Titel + Admin-Filter nebeneinander */}

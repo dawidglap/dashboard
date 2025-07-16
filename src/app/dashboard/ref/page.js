@@ -11,7 +11,7 @@ export default async function ReferralPage() {
   }
 
   return (
-    <div className="px-4 md:px-12">
+    <div className="px-4 lg:px-4 xl:px-6 2xl:px-12">
         <h1 className="text-3xl md:text-4xl mt-8 mb-8 font-extrabold text-base-content">
         Referral Übersicht
    </h1>

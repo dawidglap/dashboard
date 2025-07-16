@@ -9,6 +9,7 @@ import DeleteCompanyModal from "../../../components/Firmen/DeleteCompanyModal";
 import NewCompanyModal from "../../../components/Firmen/NewCompanyModal";
 import EditCompanyModal from "../../../components/Firmen/EditCompanyModal";
 import ToastNotification from "../../../components/Firmen/ToastNotification";
+import FirmenHeader from "@/components/Firmen/FirmenHeader";
 
 const Firmen = () => {
   const [companies, setCompanies] = useState(null); // ✅ Prevent SSR issues
@@ -130,79 +131,82 @@ const Firmen = () => {
   };
 
   // ✅ Loading State (Skeleton UI)
-  if (loading || companies === null)
-    return (
-      <div className="px-4 md:px-12">
-        <h1 className="text-3xl mt-8 md:text-4xl font-extrabold text-base-content mb-6">
-          Kunden
-        </h1>
-        <div className="overflow-x-auto rounded-lg shadow-sm">
-          <table className="table table-xs w-full">
-            <thead>
-              <tr className="text-sm md:text-md text-base-content border-b border-indigo-300 dark:text-white">
-                {/* ✅ Show Total Companies in Header */}
-                <th className="py-3 px-4 text-left">
-                  Kunden Name{" "}
-                  <span className="text-gray-400 ms-1">
-                    <span className="loading loading-spinner loading-xs"></span>
-                  </span>
-                </th>
-                <th className="py-3 px-4 text-left">Plan</th>
-                <th className="py-3 px-4 text-left hidden md:table-cell">
-                  Preis (CHF)
-                </th>
-                <th className="py-3 px-4 text-left hidden md:table-cell">
-                  Inhaber
-                </th>
-                <th className="py-3 px-4 text-left hidden md:table-cell">
-                  Business Partner
-                </th>
-                <th className="py-3 px-4 text-left hidden md:table-cell">
-                  Markenbotschafter
-                </th>
-                <th className="py-3 px-4 text-left">Ablauf</th>
-                <th className="py-3 px-4 text-left hidden md:table-cell">
-                  Provision (CHF)
-                </th>
-                <th className="py-3 px-4 text-center">Aktion</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[...Array(10)].map((_, index) => (
-                <tr
-                  key={index}
-                  className="animate-pulse border-b border-gray-200"
-                >
-                  {[...Array(9)].map((_, i) => (
-                    <td key={i} className="py-4 px-4">
-                      <div className="h-4 w-24 bg-gray-300 rounded-full"></div>
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+if (loading || companies === null)
+  return (
+    <div className="px-4 md:px-12">
+      {/* Header Responsive */}
+      <FirmenHeader userRole={userRole} onAdd={() => setShowModal(true)} />
+
+      {/* Mobile Skeleton Cards */}
+      <div className="block md:hidden space-y-4">
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="bg-white shadow rounded-xl p-4 border border-gray-100 space-y-2 animate-pulse"
+          >
+            <div className="h-5 w-3/4 bg-gray-300 rounded"></div>
+            <div className="h-4 w-full bg-gray-200 rounded"></div>
+            <div className="h-4 w-5/6 bg-gray-200 rounded"></div>
+            <div className="h-4 w-2/3 bg-gray-200 rounded"></div>
+          </div>
+        ))}
       </div>
-    );
+
+      {/* Desktop Skeleton Table */}
+      <div className="hidden md:block overflow-x-auto rounded-lg shadow-sm mt-4">
+        <table className="table table-xs w-full">
+          <thead>
+            <tr className="text-sm md:text-md text-base-content border-b border-indigo-300 dark:text-white">
+              <th className="py-3 px-4 text-left">
+                Kunden Name{" "}
+                <span className="text-gray-400 ms-1">
+                  <span className="loading loading-spinner loading-xs"></span>
+                </span>
+              </th>
+              <th className="py-3 px-4 text-left">Plan</th>
+              <th className="py-3 px-4 text-left hidden md:table-cell">
+                Preis (CHF)
+              </th>
+              <th className="py-3 px-4 text-left hidden md:table-cell">
+                Inhaber
+              </th>
+              <th className="py-3 px-4 text-left hidden md:table-cell">
+                Business Partner
+              </th>
+              <th className="py-3 px-4 text-left hidden md:table-cell">
+                Markenbotschafter
+              </th>
+              <th className="py-3 px-4 text-left">Ablauf</th>
+              <th className="py-3 px-4 text-left hidden md:table-cell">
+                Provision (CHF)
+              </th>
+              <th className="py-3 px-4 text-center">Aktion</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[...Array(8)].map((_, index) => (
+              <tr
+                key={index}
+                className="animate-pulse border-b border-gray-200"
+              >
+                {[...Array(9)].map((_, i) => (
+                  <td key={i} className="py-4 px-4">
+                    <div className="h-4 w-24 bg-gray-300 rounded-full"></div>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
 
   return (
-    <div className="px-4 md:px-12 ">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className=" text-3xl mt-8 md:text-4xl font-extrabold text-base-content dark:text-white">
-          Kunden
-        </h1>
-        {userRole === "admin" && (
-        <button
-          onClick={() => setShowModal(true)}
-          disabled={userRole !== "admin"}
-          className="btn btn-neutral px-4 hover:text-white btn-sm dark:text-white dark:hover:bg-slate-900 flex rounded-full items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <FaPlus />
-          <span>Neuer Kunde</span>
-        </button>
-        )}
-      </div>
+    <div className="px-4 lg:px-4 xl:px-6 2xl:px-12">
+      <FirmenHeader userRole={userRole} onAdd={() => setShowModal(true)} />
+
 
       <CompanyTable
         companies={companies}

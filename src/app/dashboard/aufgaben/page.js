@@ -372,7 +372,7 @@ const Tasks = () => {
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div className="px-4 md:px-12">
+    <div className="px-4 lg:px-4 xl:px-6 2xl:px-12">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl mt-8 md:text-4xl font-extrabold text-base-content mb-6">
           Aufgaben
