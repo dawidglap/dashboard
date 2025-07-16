@@ -48,7 +48,8 @@ const SignIn = () => {
   };
 
   return (
-    <div className="ml-[-16rem] px-4 md:px-0 relative flex min-h-screen items-center justify-center overflow-hidden">
+    <div className="ml-[-16rem] px-4 md:px-0 relative flex min-h-screen items-start md:items-center justify-center pt-12 md:pt-0 overflow-hidden">
+
     
       <div
         className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-pink-300 to-indigo-300 
