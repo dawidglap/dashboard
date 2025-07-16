@@ -6,6 +6,7 @@ import CompanyTableRow from "./CompanyTableRow";
 import EditCompanyModal from "./EditCompanyModal";
 import CompanyFilters from "./CompanyFilters";
 import { FiRefreshCw } from "react-icons/fi";
+import CompanyCard from "./CompanyCard";
 
 
 
@@ -109,8 +110,12 @@ const CompanyTable = ({ onEdit, onDelete }) => {
 
   // ✅ Function to open the modal with the selected company
   const handleEdit = (company) => {
-    setEditingCompany(company); // ✅ Set company to be edited
+    setEditingCompany(company);
+    if (window.innerWidth < 1024) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
+
 
   // ✅ Get user by ID
   const getUserById = (userId) => users.find((u) => u._id === userId);
@@ -186,29 +191,24 @@ const CompanyTable = ({ onEdit, onDelete }) => {
 
 
       {/* ✅ Scrollable Table with Fixed Header */}
-      <div className="max-h-[90vh] overflow-auto">
+      {/* ✅ Responsive layout: Table for desktop, Cards for mobile/tablet */}
+      <div className="hidden xl:block max-h-[90vh] overflow-auto">
         <table className="table table-xs w-full">
           <thead className="sticky top-0 z-50 bg-white">
             <tr className="text-sm md:text-md text-base-content border-b border-indigo-300 z-10 dark:text-white">
               <th className="py-3 px-4 text-left">
                 Kunden Name{" "}
-                <span className="text-gray-400">
-                  ({filteredCompanies.length})
-                </span>
+                <span className="text-gray-400">({filteredCompanies.length})</span>
               </th>
-
               <th className="py-3 px-4 text-left">Paket</th>
               <th className="py-3 px-4 text-left hidden md:table-cell">
-                Preis <br />
-                (CHF)
+                Preis <br /> (CHF)
               </th>
               <th className="py-3 px-4 text-left hidden md:table-cell">
                 Inhaber
               </th>
               <th className="py-3 px-4 text-left hidden md:table-cell">
-                Business
-                <br />
-                Partner
+                Business<br />Partner
               </th>
               <th className="py-3 px-4 text-left hidden md:table-cell">
                 Markenbotschafter
@@ -220,22 +220,18 @@ const CompanyTable = ({ onEdit, onDelete }) => {
               {userRole === "admin" && (
                 <th className="py-3 px-4 text-center">Aktion</th>
               )}
-
             </tr>
           </thead>
-
           <tbody>
             {loading ? (
-              // ✅ DaisyUI Skeleton Loader while loading
               Array.from({ length: 5 }).map((_, index) => (
                 <tr key={index}>
-                  <td colSpan="1" className="py-4 text-center">
+                  <td colSpan="9" className="py-4 text-center">
                     <div className="skeleton h-6 w-full"></div>
                   </td>
                 </tr>
               ))
             ) : filteredCompanies.length === 0 ? (
-              // ✅ Only show "No Companies Found" after loading finishes
               <tr>
                 <td colSpan="9" className="py-6 text-center text-gray-500">
                   Keine Firmen gefunden.
@@ -244,16 +240,13 @@ const CompanyTable = ({ onEdit, onDelete }) => {
             ) : (
               filteredCompanies.map((company, index) => {
                 const manager = getUserById(company.manager_id);
-                const markenbotschafter = getUserById(
-                  company.markenbotschafter_id
-                );
-
+                const markenbotschafter = getUserById(company.markenbotschafter_id);
                 return (
                   <CompanyTableRow
                     key={company._id}
                     company={company}
                     index={index + 1}
-                    onEdit={handleEdit} // ✅ CORRECT: now clicking Edit opens modal
+                    onEdit={handleEdit}
                     onDelete={onDelete}
                     manager={manager}
                     markenbotschafter={markenbotschafter}
@@ -265,6 +258,34 @@ const CompanyTable = ({ onEdit, onDelete }) => {
           </tbody>
         </table>
       </div>
+
+      {/* ✅ Mobile / Tablet Card View */}
+      <div className="xl:hidden space-y-4">
+        {loading ? (
+          Array.from({ length: 5 }).map((_, index) => (
+            <div key={index} className="skeleton h-32 w-full rounded-xl"></div>
+          ))
+        ) : filteredCompanies.length === 0 ? (
+          <p className="text-center text-gray-500 mt-4">Keine Firmen gefunden.</p>
+        ) : (
+          filteredCompanies.map((company, index) => {
+            const manager = getUserById(company.manager_id);
+            const markenbotschafter = getUserById(company.markenbotschafter_id);
+            return (
+              <CompanyCard
+                key={company._id}
+                company={company}
+                manager={manager}
+                markenbotschafter={markenbotschafter}
+                onEdit={handleEdit}
+                onDelete={onDelete}
+                userRole={userRole}
+              />
+            );
+          })
+        )}
+      </div>
+
       {/* ✅ Edit Company Modal */}
       {editingCompany && (
         <EditCompanyModal
