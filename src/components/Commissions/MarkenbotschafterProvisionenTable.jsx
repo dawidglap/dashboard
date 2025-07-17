@@ -86,56 +86,54 @@ const MarkenbotschafterProvisionenTable = ({ onResetToCompanies }) => {
 
   return (
     <div className="bg-base-100  rounded-2xl  w-full">
-      {/* <h3 className="text-xl font-bold mb-4 border-b-2 border-indigo-300 pb-2 text-base-content">
-        {selectedMB === "all"
-          ? `Provisionen pro Markenbotschafter – Jahr ${new Date().getFullYear()}`
-          : `Provision für ${markenbotschafter.find((m) => m._id === selectedMB)?.name || ""}`}
-      </h3> */}
-
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center space-x-2">
-          <div className="flex gap-2">
-            {/* 🔄 Select Markenbotschafter */}
-            <select
-              className="w-56  px-4 select select-sm select-bordered rounded-full bg-indigo-100 text-sm"
-              onChange={(e) => {
-                const value = e.target.value;
-                setSelectedMB(value === "all" ? "all" : value); // 👈
-              }}
-
-              value={selectedMB || ""}
-            >
-              <option value="all">Alle Markenbotschafter</option>
-              {markenbotschafter.map((mb) => (
-                <option key={mb._id} value={mb._id}>
-                  {mb.name} {mb.surname}
-                </option>
-              ))}
-            </select>
 
 
-            <button
-              onClick={() => {
-                setSelectedMB("all");
-              }}
-              className="px-4 h-8 w-16 border rounded-full btn-outline transition"
-              title="Alle Filter zurücksetzen"
-            >
-              <FiRefreshCw className="mx-auto w-4 h-4" />
-            </button>
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-4">
+        {/* 🔽 Select + Reset */}
+        <div className="w-full lg:w-auto flex flex-col sm:flex-row gap-2 items-center sm:items-center">
 
+          {/* 🔹 Label dinamico su mobile */}
+          <p className="text-xs text-gray-500 font-medium sm:hidden text-center">
+            Markenbotschafter auswählen:
+          </p>
 
-          </div>
+          <select
+            className="w-full sm:w-52 px-4 select select-sm select-bordered rounded-full bg-indigo-100 text-sm text-center sm:text-left mx-auto sm:mx-0"
+            onChange={(e) => {
+              const value = e.target.value;
+              setSelectedMB(value === "all" ? "all" : value);
+            }}
+            value={selectedMB || ""}
+          >
+            <option value="all">Alle Markenbotschafter</option>
+            {markenbotschafter.map((mb) => (
+              <option key={mb._id} value={mb._id}>
+                {mb.name} {mb.surname}
+              </option>
+            ))}
+          </select>
+
+          <button
+            onClick={() => setSelectedMB("all")}
+            className="w-full sm:w-16 h-8 border rounded-full btn-outline transition text-sm flex justify-center items-center mx-auto sm:mx-0"
+            title="Alle Filter zurücksetzen"
+          >
+            <span className="hidden sm:flex">
+              <FiRefreshCw className="w-4 h-4" />
+            </span>
+            <span className="sm:hidden">Filter zurücksetzen</span>
+          </button>
         </div>
 
-        {/* 💰 Totale */}
-        <div className="p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300">
+        {/* 💰 Totale responsive */}
+        <div className="p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300 w-full sm:w-1/2 lg:w-auto text-center sm:text-left mx-auto sm:mx-0 font-semibold sm:font-normal">
           Gesamtprovisionen:{" "}
           <span className="text-green-600 font-bold">
             {(markenbotschafter.length * 300).toLocaleString("de-DE")} CHF
           </span>
         </div>
       </div>
+
 
       <div className="grid sm:hidden gap-4">
         {filteredMBs.map((mb) => (
@@ -151,7 +149,8 @@ const MarkenbotschafterProvisionenTable = ({ onResetToCompanies }) => {
         ))}
       </div>
 
-      <div className="hidden overflow-x-auto max-h-[80vh] rounded-lg">
+      <div className="hidden sm:block overflow-x-auto max-h-[80vh] rounded-lg">
+
         <table className="table table-xs w-full text-left">
           <thead className="sticky top-0 bg-white dark:bg-gray-900 z-50 shadow-sm">
             <tr className="text-sm text-base-content border-b border-indigo-300">
