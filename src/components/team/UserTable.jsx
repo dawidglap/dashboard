@@ -7,6 +7,8 @@ import { getSession } from "next-auth/react";
 import UserFormModal from "./UserFormModal";
 import TeamMemberModal from "./TeamMemberModal";
 import { FaSyncAlt } from "react-icons/fa"; // ✅ Add this at the top with other imports
+import UserTableCard from "./UserTableCard";
+import UserCardSkeleton from "./UserCardSkeleton";
 
 const UserTable = ({ onDelete }) => {
   const [users, setUsers] = useState([]); // ✅ Store fetched users
@@ -198,10 +200,13 @@ const UserTable = ({ onDelete }) => {
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="overflow-x-auto max-h-[90vh] overflow-auto rounded-lg"
+        className="  max-h-[100vh] overflow-auto"
         ref={containerRef}
       >
-        <table className="table table-xs w-full border-b border-gray-200 dark:border-gray-700">
+
+
+
+        <table className="table hidden xl:table table-xs w-full border-b border-gray-200 dark:border-gray-700">
           <thead className="sticky top-0 bg-white dark:bg-gray-900 z-50">
             <tr className="dark:bg-indigo-800 text-base-content text-sm">
               <th className="py-3 px-4 text-left">Vor- und Nachname</th>
@@ -258,7 +263,25 @@ const UserTable = ({ onDelete }) => {
               </tr>
             ))}
           </tbody>
+
         </table>
+        {/* 🔹 Card view su mobile/tablet */}
+        <div className="xl:hidden space-y-4 mt-4">
+          {filteredUsers.map((user) => (
+            <UserTableCard
+              key={user._id}
+              user={user}
+              onEdit={(u) => {
+                setSelectedUser(u);
+                setIsEditModalOpen(true);
+              }}
+              onDelete={onDelete}
+              userRole={"admin"}
+              onView={(id) => setSelectedTeamMember(id)}// oppure gestisci da stato sessione se preferisci
+            />
+          ))}
+        </div>
+
       </motion.div>
 
       {loadingMore && (
@@ -266,6 +289,14 @@ const UserTable = ({ onDelete }) => {
           Lade weitere...
         </p>
       )}
+      {loading && (
+        <div className="xl:hidden space-y-4 mt-4">
+          {[...Array(3)].map((_, i) => (
+            <UserCardSkeleton key={i} />
+          ))}
+        </div>
+      )}
+
 
       {/* ✅ Fullscreen Modal for Editing User */}
       <AnimatePresence>
