@@ -154,29 +154,37 @@ const TeamMemberProfile = ({ userId }) => {
         {/* Right side */}
         <div className="space-y-4">
           {user?.role === "markenbotschafter" && user.manager ? (
-            <div className="bg-gradient-to-r mt-5 from-indigo-600 to-purple-500 p-4 px-8 rounded-full shadow-xl">
-              <div className="flex">
-                <h3 className="text-sm font-semibold mb-2 text-gray-300 dark:text-gray-200">
+            <div className="bg-gradient-to-r from-indigo-600 to-purple-500 rounded-xl xl:rounded-full shadow-xl px-4 py-5 sm:px-6 sm:py-6 xl:px-8 xl:py-6">
+              {/* Titolo + nome */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                <h3 className="text-sm sm:text-base font-semibold text-gray-200">
                   Dein Business Partner:
                 </h3>
-                <p className="text-sm text-white font-bold ms-2">
+                <p className="text-sm sm:text-base text-white font-bold">
                   {user.manager.name} {user.manager.surname}
                 </p>
               </div>
-              <p className="text-sm text-white font-bold">
-                <span className="text-sm font-semibold mb-2 text-gray-300 dark:text-gray-200">
+
+              {/* Contatto */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                <span className="text-sm font-semibold text-gray-300 dark:text-gray-200">
                   Kontakt:
-                </span>{" "}
-                {user.manager.email}
-              </p>
+                </span>
+                <span className="text-sm text-white font-bold break-words max-w-full">
+                  {user.manager.email}
+                </span>
+              </div>
             </div>
           ) : user?.role === "manager" ? (
             <>
-              <h3 className="text-lg font-semibold pb-1 ps-4">Mein Team</h3>
+              <h3 className="text-base sm:text-lg font-semibold pb-1 ps-2 sm:ps-4">
+                Mein Team
+              </h3>
               <MemberCompanies companies={companies} userId={userId} />
             </>
           ) : null}
         </div>
+
       </div>
     </div>
 

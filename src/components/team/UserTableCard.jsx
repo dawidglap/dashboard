@@ -19,6 +19,7 @@ const UserTableCard = ({ user, onEdit, onDelete, userRole, onView }) => {
                     <p className="text-xs text-gray-500 dark:text-gray-400">
                         {user.email}
                     </p>
+                    <div className="border-b border-indigo-400 mt-2 mb-1 block lg:hidden" />
                 </div>
 
                 {userRole === "admin" && (
@@ -32,7 +33,7 @@ const UserTableCard = ({ user, onEdit, onDelete, userRole, onView }) => {
                         </button>
                         <button
                             onClick={() => onDelete(user)}
-                            className="hover:text-red-600 transition"
+                            className="text-red-500 hover:text-red-600 transition"
                             title="Löschen"
                         >
                             <FaTrash />
