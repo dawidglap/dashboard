@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import TeamMemberProfile from "@/components/team/TeamMemberProfile";
 import TeamMemberProfileCompact from "@/components/team/TeamMemberProfileCompact";
+import TeamHeader from "@/components/Team/TeamHeader";
 
 
 
@@ -120,12 +121,54 @@ if ((user?.role === "manager" || user?.role === "markenbotschafter") && fullUser
     setCurrentUser(null);
   };
 
-  if (loading)
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <span className="loading loading-ring loading-lg"></span>
+ if (loading)
+  return (
+    <div className="px-4 md:px-12">
+      {/* Mobile Skeleton Cards */}
+      <div className="block md:hidden space-y-4">
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="bg-white dark:bg-gray-800 shadow rounded-xl p-4 border border-gray-200 dark:border-gray-700 space-y-2 animate-pulse"
+          >
+            <div className="h-5 w-3/4 bg-gray-300 dark:bg-gray-700 rounded"></div>
+            <div className="h-4 w-full bg-gray-200 dark:bg-gray-600 rounded"></div>
+            <div className="h-4 w-5/6 bg-gray-200 dark:bg-gray-600 rounded"></div>
+            <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-600 rounded"></div>
+          </div>
+        ))}
       </div>
-    );
+
+      {/* Desktop Skeleton Table */}
+      <div className="hidden md:block overflow-x-auto rounded-lg shadow-sm mt-4">
+        <table className="table table-xs w-full">
+          <thead>
+            <tr className="text-sm text-base-content dark:text-white border-b border-indigo-300">
+              <th className="py-3 px-4 text-left">
+                Name <span className="loading loading-spinner loading-xs ms-2" />
+              </th>
+              <th className="py-3 px-4 text-left">E-Mail</th>
+              <th className="py-3 px-4 text-left hidden md:table-cell">Rolle</th>
+              <th className="py-3 px-4 text-left hidden md:table-cell">Geburtstag</th>
+              <th className="py-3 px-4 text-center">Aktion</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[...Array(6)].map((_, index) => (
+              <tr key={index} className="animate-pulse border-b border-gray-200">
+                {[...Array(5)].map((_, i) => (
+                  <td key={i} className="py-4 px-4">
+                    <div className="h-4 w-24 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
 
@@ -138,22 +181,15 @@ if ((user?.role === "manager" || user?.role === "markenbotschafter") && fullUser
       transition={{ duration: 0.3, ease: "easeOut" }}
       className="bg-base-100 px-4 md:px-12"
     >
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl mt-8 md:text-4xl font-extrabold text-base-content mb-6">
-          Teamübersicht
-        </h1>
-        <button
-          onClick={() => {
-            setShowModal(true);
-            setIsEditing(false);
-            setCurrentUser(null);
-          }}
-          className="btn btn-neutral btn-sm rounded-full flex items-center space-x-2 transition-all px-4 hover:text-white"
-        >
-          <FaPlus />
-          <span>Neuer Benutzer</span>
-        </button>
-      </div>
+   <TeamHeader
+  userRole={user?.role}
+  onAdd={() => {
+    setShowModal(true);
+    setIsEditing(false);
+    setCurrentUser(null);
+  }}
+/>
+
 
       {/* ✅ User Table */}
       <UserTable users={users} onEdit={handleEdit} onDelete={setUserToDelete} />

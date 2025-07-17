@@ -102,74 +102,96 @@ const UserTable = ({ onDelete }) => {
 
   return (
     <>
-      {/* ✅ Filter Dropdown & Total Count */}
 
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center space-x-2">
-          {/* 🔹 Dropdown for user names */}
-          <select
-            className="px-4 my-2 ms-1 w-72 select select-sm select-bordered rounded-full bg-indigo-100 text-smf"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            <option value="">Mitglieder</option>
-            {[...new Set(users.map((u) => `${u.name} ${u.surname}`))].map((fullName, i) => (
-              <option key={i} value={fullName}>
-                {fullName}
-              </option>
-            ))}
-          </select>
+      {/* ✅ Responsive Filter Section */}
+      <div className="flex flex-col xl:flex-row xl:items-start xl:justify-start gap-4 mb-4 w-full xl:w-auto">
+        {/* 🔹 Select membri */}
+        <div className="order-1 w-full xl:w-auto flex flex-col gap-1">
+          <label className="xl:hidden text-xs sm:text-left text-center font-semibold text-gray-500 dark:text-gray-300 px-1">
+            Mitglied auswählen:
+          </label>
+          {users.length > 0 && (
+            <select
+              className="select select-sm text-center lg:text-start select-bordered rounded-full bg-indigo-100 text-sm
+        w-full sm:w-2/3 md:w-1/2 xl:w-72 px-4 ms-0"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            >
+              <option value="">Alle Mitglieder</option>
+              {[...new Set(users.map((u) => `${u.name} ${u.surname}`))].map((fullName, i) => (
+                <option key={i} value={fullName}>
+                  {fullName}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
 
-          {/* 🔹 Reset button with FaSyncAlt icon */}
+        {/* 🔹 Ruolo */}
+        <div className="order-3 w-full xl:w-full flex flex-col xl:flex-row xl:justify-end gap-1">
+
+
+          <label className="xl:hidden sm:text-left text-xs text-center font-semibold text-gray-500 dark:text-gray-300 px-1">
+            Rolle wählen:
+          </label>
+          <div className="flex flex-col lg:flex-row lg:flex-wrap gap-2">
+            <button
+              onClick={() => setRoleFilter("")}
+              className={`p-2 px-4 text-sm rounded-full border ${roleFilter === "" ? "bg-indigo-600 text-white" : "bg-indigo-50 text-gray-700"
+                }`}
+            >
+              Alle Mitglieder: <span className="font-bold">{users.length}</span>
+            </button>
+            <button
+              onClick={() => setRoleFilter("manager")}
+              className={`p-2 px-4 text-sm rounded-full border ${roleFilter === "manager" ? "bg-indigo-600 text-white" : "bg-indigo-50 text-gray-700"
+                }`}
+            >
+              Business Partners:{" "}
+              <span className="font-bold">
+                {users.filter((user) => user.role === "manager").length}
+              </span>
+            </button>
+            <button
+              onClick={() => setRoleFilter("markenbotschafter")}
+              className={`p-2 px-4 text-sm rounded-full border ${roleFilter === "markenbotschafter" ? "bg-indigo-600 text-white" : "bg-indigo-50 text-gray-700"
+                }`}
+            >
+              Markenbotschafter:{" "}
+              <span className="font-bold">
+                {users.filter((user) => user.role === "markenbotschafter").length}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* 🔹 Bottone reset */}
+        <div className="order-2 w-full sm:w-2/3 md:w-1/2 xl:w-16">
+          {/* <label className="xl:hidden text-sm font-semibold text-gray-600 dark:text-gray-300 px-1 invisible">
+            .
+          </label> */}
           <button
             onClick={() => {
               setFilter("");
               setRoleFilter("");
             }}
-            className="btn btn-outline btn-sm rounded-full flex items-center justify-center w-16 px-4 h-8"
+            className="btn btn-outline btn-sm rounded-full
+      w-full xl:w-16 xl:px-4 xl:h-8
+      flex items-center justify-center"
             title="Filter zurücksetzen"
           >
-            <FaSyncAlt className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* 🔹 Role filter buttons */}
-        <div className="flex space-x-2">
-          <button
-            onClick={() => setRoleFilter("")}
-            className={`p-2 px-4 text-sm rounded-full border ${roleFilter === ""
-              ? "bg-indigo-600 text-white"
-              : "bg-indigo-50 text-gray-700"
-              }`}
-          >
-            Alle Mitglieder: <span className="font-bold">{users.length}</span>
-          </button>
-          <button
-            onClick={() => setRoleFilter("manager")}
-            className={`p-2 px-4 text-sm rounded-full border ${roleFilter === "manager"
-              ? "bg-indigo-600 text-white"
-              : "bg-indigo-50 text-gray-700"
-              }`}
-          >
-            Business Partners:{" "}
-            <span className="font-bold">
-              {users.filter((user) => user.role === "manager").length}
-            </span>
-          </button>
-          <button
-            onClick={() => setRoleFilter("markenbotschafter")}
-            className={`p-2 px-4 text-sm rounded-full border ${roleFilter === "markenbotschafter"
-              ? "bg-indigo-600 text-white"
-              : "bg-indigo-50 text-gray-700"
-              }`}
-          >
-            Markenbotschafter:{" "}
-            <span className="font-bold">
-              {users.filter((user) => user.role === "markenbotschafter").length}
+            <span className="xl:hidden">Filter zurücksetzen</span>
+            <span className="hidden xl:flex">
+              <FaSyncAlt className="w-4 h-4" />
             </span>
           </button>
         </div>
       </div>
+
+
+
+
+
 
       {/* ✅ Scrollable Table with Fixed Header */}
       <motion.div
