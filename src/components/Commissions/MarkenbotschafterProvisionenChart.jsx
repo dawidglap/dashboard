@@ -105,53 +105,55 @@ const MarkenbotschafterProvisionenChart = ({ timeframe }) => {
     return (
         <div className="border-2 border-white p-4 bg-transparent rounded-xl shadow-xl">
             <h2 className="text-xl font-bold mb-4">MB Provisionen Fix über die Zeit</h2>
-            <ResponsiveContainer width="100%" height={400}>
-                <AreaChart
-                    data={chartData}
-                    margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
-                >
-                    <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
-                    <XAxis
-                        dataKey="period"
-                        tick={{ fontSize: 12 }}
-                        angle={-15}
-                        textAnchor="end"
-                    />
-                    <YAxis
-                        tickFormatter={(value) => `CHF ${value.toLocaleString("de-DE")}`}
-                        tick={{ fontSize: 12 }}
-                    />
-                    <Tooltip
-                        contentStyle={{
-                            backgroundColor: "rgba(255, 255, 255, 0.9)",
-                            borderRadius: "8px",
-                            boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
-                            padding: "10px",
-                        }}
-                        formatter={(value) => [`CHF ${value.toLocaleString("de-DE")}`, "MB Fix Provisionen"]}
-                        labelFormatter={(label) => `${xAxisLabel}: ${label}`}
-                    />
-                    <defs>
-                        <linearGradient id="colorMB" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#93c5fd" stopOpacity={0.6} />
-                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1} />
-                        </linearGradient>
-                    </defs>
-                    <Area
-                        type="monotone"
-                        dataKey="mbEarnings"
-                        stroke="#3b82f6"
-                        strokeWidth={2}
-                        fill="url(#colorMB)"
-                        dot={{ r: 4, strokeWidth: 2, fill: "#2563eb" }}
-                        activeDot={{ r: 6, fill: "#1d4ed8" }}
-                    />
-                    <Legend
-                        wrapperStyle={{ paddingTop: 10 }}
-                        formatter={() => "MB Provisionen Fix (CHF)"}
-                    />
-                </AreaChart>
-            </ResponsiveContainer>
+            <div className="h-[60vh]">
+                <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart
+                        data={chartData}
+                        margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
+                        <XAxis
+                            dataKey="period"
+                            tick={{ fontSize: 12 }}
+                            angle={-15}
+                            textAnchor="end"
+                        />
+                        <YAxis
+                            tickFormatter={(value) => `CHF ${value.toLocaleString("de-DE")}`}
+                            tick={{ fontSize: 12 }}
+                        />
+                        <Tooltip
+                            contentStyle={{
+                                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                                borderRadius: "8px",
+                                boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
+                                padding: "10px",
+                            }}
+                            formatter={(value) => [`CHF ${value.toLocaleString("de-DE")}`, "MB Fix Provisionen"]}
+                            labelFormatter={(label) => `${xAxisLabel}: ${label}`}
+                        />
+                        <defs>
+                            <linearGradient id="colorMB" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#93c5fd" stopOpacity={0.6} />
+                                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1} />
+                            </linearGradient>
+                        </defs>
+                        <Area
+                            type="monotone"
+                            dataKey="mbEarnings"
+                            stroke="#3b82f6"
+                            strokeWidth={2}
+                            fill="url(#colorMB)"
+                            dot={{ r: 4, strokeWidth: 2, fill: "#2563eb" }}
+                            activeDot={{ r: 6, fill: "#1d4ed8" }}
+                        />
+                        <Legend
+                            wrapperStyle={{ paddingTop: 10 }}
+                            formatter={() => "MB Provisionen Fix (CHF)"}
+                        />
+                    </AreaChart>
+                </ResponsiveContainer>
+            </div>
         </div>
     );
 };

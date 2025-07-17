@@ -101,7 +101,9 @@ const ProvisionenChart = ({ chartData, timeframe }) => {
   if (!adjustedChartData || adjustedChartData.length < 2) {
     return (
       <div className="border-2 border-white p-4 bg-transparent rounded-xl shadow-xl text-center">
-        <h2 className="text-xl font-bold mb-4">Provisionen über die Zeit</h2>
+        <h2 className="text-lg sm:text-xl font-bold mb-4 text-center lg:text-left">
+          Provisionen über die Zeit
+        </h2>
         <p className="text-gray-500">Nicht genug Daten für das Diagramm.</p>
       </div>
     );
@@ -111,81 +113,85 @@ const ProvisionenChart = ({ chartData, timeframe }) => {
 
   return (
     <div className="border-2 border-white p-4 bg-transparent rounded-xl shadow-xl">
-      <h2 className="text-xl font-bold mb-4">Provisionen über die Zeit</h2>
-      <ResponsiveContainer width="100%" height={500}>
-        <AreaChart
-          data={adjustedChartData}
-          margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
-          <XAxis
-            dataKey="period"
-            tick={{ fontSize: 12 }}
-            angle={-15}
-            textAnchor="end"
-          />
-          <YAxis
-            tickFormatter={(value) => `CHF ${value.toLocaleString("de-DE")}`}
-            tick={{ fontSize: 12 }}
-          />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "rgba(255, 255, 255, 0.9)",
-              borderRadius: "8px",
-              boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
-              padding: "10px",
-            }}
-            formatter={(value, name) => {
-              const labelMap = {
-                earnings: "Provisionen",
-                mbEarnings: "MB Fixe Provisionen",
-              };
-              return [`CHF ${value.toLocaleString("de-DE")}`, labelMap[name] || name];
-            }}
-            labelFormatter={(label) => `${xAxisLabel}: ${label}`}
-          />
-          <defs>
-            <linearGradient id="colorCommissions" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#55e389" stopOpacity={0.6} />
-              <stop offset="95%" stopColor="#22c55e" stopOpacity={0.1} />
-            </linearGradient>
-            <linearGradient id="colorMB" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#93c5fd" stopOpacity={0.6} />
-              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1} />
-            </linearGradient>
-          </defs>
-          <Area
-            type="monotone"
-            dataKey="earnings"
-            stroke="#22c55e"
-            strokeWidth={2}
-            fill="url(#colorCommissions)"
-            dot={{ r: 4, strokeWidth: 2, fill: "#16a34a" }}
-            activeDot={{ r: 6, fill: "#166534" }}
-          />
-          {!isManager && !isMarkenbotschafter && (
+      <h2 className="text-lg sm:text-xl font-bold mb-4 text-center lg:text-left">
+        Provisionen über die Zeit
+      </h2>
+      <div className="h-[60vh]">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart
+            data={adjustedChartData}
+            margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
+            <XAxis
+              dataKey="period"
+              tick={{ fontSize: 12 }}
+              angle={-15}
+              textAnchor="end"
+            />
+            <YAxis
+              tickFormatter={(value) => `CHF ${value.toLocaleString("de-DE")}`}
+              tick={{ fontSize: 12 }}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                borderRadius: "8px",
+                boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.1)",
+                padding: "10px",
+              }}
+              formatter={(value, name) => {
+                const labelMap = {
+                  earnings: "Provisionen",
+                  mbEarnings: "MB Fixe Provisionen",
+                };
+                return [`CHF ${value.toLocaleString("de-DE")}`, labelMap[name] || name];
+              }}
+              labelFormatter={(label) => `${xAxisLabel}: ${label}`}
+            />
+            <defs>
+              <linearGradient id="colorCommissions" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#55e389" stopOpacity={0.6} />
+                <stop offset="95%" stopColor="#22c55e" stopOpacity={0.1} />
+              </linearGradient>
+              <linearGradient id="colorMB" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#93c5fd" stopOpacity={0.6} />
+                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1} />
+              </linearGradient>
+            </defs>
             <Area
               type="monotone"
-              dataKey="mbEarnings"
-              stroke="#3b82f6"
+              dataKey="earnings"
+              stroke="#22c55e"
               strokeWidth={2}
-              fill="url(#colorMB)"
-              dot={{ r: 4, strokeWidth: 2, fill: "#2563eb" }}
-              activeDot={{ r: 6, fill: "#1d4ed8" }}
+              fill="url(#colorCommissions)"
+              dot={{ r: 4, strokeWidth: 2, fill: "#16a34a" }}
+              activeDot={{ r: 6, fill: "#166534" }}
             />
-          )}
-          <Legend
-            wrapperStyle={{ paddingTop: 10 }}
-            formatter={(value) =>
-              value === "earnings"
-                ? "Provisionen (CHF)"
-                : value === "mbEarnings"
-                  ? "MB Provisionen Fix (CHF)"
-                  : value
-            }
-          />
-        </AreaChart>
-      </ResponsiveContainer>
+            {!isManager && !isMarkenbotschafter && (
+              <Area
+                type="monotone"
+                dataKey="mbEarnings"
+                stroke="#3b82f6"
+                strokeWidth={2}
+                fill="url(#colorMB)"
+                dot={{ r: 4, strokeWidth: 2, fill: "#2563eb" }}
+                activeDot={{ r: 6, fill: "#1d4ed8" }}
+              />
+            )}
+            <Legend
+              wrapperStyle={{ paddingTop: 10 }}
+              formatter={(value) =>
+                value === "earnings"
+                  ? "Provisionen (CHF)"
+                  : value === "mbEarnings"
+                    ? "MB Provisionen Fix (CHF)"
+                    : value
+              }
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };
