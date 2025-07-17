@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import MemberCard from "./MemberCard";
 
 const MemberCompanies = ({ companies, userId }) => {
   const [assignedBotschafters, setAssignedBotschafters] = useState([]);
@@ -43,68 +44,75 @@ const MemberCompanies = ({ companies, userId }) => {
   // 🧠 Wenn Manager, zeige Markenbotschafter
   if (userRole === "manager") {
     return (
-      <div className="overflow-x-auto">
-        <table className="table w-full table-xs rounded-lg">
-          <thead>
-            <tr className="text-sm md:text-md text-base-content border-b border-indigo-300">
-              <th className="py-3 px-4 text-left">Markenbotschafter ({assignedBotschafters.length})</th>
-              {/* <th className="py-3 px-4 text-left">E-Mail</th> */}
+      <>
+        <div className="grid gap-4 lg:hidden">
+          {assignedBotschafters.map((user) => (
+            <MemberCard key={user._id} user={user} />
+          ))}
+        </div>
+        <div className="overflow-x-auto hidden lg:block">
+          <table className="table w-full table-xs rounded-lg">
+            <thead>
+              <tr className="text-sm md:text-md text-base-content border-b border-indigo-300">
+                <th className="py-3 px-4 text-left">Markenbotschafter ({assignedBotschafters.length})</th>
+                {/* <th className="py-3 px-4 text-left">E-Mail</th> */}
 
-              <th className="py-3 px-4 text-left">Affiliate Link</th>
-              <th className="py-3 px-4 text-left">Erstellt am</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {assignedBotschafters.length === 0 ? (
-              <tr>
-                <td colSpan="6" className="text-center p-3 text-gray-500">
-                  Keine Markenbotschafter zugewiesen.
-                </td>
+                <th className="py-3 px-4 text-left">Affiliate Link</th>
+                <th className="py-3 px-4 text-left">Erstellt am</th>
               </tr>
-            ) : (
-              assignedBotschafters.map((user) => (
-                <tr
-                  key={user._id}
-                  className="hover:bg-indigo-50 dark:hover:bg-indigo-900 border-b border-gray-200 text-slate-700 dark:text-slate-200"
-                >
-                  {/* Name */}
-                  <td className="py-4 px-4 font-medium">
-                    {user.name} {user.surname}
-                  </td>
+            </thead>
 
-                  {/* E-Mail */}
-                  {/* <td className="py-4 px-4 text-sm">
+            <tbody>
+              {assignedBotschafters.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center p-3 text-gray-500">
+                    Keine Markenbotschafter zugewiesen.
+                  </td>
+                </tr>
+              ) : (
+                assignedBotschafters.map((user) => (
+                  <tr
+                    key={user._id}
+                    className="hover:bg-indigo-50 dark:hover:bg-indigo-900 border-b border-gray-200 text-slate-700 dark:text-slate-200"
+                  >
+                    {/* Name */}
+                    <td className="py-4 px-4 font-medium">
+                      {user.name} {user.surname}
+                    </td>
+
+                    {/* E-Mail */}
+                    {/* <td className="py-4 px-4 text-sm">
                     {user.email || "—"}
                   </td> */}
 
 
 
-                  {/* Affiliate Link (troncato, non cliccabile) */}
-                  <td className="py-4 px-4 text-xs text-gray-500">
-                    <div
-                      className="tooltip"
-                      data-tip={`https://business.webomo.ch/ref=${user._id}`.slice(0, 40) + "..."}
-                    >
-                      <p className="truncate max-w-[180px] cursor-default">
-                        {`https://business.webomo.ch/ref=${user._id}`.slice(0, 25)}...
-                      </p>
-                    </div>
-                  </td>
+                    {/* Affiliate Link (troncato, non cliccabile) */}
+                    <td className="py-4 px-4 text-xs text-gray-500">
+                      <div
+                        className="tooltip"
+                        data-tip={`https://business.webomo.ch/ref=${user._id}`.slice(0, 40) + "..."}
+                      >
+                        <p className="truncate max-w-[180px] cursor-default">
+                          {`https://business.webomo.ch/ref=${user._id}`.slice(0, 25)}...
+                        </p>
+                      </div>
+                    </td>
 
-                  {/* Erstellungsdatum */}
-                  <td className="py-4 px-4 text-sm">
-                    {user.createdAt
-                      ? new Date(user.createdAt).toLocaleDateString("de-DE")
-                      : "—"}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
+                    {/* Erstellungsdatum */}
+                    <td className="py-4 px-4 text-sm">
+                      {user.createdAt
+                        ? new Date(user.createdAt).toLocaleDateString("de-DE")
+                        : "—"}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
 
-        </table>
-      </div>
+          </table>
+        </div>
+      </>
     );
   }
 
