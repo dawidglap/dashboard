@@ -84,21 +84,21 @@ const TeamMemberProfile = ({ userId }) => {
   if (error) return <div className="p-6 text-red-500">Error: {error}</div>;
 
   return (
-    <div className="p-3 sm:p-4 xl:p-6 max-w-6xl mx-auto bg-white dark:bg-gray-900 rounded-lg">
-      <h2 className="text-lg sm:text-xl xl:text-2xl font-semibold mb-4 sm:mb-5 xl:mb-6">
+    <div className="p-4 sm:p-6 xl:p-8 w-full overflow-x-hidden bg-white dark:bg-gray-900 rounded-lg max-w-full">
+      <h2 className="text-2xl font-semibold mb-6">
         <span className="font-extrabold">Teammitglied</span> :{" "}
         {user?.name || "Unbekannt"} {user?.surname || "Unbekannt"}
       </h2>
 
-      {/* Layout responsive: 1 col fino a xl */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 xl:gap-6">
-        {/* Left Side - User Details */}
-        <div className="space-y-4">
+      {/* Layout responsive, padding-right per evitare overflow da 768 a 1280 */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:pr-[256px] xl:pr-0">
+        {/* Left side */}
+        <div className="overflow-hidden">
           <ProfileDetails user={user} />
 
           {promoCode && (
-            <div className="mb-4">
-              <label className="block text-gray-700 text-xs sm:text-sm font-medium pb-1">
+            <div className="mb-6">
+              <label className="mt-4 block text-gray-700 text-sm font-medium pb-1">
                 Dein Promo-Code
               </label>
               <div className="relative">
@@ -106,7 +106,7 @@ const TeamMemberProfile = ({ userId }) => {
                   type="text"
                   value={promoCode}
                   disabled
-                  className="input input-bordered rounded-full w-full bg-gray-100 text-gray-700 dark:text-gray-300 dark:bg-gray-800 text-xs sm:text-sm"
+                  className="input input-bordered rounded-full w-full bg-gray-100 text-gray-700 dark:text-gray-300 dark:bg-gray-800"
                 />
                 <button
                   onClick={() => {
@@ -114,7 +114,7 @@ const TeamMemberProfile = ({ userId }) => {
                     setCopiedPromo(true);
                     setTimeout(() => setCopiedPromo(false), 2000);
                   }}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 badge badge-soft badge-primary text-[10px] sm:text-xs"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 badge badge-soft badge-primary"
                 >
                   {copiedPromo ? "Kopiert!" : "Kopieren"}
                 </button>
@@ -123,8 +123,8 @@ const TeamMemberProfile = ({ userId }) => {
           )}
 
           {user?.referralLink && (
-            <div className="mb-4">
-              <label className="block text-gray-700 text-xs sm:text-sm font-medium pb-1">
+            <div className="mb-6">
+              <label className="mt-4 block text-gray-700 text-sm font-medium pb-1">
                 Dein Empfehlungslink
               </label>
               <div className="relative">
@@ -132,7 +132,7 @@ const TeamMemberProfile = ({ userId }) => {
                   type="text"
                   value={user.referralLink}
                   disabled
-                  className="input input-bordered rounded-full w-full bg-gray-100 text-gray-700 dark:text-gray-300 dark:bg-gray-800 text-xs sm:text-sm"
+                  className="input input-bordered rounded-full w-full bg-gray-100 text-gray-700 dark:text-gray-300 dark:bg-gray-800"
                 />
                 <button
                   onClick={() => {
@@ -140,7 +140,7 @@ const TeamMemberProfile = ({ userId }) => {
                     setCopiedReferral(true);
                     setTimeout(() => setCopiedReferral(false), 2000);
                   }}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 badge badge-soft badge-primary text-[10px] sm:text-xs"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 badge badge-soft badge-primary"
                 >
                   {copiedReferral ? "Kopiert!" : "Kopieren"}
                 </button>
@@ -149,32 +149,37 @@ const TeamMemberProfile = ({ userId }) => {
           )}
         </div>
 
-        {/* Right Side - Assigned Companies / Manager */}
-        <div className="space-y-3">
+        {/* Right side */}
+        <div className="space-y-4">
           {user?.role === "markenbotschafter" && user.manager ? (
-            <div className="bg-gradient-to-r mt-2 from-indigo-600 to-purple-500 p-3 sm:p-4 px-4 sm:px-6 rounded-full shadow-xl">
-              <div className="flex flex-wrap items-center gap-x-2">
-                <h3 className="text-xs sm:text-sm font-semibold text-gray-300 dark:text-gray-200">
+            <div className="bg-gradient-to-r mt-5 from-indigo-600 to-purple-500 p-4 px-8 rounded-full shadow-xl">
+              <div className="flex">
+                <h3 className="text-sm font-semibold mb-2 text-gray-300 dark:text-gray-200">
                   Dein Business Partner:
                 </h3>
-                <p className="text-xs sm:text-sm text-white font-bold">
+                <p className="text-sm text-white font-bold ms-2">
                   {user.manager.name} {user.manager.surname}
                 </p>
               </div>
-              <p className="text-xs sm:text-sm text-white font-bold">
-                <span className="text-gray-300 dark:text-gray-200">Kontakt:</span>{" "}
+              <p className="text-sm text-white font-bold">
+                <span className="text-sm font-semibold mb-2 text-gray-300 dark:text-gray-200">
+                  Kontakt:
+                </span>{" "}
                 {user.manager.email}
               </p>
             </div>
           ) : user?.role === "manager" ? (
             <>
-              <h3 className="text-xs sm:text-sm font-medium pb-1 ps-2">Mein Team</h3>
+              <h3 className="text-sm font-medium pb-1 ps-4">Mein Team</h3>
               <MemberCompanies companies={companies} userId={userId} />
             </>
           ) : null}
         </div>
       </div>
     </div>
+
+
+
 
   );
 };
