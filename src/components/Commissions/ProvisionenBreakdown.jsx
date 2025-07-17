@@ -16,6 +16,8 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
   const isAdmin = session?.user?.role === "admin";
   const isManager = session?.user?.role === "manager";
   const isMarkenbotschafter = session?.user?.role === "markenbotschafter";
+  const showAllCompanies = !selectedMB || selectedMB === "";
+
 
   const managerName = `${session?.user?.name || "Deine Provisionen"}`;
   const [filter, setFilter] = useState("");
@@ -224,12 +226,20 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-4">
         {/* ✅ Select + Reset Button */}
         <div className="w-full lg:w-auto flex flex-col sm:flex-row gap-2 items-center sm:items-center">
+
+          {/* 🔹 Label dinamico solo su mobile */}
+          <p className="text-xs text-gray-500 font-medium sm:hidden text-center">
+            {showAllCompanies ? "Kunde auswählen:" : "Markenbotschafter auswählen:"}
+          </p>
+
           <select
             className="w-full sm:w-52 px-4 select select-sm select-bordered rounded-full bg-indigo-100 text-sm text-center sm:text-left mx-auto sm:mx-0"
             onChange={(e) => setFilter(e.target.value)}
             value={filter}
           >
-            <option value="">Kunden</option>
+            <option value="">
+              {showAllCompanies ? "Kunden" : "Markenbotschafter"}
+            </option>
             {[...new Set(groupedCommissions.map((c) => c.companyName))].map((company, i) => (
               <option key={i} value={company}>
                 {company}
@@ -250,11 +260,11 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
         </div>
 
         {/* ✅ Deine Provisionen */}
-        <div className="p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300 w-full sm:w-1/2 lg:w-auto text-center sm:text-left mx-auto sm:mx-0">
+        <div className="p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300 w-full sm:w-1/2 lg:w-auto text-center sm:text-left mx-auto sm:mx-0 font-semibold sm:font-normal">
           {isMarkenbotschafter ? (
             <div>
               Deine Provisionen:{" "}
-              <span className="font-semibold text-green-600">
+              <span className="text-green-600">
                 {commissions
                   .filter((c) => c.role === "markenbotschafter")
                   .reduce((sum, c) => sum + c.amount, 0)
@@ -265,7 +275,7 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
           ) : isManager ? (
             <div>
               {managerName}:{" "}
-              <span className="font-semibold text-green-600">
+              <span className="text-green-600">
                 {commissions
                   .filter((c) => c.role === "manager")
                   .reduce((sum, c) => sum + c.amount, 0)
@@ -273,7 +283,7 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
                 CHF
               </span>{" "}
               | Markenbotschafter:{" "}
-              <span className="font-semibold text-green-600">
+              <span className="text-green-600">
                 {commissions
                   .filter((c) => c.role === "markenbotschafter")
                   .reduce((sum, c) => sum + c.amount, 0)
@@ -291,6 +301,7 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
           )}
         </div>
       </div>
+
 
 
 

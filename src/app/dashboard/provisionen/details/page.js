@@ -85,28 +85,31 @@ const ProvisionenDetails = () => {
           {backButtonText}
         </button> */}
       </div>
-      <div className="flex space-x-2 mb-2 justify-end">
+<div className="flex flex-col sm:flex-row sm:space-x-2 mb-4 lg:justify-end sm:justify-start justify-center items-center sm:items-start">
   <button
     onClick={() => setShowAllCompanies(true)}
-    className={`p-2 px-4 text-sm rounded-full border ${
+    className={`w-full sm:w-auto p-2 px-4 text-sm rounded-full border ${
       showAllCompanies
         ? "bg-indigo-600 text-white"
         : "bg-indigo-50 text-gray-700"
-    }`}
+    } ${showAllCompanies ? "font-semibold" : "font-semibold"} lg:font-normal`}
   >
     Alle Kunden
   </button>
+
   <button
     onClick={() => setShowAllCompanies(false)}
-    className={`p-2 px-4 text-sm rounded-full border ${
+    className={`w-full sm:w-auto p-2 mt-2 sm:mt-0 px-4 text-sm rounded-full border ${
       !showAllCompanies
         ? "bg-indigo-600 text-white"
         : "bg-indigo-50 text-gray-700"
-    }`}
+    } ${!showAllCompanies ? "font-semibold" : "font-semibold"} lg:font-normal`}
   >
     Alle Markenbotschafter
   </button>
 </div>
+
+
 
 
 
