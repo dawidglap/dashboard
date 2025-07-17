@@ -221,106 +221,79 @@ const ProvisionenBreakdown = ({ commissions = [], selectedMB, setSelectedMB, onR
   return (
     <div className="bg-base-100 rounded-2xl w-full">
       {/* ✅ Header with filter & dynamic total commissions */}
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center space-x-2">
-          <div className="flex gap-2">
-            {/* 🏢 Select per le Firmen */}
-            <select
-              className="w-52  px-4 select select-sm select-bordered rounded-full bg-indigo-100 text-sm"
-              onChange={(e) => setFilter(e.target.value)}
-              value={filter}
-            >
-              <option value="">Kunden</option>
-              {[...new Set(groupedCommissions.map((c) => c.companyName))].map((company, i) => (
-                <option key={i} value={company}>
-                  {company}
-                </option>
-              ))}
-            </select>
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-4">
+        {/* ✅ Select + Reset Button */}
+        <div className="w-full lg:w-auto flex flex-col sm:flex-row gap-2 items-center sm:items-center">
+          <select
+            className="w-full sm:w-52 px-4 select select-sm select-bordered rounded-full bg-indigo-100 text-sm text-center sm:text-left mx-auto sm:mx-0"
+            onChange={(e) => setFilter(e.target.value)}
+            value={filter}
+          >
+            <option value="">Kunden</option>
+            {[...new Set(groupedCommissions.map((c) => c.companyName))].map((company, i) => (
+              <option key={i} value={company}>
+                {company}
+              </option>
+            ))}
+          </select>
 
-
-
-
-            {/* 🔄 Reset button */}
-            <button
-              onClick={() => {
-                setFilter(""); // ✅ resetta solo il filtro delle compagnie
-              }}
-              className="px-4 h-8 w-16 border rounded-full btn-outline transition"
-              title="Alle Filter zurücksetzen"
-            >
-              <FiRefreshCw className="mx-auto w-4 h-4" />
-            </button>
-
-          </div>
-
-
-
-
-
+          <button
+            onClick={() => setFilter("")}
+            className="w-full sm:w-16 h-8 border rounded-full btn-outline transition text-sm flex justify-center items-center mx-auto sm:mx-0"
+            title="Alle Filter zurücksetzen"
+          >
+            <span className="hidden sm:flex">
+              <FiRefreshCw className="w-4 h-4" />
+            </span>
+            <span className="sm:hidden">Filter zurücksetzen</span>
+          </button>
         </div>
 
-
-
-
-        {/* 🔹 Total Commissions Amount (Static & Dynamic) */}
-        {/* 👇 Breakdown der Provisionen */}
-        <div className="p-0 px-0 text-sm rounded-full text-gray-700  bg-indigo-50 focus:ring focus:ring-indigo-300">
+        {/* ✅ Deine Provisionen */}
+        <div className="p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300 w-full sm:w-1/2 lg:w-auto text-center sm:text-left mx-auto sm:mx-0">
           {isMarkenbotschafter ? (
-            <>
-              <div className="px-4 py-2">
-                Deine Provisionen:{" "}
-                <span className="font-semibold text-green-600">
-                  {commissions
-                    .filter((c) => c.role === "markenbotschafter")
-                    .reduce((sum, c) => sum + c.amount, 0)
-                    .toLocaleString("de-DE")}{" "}
-                  CHF
-                </span>
-              </div>
-            </>
+            <div>
+              Deine Provisionen:{" "}
+              <span className="font-semibold text-green-600">
+                {commissions
+                  .filter((c) => c.role === "markenbotschafter")
+                  .reduce((sum, c) => sum + c.amount, 0)
+                  .toLocaleString("de-DE")}{" "}
+                CHF
+              </span>
+            </div>
           ) : isManager ? (
-            <>
-              <div className="px-4 py-2">
-                {managerName}:{" "}
-                <span className="font-semibold text-green-600">
-                  {commissions
-                    .filter((c) => c.role === "manager")
-                    .reduce((sum, c) => sum + c.amount, 0)
-                    .toLocaleString("de-DE")}{" "}
-                  CHF
-                </span>{" "}
-                | Markenbotschafter:{" "}
-                <span className="font-semibold text-green-600">
-                  {commissions
-                    .filter((c) => c.role === "markenbotschafter")
-                    .reduce((sum, c) => sum + c.amount, 0)
-                    .toLocaleString("de-DE")}{" "}
-                  CHF
-                </span>
-              </div>
-            </>
+            <div>
+              {managerName}:{" "}
+              <span className="font-semibold text-green-600">
+                {commissions
+                  .filter((c) => c.role === "manager")
+                  .reduce((sum, c) => sum + c.amount, 0)
+                  .toLocaleString("de-DE")}{" "}
+                CHF
+              </span>{" "}
+              | Markenbotschafter:{" "}
+              <span className="font-semibold text-green-600">
+                {commissions
+                  .filter((c) => c.role === "markenbotschafter")
+                  .reduce((sum, c) => sum + c.amount, 0)
+                  .toLocaleString("de-DE")}{" "}
+                CHF
+              </span>
+            </div>
           ) : (
-            <>
-              {!isMarkenbotschafter && (
-                <p className="p-2 px-4 text-sm rounded-full text-gray-700 border bg-indigo-50 focus:ring focus:ring-indigo-300">
-                  Gesamtprovisionen:{" "}
-                  <span className="text-green-600 font-bold">
-                    {totalCommissionsFiltered.toLocaleString("de-DE")} CHF
-                  </span>
-                </p>
-              )}
-
-            </>
+            <div>
+              Gesamtprovisionen:{" "}
+              <span className="text-green-600 font-bold">
+                {totalCommissionsFiltered.toLocaleString("de-DE")} CHF
+              </span>
+            </div>
           )}
         </div>
-
-
-
-
-
-
       </div>
+
+
+
 
       {/* ✅ Scrollable Table with Sticky Header */}
       <div
