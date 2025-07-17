@@ -122,7 +122,7 @@ const DemoCalls = () => {
 
   return (
    <div className="px-4 md:px-12">
- <h1 className="text-xl sm:text-2xl md:text-4xl text-center mt-8 mb-8 font-extrabold text-base-content">
+ <h1 className="text-xl sm:text-2xl md:text-4xl text-center md:text-start mt-8 mb-8 font-extrabold text-base-content">
   Bevorstehende <span className="block sm:inline">Demo-Calls</span>
 </h1>
 
