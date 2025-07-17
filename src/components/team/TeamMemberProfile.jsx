@@ -85,10 +85,12 @@ const TeamMemberProfile = ({ userId }) => {
 
   return (
     <div className="p-4 sm:p-6 xl:p-8 w-full overflow-x-hidden bg-white dark:bg-gray-900 rounded-lg max-w-full">
-      <h2 className="text-2xl font-semibold mb-6">
-        <span className="font-extrabold">Teammitglied</span> :{" "}
-        {user?.name || "Unbekannt"} {user?.surname || "Unbekannt"}
+      <h2 className="text-center md:text-left text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold mb-6 leading-snug">
+        <span className="font-extrabold">Teammitglied:</span>
+        <br className="block lg:hidden" />
+        <span className="lg:inline"> {user?.name || "Unbekannt"} {user?.surname || "Unbekannt"}</span>
       </h2>
+
 
       {/* Layout responsive, padding-right per evitare overflow da 768 a 1280 */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:pr-[256px] xl:pr-0">
