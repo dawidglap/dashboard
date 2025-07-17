@@ -93,32 +93,68 @@ const DemoCalls = () => {
   }, [bookings]);
 
   // ✅ Loading State
-  if (loading) {
-    return (
-      <div className="px-4 lg:px-4 xl:px-6 2xl:px-12">
-        <h1 className="text-3xl md:text-4xl mt-8 mb-8 font-extrabold text-base-content">
-          Bevorstehende Demo-Calls
-        </h1>
-        <div className="overflow-x-auto rounded-lg shadow-sm">
-          <table className="table table-xs w-full">
-            <thead className="sticky top-0 bg-white dark:bg-gray-900 z-50">
-              <tr className="text-sm md:text-md text-base-content border-b border-indigo-300">
-                <th className="py-3 px-4 text-left">Titel</th>
-                <th className="py-3 px-4 text-left">Datum & Zeit</th>
-                <th className="py-3 px-4 text-left">Teilnehmer</th>
-                <th className="py-3 px-4 text-left hidden md:table-cell">
-                  E-Mail
-                </th>
-                <th className="py-3 px-4 text-left hidden md:table-cell">
-                  Video-Call-Link
-                </th>
-              </tr>
-            </thead>
-          </table>
-        </div>
+if (loading) {
+  return (
+    <div className="px-4 md:px-6 xl:px-12">
+      <h1 className="text-xl sm:text-2xl md:text-4xl text-center md:text-start mt-8 mb-8 font-extrabold text-base-content">
+        Bevorstehende <span className="block sm:inline">Demo-Calls</span>
+      </h1>
+
+      {/* ✅ Skeleton CARD Versione Mobile */}
+      <div className="grid gap-4 lg:hidden">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div
+            key={`skeleton-mobile-${index}`}
+            className="bg-white dark:bg-slate-800 border border-indigo-200 dark:border-indigo-700 rounded-xl p-4 shadow space-y-2"
+          >
+            <div className="skeleton h-4 w-1/2" />
+            <div className="skeleton h-3 w-5/6" />
+            <div className="skeleton h-3 w-4/5" />
+            <div className="skeleton h-3 w-3/4" />
+            <div className="skeleton h-3 w-1/2" />
+          </div>
+        ))}
       </div>
-    );
-  }
+
+      {/* ✅ Skeleton TABELLA Desktop */}
+      <div className="overflow-x-auto rounded-lg shadow-sm hidden lg:block">
+        <table className="table table-xs w-full">
+          <thead className="sticky top-0 bg-white dark:bg-gray-900 z-50">
+            <tr className="text-sm md:text-md text-base-content border-b border-indigo-300">
+              <th className="py-3 px-4 text-left">Titel</th>
+              <th className="py-3 px-4 text-left">Datum & Zeit</th>
+              <th className="py-3 px-4 text-left">Teilnehmer</th>
+              <th className="py-3 px-4 text-left">E-Mail</th>
+              <th className="py-3 px-4 text-left">Video-Call-Link</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <tr key={`skeleton-row-${index}`}>
+                <td className="py-4 px-4">
+                  <div className="skeleton h-4 w-32" />
+                </td>
+                <td className="py-4 px-4">
+                  <div className="skeleton h-4 w-48" />
+                </td>
+                <td className="py-4 px-4">
+                  <div className="skeleton h-4 w-32" />
+                </td>
+                <td className="py-4 px-4">
+                  <div className="skeleton h-4 w-40" />
+                </td>
+                <td className="py-4 px-4">
+                  <div className="skeleton h-4 w-24" />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 
   return (
    <div className="px-4 md:px-12">

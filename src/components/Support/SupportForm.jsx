@@ -84,9 +84,8 @@ const SupportForm = () => {
       {/* ✅ Toast Notification */}
       {toast && (
         <div
-          className={`fixed bottom-5 right-5 badge ${
-            toast.type === "success" ? "badge-success" : "badge-error"
-          } text-white px-4 py-2 rounded-full shadow-lg`}
+          className={`fixed bottom-5 right-5 badge ${toast.type === "success" ? "badge-success" : "badge-error"
+            } text-white px-4 py-2 rounded-full shadow-lg`}
         >
           {toast.message}
         </div>
@@ -150,17 +149,20 @@ const SupportForm = () => {
         </div>
 
         {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-purple-500 px-4 py-2 text-white shadow-lg transition-all duration-300 hover:bg-opacity-90 dark:from-indigo-500 dark:to-purple-400"
-        >
-          {loading ? (
-            <span className="loading loading-spinner loading-sm"></span>
-          ) : (
-            "Anfrage senden"
-          )}
-        </button>
+        <div className="flex justify-center sm:justify-start">
+          <button
+            type="submit"
+            disabled={loading}
+            className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-purple-500 px-4 py-2 text-white shadow-lg transition-all duration-300 hover:bg-opacity-90 dark:from-indigo-500 dark:to-purple-400"
+          >
+            {loading ? (
+              <span className="loading loading-spinner loading-sm"></span>
+            ) : (
+              "Anfrage senden"
+            )}
+          </button>
+        </div>
+
       </form>
     </div>
   );
