@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import TeamMemberProfile from "@/components/team/TeamMemberProfile";
 import TeamMemberProfileCompact from "@/components/team/TeamMemberProfileCompact";
-import TeamHeader from "../../../components/Team/TeamHeader";
+import TeamHeader from "../../../components/team/TeamHeader";
 
 
 
