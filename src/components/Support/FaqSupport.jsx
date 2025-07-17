@@ -39,12 +39,12 @@ const FaqSupport = () => {
   };
 
   return (
-    <div className="p-6 bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-2xl shadow-2xl">
-      <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+    <div className="mb-4 md:mb-0 p-6 bg-white/50 dark:bg-gray-800/50 backdrop-blur-lg rounded-2xl shadow-2xl">
+      <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">
         Häufig gestellte Fragen (FAQ)
       </h2>
 
-      <div className="space-y-3">
+      <div className="space-y-3 text-xs sm:text-sm">
         {faqs.map((faq, index) => (
           <div
             key={index}
@@ -54,13 +54,14 @@ const FaqSupport = () => {
               onClick={() => toggleFaq(index)}
               className="w-full text-left py-3 px-4 text-gray-800 dark:text-gray-200 font-medium flex justify-between items-center"
             >
-              {faq.question}
-              <span className="text-gray-600 dark:text-gray-400">
+              <span className="text-xs sm:text-sm">{faq.question}</span>
+              <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
                 {openIndex === index ? "▲" : "▼"}
               </span>
             </button>
+
             {openIndex === index && (
-              <div className="px-4 pb-3 text-gray-600 dark:text-gray-300 text-sm">
+              <div className="px-4 pb-3 text-gray-600 dark:text-gray-300 text-xs sm:text-sm">
                 {faq.answer}
               </div>
             )}
@@ -68,6 +69,7 @@ const FaqSupport = () => {
         ))}
       </div>
     </div>
+
   );
 };
 

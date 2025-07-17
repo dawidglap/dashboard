@@ -80,47 +80,47 @@ const SupportForm = () => {
   };
 
   return (
-    <div className="relative p-6 bg-white/30 dark:bg-slate-800/30  backdrop-blur-lg shadow-2xl rounded-2xl">
+    <div className="relative p-6 bg-white/30 dark:bg-slate-800/30 backdrop-blur-lg shadow-2xl rounded-2xl">
       {/* ✅ Toast Notification */}
       {toast && (
         <div
           className={`fixed bottom-5 right-5 badge ${toast.type === "success" ? "badge-success" : "badge-error"
-            } text-white px-4 py-2 rounded-full shadow-lg`}
+            } text-white px-4 py-2 rounded-full shadow-lg text-xs sm:text-sm`}
         >
           {toast.message}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Name (Prefilled) */}
+      <form onSubmit={handleSubmit} className="space-y-4 text-xs sm:text-sm">
+        {/* Name */}
         <div>
-          <label className="block text-gray-700 dark:text-gray-300 font-semibold">
+          <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">
             Dein Name
           </label>
           <input
             type="text"
             value={user ? `${user.name} ${user.surname} (${user.role})` : ""}
             disabled
-            className="input input-bordered rounded-full w-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-white"
+            className="input input-bordered rounded-full w-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-white text-xs sm:text-sm"
           />
         </div>
 
-        {/* Email (Prefilled) */}
+        {/* Email */}
         <div>
-          <label className="block text-gray-700 dark:text-gray-300 font-semibold">
+          <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">
             E-Mail
           </label>
           <input
             type="email"
             value={user ? user.email : ""}
             disabled
-            className="input input-bordered rounded-full w-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-white"
+            className="input input-bordered rounded-full w-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-white text-xs sm:text-sm"
           />
         </div>
 
         {/* Subject */}
         <div>
-          <label className="block text-gray-700 dark:text-gray-300 font-semibold">
+          <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">
             Betreff
           </label>
           <input
@@ -128,32 +128,32 @@ const SupportForm = () => {
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             required
-            className="input input-bordered rounded-full w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-white"
+            className="input input-bordered rounded-full w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-white text-xs sm:text-sm"
             placeholder="Gib dein Anliegen ein..."
           />
         </div>
 
         {/* Message */}
         <div>
-          <label className="block text-gray-700 dark:text-gray-300 font-semibold">
+          <label className="block text-gray-700 dark:text-gray-300 font-semibold mb-1">
             Nachricht
           </label>
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             required
-            className="textarea textarea-bordered rounded-xl w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-white"
+            className="textarea textarea-bordered rounded-xl w-full bg-white dark:bg-gray-800 text-gray-700 dark:text-white text-xs sm:text-sm"
             placeholder="Beschreibe dein Problem oder deine Anfrage..."
             rows="5"
           ></textarea>
         </div>
 
-        {/* Submit Button */}
+        {/* Submit */}
         <div className="flex justify-center sm:justify-start">
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-purple-500 px-4 py-2 text-white shadow-lg transition-all duration-300 hover:bg-opacity-90 dark:from-indigo-500 dark:to-purple-400"
+            className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-purple-500 px-4 py-2 text-white text-xs sm:text-sm shadow-lg transition-all duration-300 hover:bg-opacity-90 dark:from-indigo-500 dark:to-purple-400"
           >
             {loading ? (
               <span className="loading loading-spinner loading-sm"></span>
@@ -162,9 +162,9 @@ const SupportForm = () => {
             )}
           </button>
         </div>
-
       </form>
     </div>
+
   );
 };
 
