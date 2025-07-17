@@ -309,13 +309,14 @@ const UserTable = ({ onDelete }) => {
           />
         )}
       </AnimatePresence>
-
-      {selectedTeamMember && (
-        <TeamMemberModal
-          userId={selectedTeamMember}
-          onClose={() => setSelectedTeamMember(null)}
-        />
-      )}
+      <AnimatePresence mode="wait">
+        {selectedTeamMember && (
+          <TeamMemberModal
+            userId={selectedTeamMember}
+            onClose={() => setSelectedTeamMember(null)}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 };
