@@ -184,6 +184,7 @@ const SidebarMenu = ({ isOpen, onClose }) => {
             href="/dashboard/hilfe"
             icon={<FaQuestionCircle />}
             active={isActive("/dashboard/hilfe")}
+            onClick={onClose} // ✅ chiude menu mobile
           />
         </ul>
 
