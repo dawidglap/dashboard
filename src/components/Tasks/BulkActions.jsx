@@ -39,7 +39,7 @@ const BulkActions = ({
       setSelectedTasks([]);
 
       // ✅ Show success toast
-      showToast(`✅ ${responseData.message}`, "success");
+      showToast(` ${responseData.message}`, "success");
     } catch (error) {
       console.error("❌ Bulk Delete Error:", error);
       showToast(error.message, "error");
@@ -72,7 +72,7 @@ const BulkActions = ({
       );
 
       setSelectedTasks([]);
-      showToast(" Status erfolgreich aktualisiert!", "success");
+      showToast("Status erfolgreich aktualisiert!", "success");
     } catch (error) {
       console.error("❌ Fehler:", error);
       showToast(error.message, "error");
