@@ -188,7 +188,10 @@ const TaskCard = ({
                             {user?.role === "admin" && (
                                 <li>
                                     <button
-                                        onClick={() => onDelete(task._id)}
+                                        onClick={() => {
+                                            setIsDropdownOpen(false);  // ✅ chiudi il menu
+                                            onDelete(task._id);        // ✅ apri il modal
+                                        }}
                                         className="flex items-center px-4 py-2 text-red-500 hover:bg-indigo-100 w-full rounded-md"
                                     >
                                         <FaTrash className="mr-2" /> Löschen

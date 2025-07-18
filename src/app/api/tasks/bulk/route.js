@@ -57,7 +57,7 @@ export async function DELETE(request) {
 
     if (result.deletedCount === 0) {
       return new Response(
-        JSON.stringify({ success: false, message: "No tasks deleted" }),
+        JSON.stringify({ success: false, message: "Keine Aufgaben gelöscht." }),
         { status: 404 }
       );
     }
@@ -65,7 +65,8 @@ export async function DELETE(request) {
     return new Response(
       JSON.stringify({
         success: true,
-        message: `${result.deletedCount} tasks deleted successfully`,
+        message: `${result.deletedCount} Aufgaben erfolgreich gelöscht.
+`,
       }),
       { status: 200 }
     );
@@ -140,7 +141,7 @@ export async function PUT(request) {
     return new Response(
       JSON.stringify({
         success: true,
-        message: `${result.modifiedCount} tasks updated successfully`,
+        message: `${result.modifiedCount} Aufgaben erfolgreich aktualisiert.`,
       }),
       { status: 200 }
     );
