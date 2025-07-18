@@ -155,7 +155,7 @@ const FilterTaskBar = ({ onFilterChange, user }) => {
       {/* ♻ Reset Button */}
       <button
         onClick={resetFilters}
-        className="btn btn-sm btn-outline rounded-full flex items-center justify-center gap-2 px-3 md:px-0 md:w-[4vw] w-full"
+        className="xl:ms-auto btn btn-sm btn-outline rounded-full flex items-center justify-center gap-2 px-3 md:px-0 md:w-[4vw] w-full"
       >
         {/* Versione desktop (solo icona) */}
         <FaSyncAlt className="hidden md:inline" />

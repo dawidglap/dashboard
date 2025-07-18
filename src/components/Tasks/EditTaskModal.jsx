@@ -77,7 +77,7 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
       // ✅ Call `onUpdate` to refresh the UI immediately
       onUpdate(task._id, updatedTask);
 
-      setToastMessage("✅ Aufgabe erfolgreich aktualisiert!");
+      setToastMessage("Aufgabe erfolgreich aktualisiert!");
       setTimeout(() => {
         setToastMessage(null);
         onClose();

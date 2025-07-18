@@ -6,6 +6,7 @@ import NewTaskModal from "../../../components/Tasks/NewTaskModal";
 import TaskRow from "../../../components/Tasks/TaskRow";
 import FilterTaskBar from "../../../components/Tasks/FilterTaskBar"; // ✅ Import the filter component
 import BulkActions from "../../../components/Tasks/BulkActions";
+import TaskCard from "@/components/Tasks/TaskCard";
 
 const Tasks = () => {
   const { data: session } = useSession();
@@ -409,12 +410,12 @@ const Tasks = () => {
 
         <div
           ref={tableContainerRef}
-          className="overflow-x-auto max-h-[80vh] overflow-auto rounded-lg "
+          className="overflow-x-auto max-h-[80vh] overflow-auto rounded-lg hidden xl:block"
         >
           <table className="table w-full border-b border-gray-200">
             <thead className="sticky top-0 bg-white dark:bg-gray-900 z-50 shadow-sm ">
               <tr>
-                <th className="py-3 px-4 w-6">
+                <th className=" py-3 px-4 w-6">
                   <input
                     type="checkbox"
                     checked={allSelected}
@@ -422,15 +423,15 @@ const Tasks = () => {
                     className="checkbox checkbox-sm rounded-full"
                   />
                 </th>
-                <th className="py-3 px-4 text-left text-lg font-bold w-6">!</th>{" "}
+                <th className=" py-3 px-4 text-left text-lg font-bold w-6">!</th>{" "}
                 {/* Priority column */}
-                <th className="py-3 px-4 text-left w-auto">Titel</th>
-                <th className="py-3 px-4 text-left w-44">Status</th>
-                <th className="py-3 px-4 text-left w-40">Zugewiesen an</th>
-                <th className="py-3 px-4 text-left w-32">Rolle</th>
-                <th className="py-3 px-4 text-left w-28">Fällig am</th>
-                <th className="py-3 px-4 text-left w-28">Erstellt am</th>
-                <th className="py-3 px-4 text-center w-6">Aktion</th>
+                <th className=" py-3 px-4 text-left w-auto">Titel</th>
+                <th className=" py-3 px-4 text-left w-44">Status</th>
+                <th className=" py-3 px-4 text-left w-40">Zugewiesen an</th>
+                <th className=" py-3 px-4 text-left w-32">Rolle</th>
+                <th className=" py-3 px-4 text-left w-28">Fällig am</th>
+                <th className=" py-3 px-4 text-left w-28">Erstellt am</th>
+                <th className=" py-3 px-4 text-center w-6">Aktion</th>
               </tr>
             </thead>
 
@@ -482,6 +483,66 @@ const Tasks = () => {
             </tbody>
           </table>
         </div>
+
+        {/* ✅ Mobile & Tablet view: TaskCard */}
+<div className="xl:hidden space-y-4">
+  {filteredTasks
+    .filter(
+      (task) =>
+       task &&
+task._id &&
+(
+  !filters.assignedToFilter ||
+  (
+    typeof task.assignedTo === "object"
+      ? task.assignedTo?._id === filters.assignedToFilter
+      : task.assignedTo === filters.assignedToFilter
+  )
+)
+
+    )
+    .map((task, index) => (
+      <TaskCard
+        key={task._id || `card-${index}`}
+        task={task}
+        user={user}
+     onUpdate={(taskId, updatedTask) => {
+  setTasks((prev) =>
+    prev.map((t) => (t?._id === taskId ? updatedTask : t))
+  );
+
+  // ✅ Reset dei filtri (opzionale, se vuoi che il task non scompaia)
+  setFilters({
+    statusFilter: "",
+    priorityFilter: "",
+    assignedToFilter: "",
+    dueDateFilter: "",
+    searchQuery: "",
+  });
+
+  showToast("Aufgabe aktualisiert.", "success");
+}}
+
+
+        onDelete={confirmDelete}
+        assignedTo={
+          task?.assignedTo && typeof task.assignedTo === "object"
+            ? task.assignedTo
+            : {
+                _id: "unassigned",
+                name: "Nicht zugewiesen",
+                role: "Unbekannt",
+              }
+        }
+        dueDate={task?.dueDate}
+        createdAt={task?.createdAt}
+        isSelected={selectedTasks.includes(task._id)}
+        onSelectTask={handleTaskSelect}
+      />
+    ))}
+</div>
+
+
       </div>
 
       {/* ✅ Pagination Controls (Minimalistic & Functional) */}
