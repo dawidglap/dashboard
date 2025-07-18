@@ -48,7 +48,7 @@ const TaskModal = ({ task, onClose }) => {
   if (!task) return null;
 
   return (
-    <div className="modal modal-open flex items-center justify-center ">
+    <div className="modal modal-open  flex items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -80,76 +80,6 @@ const TaskModal = ({ task, onClose }) => {
               {task.description || "Keine Beschreibung verfügbar"}
             </p>
           </div>
-
-          {/* Assigned To */}
-          {/* <div className="col-span-2 p-3 border-l-2 border-b-2 border-indigo-400 bg-indigo- rounded-xl">
-            <span className="text-sm font-medium flex items-center gap-2 text-gray-700">
-              Zugewiesen an:
-            </span>
-            <p className="text-gray-900 font-semibold text-lg">
-              {task.assignedTo?.name || "Nicht zugewiesen"}
-              <span className="block text-sm text-gray-500 uppercase">
-                {task.assignedTo?.role || "Unbekannt"}
-              </span>
-            </p>
-          </div> */}
-
-          {/* <div className="col-span-1 p-3 border-l-2 border-b-2  rounded-2xl">
-            <span className="text-sm font-medium flex items-center gap-2 text-gray-700">
-              Priorität:
-            </span>
-            <p
-              className={`text-lg font-semibold ${
-                PRIORITY_ICONS[task.priority]?.color
-              }`}
-            >
-              {PRIORITY_ICONS[task.priority]?.label || "Unbekannt"}
-            </p>
-          </div> */}
-
-          {/* Status & Priority */}
-          {/* <div className="col-span-1 p-3 border-l-2 border-b-2  rounded-2xl">
-            <span className="text-sm font-medium flex items-center gap-2 text-gray-700">
-              {STATUS_ICONS[task.status]?.icon} Status:
-            </span>
-            <p
-              className={`text-lg font-semibold ${
-                STATUS_ICONS[task.status]?.color
-              }`}
-            >
-              {STATUS_ICONS[task.status]?.label || "Unbekannt"}
-            </p>
-          </div> */}
-          {/* Created At */}
-          {/* <div className="col-span-1 p-3 border-l-2 border-b-2 border-lime-200 mt-3 rounded-2xl shadow-sm">
-            <span className="text-sm font-medium flex items-center gap-2 text-gray-700">
-              Erstellt am:
-            </span>
-            <p className="text-gray-900">
-              {task.createdAt
-                ? new Date(task.createdAt).toLocaleDateString("de-DE", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })
-                : "Unbekannt"}
-            </p>
-          </div> */}
-          {/* Due Date */}
-          {/* <div className="col-span-1 p-3 border-l-2 border-b-2 mt-3 border-red-200  rounded-2xl">
-            <span className="text-sm font-medium flex items-center gap-2 text-gray-700">
-              Fällig am:
-            </span>
-            <p className="text-gray-900 font-semibold">
-              {task.dueDate
-                ? new Date(task.dueDate).toLocaleDateString("de-DE", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })
-                : "Kein Datum"}
-            </p>
-          </div> */}
         </div>
 
         {/* Actions */}

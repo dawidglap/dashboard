@@ -1,6 +1,6 @@
 "use client";
 
-import { FaCheckCircle, FaEdit, FaEllipsisH, FaPlayCircle, FaSpinner, FaTimesCircle, FaTrash } from "react-icons/fa";
+import { FaCheckCircle, FaEdit, FaEllipsisH, FaPlayCircle, FaSpinner, FaTimesCircle, FaTrash, FaExternalLinkAlt } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
 import TaskModal from "./TaskModal";
 import EditTaskModal from "./EditTaskModal";
@@ -111,7 +111,14 @@ const TaskCard = ({
                         onChange={(e) => onSelectTask(task._id, e.target.checked)}
                         className="checkbox checkbox-sm rounded-full"
                     />
-                    <h3 className="font-bold text-base">{task.title}</h3>
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="text-left font-semibold text-indigo-600 underline flex items-center gap-2"
+                    >
+                        <span>{task.title}</span>
+                        <FaExternalLinkAlt className="text-indigo-500" />
+                    </button>
+
                 </div>
                 <div className="relative mt-0">
                     <button
