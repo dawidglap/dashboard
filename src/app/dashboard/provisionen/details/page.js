@@ -75,15 +75,10 @@ const ProvisionenDetails = () => {
       {/* ✅ Back Button (Dynamic based on user role) */}
       <div className="flex justify-between mb-2">
         <h2 className="text-xl md:text-4xl text-center sm:text-start mt-8 mb-8 font-extrabold text-base-content">
-          Detaillierte Provisionsübersicht
-        </h2>
+  Detaillierte<br className="sm:hidden" /> Provisionsübersicht
+</h2>
         
-        {/* <button
-          onClick={() => router.push(backButtonLink)}
-          className="btn btn-sm btn-neutral rounded-full px-4 mt-8 mb-8"
-        >
-          {backButtonText}
-        </button> */}
+     
       </div>
 <div className="flex flex-col sm:flex-row sm:space-x-2 mb-4 lg:justify-end sm:justify-start justify-center items-center sm:items-start">
   <button
