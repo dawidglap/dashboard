@@ -67,10 +67,11 @@ useEffect(() => {
   animate={{ opacity: 1, y: 0 }}
   transition={{ duration: 0.6, ease: "easeOut" }}
 >
-  <h1 className="text-3xl md:text-4xl font-extrabold text-base-content">
+   <div className="flex flex-col md:flex-row sm:items-center sm:justify-between gap-4 mt-8 mb-6">
+            <h1 className="text-2xl sm:text-4xl text-center md:text-left font-extrabold text-base-content dark:text-white">
     Materialien <span className="font-normal text-xl">(Downloads)</span>
   </h1>
-
+</div>
   {/* Admin Filter Dropdown */}
   {(userRole === "admin" || userRole === "manager") &&  (
     <div className="mt-4 md:mt-0">
