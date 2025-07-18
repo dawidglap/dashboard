@@ -72,7 +72,7 @@ const BulkActions = ({
       );
 
       setSelectedTasks([]);
-      showToast("✅ Status erfolgreich aktualisiert!", "success");
+      showToast(" Status erfolgreich aktualisiert!", "success");
     } catch (error) {
       console.error("❌ Fehler:", error);
       showToast(error.message, "error");
@@ -84,7 +84,7 @@ const BulkActions = ({
   return (
     <div className="flex items-center justify-between  py-3  ">
       {/* 🛠️ Bulk Action Buttons */}
-      <div className="flex space-x-2">
+      <div className="flex flex-col sm:flex-row gap-2 sm:space-x-2 sm:gap-0">
         {user?.role === "admin" ? (
           <button
             onClick={() => setIsDeleteModalOpen(true)}
@@ -94,7 +94,7 @@ const BulkActions = ({
             Löschen ({selectedTasks.length})
           </button>
         ) : (
-          <div className="tooltip tooltip-top" data-tip="Nur Admin">
+          <div className="tooltip tooltip-top sm:tooltip" data-tip="Nur Admin">
             <button
               disabled
               className="btn btn-sm bg-gray-200 text-gray-500 cursor-not-allowed rounded-full flex items-center px-4"
@@ -121,9 +121,10 @@ const BulkActions = ({
         </button>
       </div>
 
+
       {/* 🔥 DELETE CONFIRMATION MODAL */}
       {isDeleteModalOpen && (
-        <div className="modal modal-open flex items-center justify-center">
+        <div className="modal modal-open flex items-center justify-center px-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
