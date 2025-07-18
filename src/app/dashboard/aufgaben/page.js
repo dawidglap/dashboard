@@ -588,20 +588,24 @@ task._id &&
       {isDeleteModalOpen && (
         <div className="modal modal-open">
           <div className="modal-box">
-            <h3 className="font-bold text-lg">Bist du sicher?</h3>
-            <p className="py-4">
-              Diese Aktion kann nicht rückgängig gemacht werden.
+              <div className="flex justify-between items-center border-b pb-3">
+              <h3 className="text-lg font-bold text-red-600 flex items-center gap-2">
+                ⚠️ Bist du sicher?
+              </h3>
+            </div>
+             <p className="py-4 text-gray-700 text-sm">
+              Diese Aktion kann nicht rückgängig gemacht werden!
             </p>
             <div className="modal-action">
               <button
                 onClick={() => setIsDeleteModalOpen(false)}
-                className="btn btn-sm btn-neutral"
+                className="btn btn-sm btn-outline rounded-full"
               >
                 Abbrechen
               </button>
               <button
                 onClick={handleTaskDelete}
-                className="btn btn-sm btn-error"
+                className="btn btn-sm bg-red-500 text-white hover:bg-red-600 rounded-full px-4"
               >
                 Löschen
               </button>
