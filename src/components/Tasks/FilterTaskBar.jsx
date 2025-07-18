@@ -155,10 +155,14 @@ const FilterTaskBar = ({ onFilterChange, user }) => {
       {/* ♻ Reset Button */}
       <button
         onClick={resetFilters}
-        className="w-[4vw] btn btn-sm btn-outline rounded-full flex items-center px-3 "
+        className="btn btn-sm btn-outline rounded-full flex items-center justify-center gap-2 px-3 md:px-0 md:w-[4vw] w-full"
       >
-        <FaSyncAlt className="" />
+        {/* Versione desktop (solo icona) */}
+        <FaSyncAlt className="hidden md:inline" />
+        {/* Versione mobile (solo testo) */}
+        <span className="md:hidden">Filter zurücksetzen</span>
       </button>
+
     </div>
   );
 };

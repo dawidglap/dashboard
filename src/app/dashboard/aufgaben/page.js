@@ -373,20 +373,21 @@ const Tasks = () => {
 
   return (
     <div className="px-4 lg:px-4 xl:px-6 2xl:px-12">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl mt-8 md:text-4xl font-extrabold text-base-content mb-6">
-          Aufgaben
-        </h1>
+  <div className="flex flex-col md:flex-row sm:items-center sm:justify-between gap-4 mt-8 mb-6">
+  <h1 className="text-2xl sm:text-4xl text-center lg:text-left font-extrabold text-base-content dark:text-white">
+    Aufgaben
+  </h1>
 
-        {user?.role === "admin" && (
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="btn btn-sm btn-neutral px-4 rounded-full"
-          >
-            + Neue Aufgabe
-          </button>
-        )}
-      </div>
+  {user?.role === "admin" && (
+    <button
+      onClick={() => setIsModalOpen(true)}
+      className="btn btn-neutral px-4 hover:text-white btn-sm dark:text-white dark:hover:bg-slate-900 flex rounded-full items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <span>+ Neue Aufgabe</span>
+    </button>
+  )}
+</div>
+
       <FilterTaskBar
         onFilterChange={handleFilterChange}
         users={users}
