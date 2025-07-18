@@ -91,25 +91,27 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
   };
 
   return (
-    <div className="modal modal-open flex items-center justify-center">
+    <div className="modal modal-open flex items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="modal-box max-w-4xl w-full bg-base-100 shadow-lg rounded-2xl p-8 "
+        className="modal-box w-full max-w-sm sm:max-w-xl xl:max-w-4xl bg-base-100 shadow-lg rounded-2xl p-6 sm:p-8"
       >
+
         {/* Header */}
-        <div className="flex justify-between items-center border-b pb-4">
-          <h3 className="text-2xl font-bold text-base-content">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b pb-4">
+          <h3 className="text-lg sm:text-2xl font-bold text-center sm:text-left text-base-content w-full">
             Aufgabe bearbeiten
           </h3>
         </div>
 
+
         {/* Grid Layout */}
-        <div className="grid grid-cols-4 gap-3 mt-6">
-          {/* Task Title */}
-          <div className="col-span-2">
+        <div className="grid grid-cols-4 gap-4 mt-6">
+          {/* Titel - sempre 1 riga */}
+          <div className="col-span-4">
             <label className="text-sm font-medium">Titel</label>
             <input
               type="text"
@@ -120,8 +122,8 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
             />
           </div>
 
-          {/* Priority & Status */}
-          <div className="col-span-1">
+          {/* Priorität */}
+          <div className="col-span-4 sm:col-span-1">
             <label className="text-sm font-medium">Priorität</label>
             <select
               value={priority}
@@ -133,7 +135,9 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
               <option value="low">Niedrig</option>
             </select>
           </div>
-          <div className="col-span-1">
+
+          {/* Status */}
+          <div className="col-span-4 sm:col-span-1">
             <label className="text-sm font-medium">Status</label>
             <select
               value={status}
@@ -147,19 +151,8 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
             </select>
           </div>
 
-          {/* Task Description */}
-          <div className="col-span-3">
-            <label className="text-sm font-medium">Beschreibung</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="textarea textarea-sm textarea-bordered w-full h-20 rounded-2xl px-3"
-              placeholder="Beschreibung eingeben..."
-            ></textarea>
-          </div>
-
-          {/* Due Date */}
-          <div className="col-span-1">
+          {/* Fällig am */}
+          <div className="col-span-4 sm:col-span-1">
             <label className="text-sm font-medium">Fällig am</label>
             <input
               type="date"
@@ -170,7 +163,18 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
             />
           </div>
 
-          {/* Assigned Users */}
+          {/* Beschreibung */}
+          <div className="col-span-4">
+            <label className="text-sm font-medium">Beschreibung</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="textarea textarea-sm textarea-bordered w-full h-20 rounded-2xl px-3"
+              placeholder="Beschreibung eingeben..."
+            ></textarea>
+          </div>
+
+          {/* Zugewiesen an */}
           <div className="col-span-4">
             <label className="text-sm font-medium">Zugewiesen an</label>
             <div className="border rounded-2xl p-3 bg-white">
@@ -190,13 +194,15 @@ const EditTaskModal = ({ task, onClose, onUpdate }) => {
           </div>
         </div>
 
+
         {/* Error Message */}
         {error && (
           <p className="text-red-500 text-sm text-center mt-3">{error}</p>
         )}
 
         {/* Modal Actions */}
-        <div className="flex justify-between mt-6">
+        <div className="flex flex-wrap justify-between gap-2 mt-6">
+
           <button
             onClick={onClose}
             className="btn btn-sm btn-outline rounded-full"
