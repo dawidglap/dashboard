@@ -49,7 +49,7 @@ const TeamMemberModal = ({ userId, onClose }) => {
       {/* 🔙 Bottone di chiusura visibile solo su mobile/tablet */}
       <button
         onClick={onClose}
-        className="xl:hidden absolute top-4 right-4 bg-indigo-100 text-indigo-700 dark:bg-gray-800 dark:text-white rounded-full px-4 py-1 text-sm shadow-md hover:bg-indigo-200 dark:hover:bg-gray-700 transition"
+        className="xl:hidden absolute top-4 right-4 md:right-[302px] xl:mr-0 bg-indigo-100 text-indigo-700 dark:bg-gray-800 dark:text-white rounded-full px-4 py-1 text-sm shadow-md hover:bg-indigo-200 dark:hover:bg-gray-700 transition"
       >
         ← Zurück
       </button>

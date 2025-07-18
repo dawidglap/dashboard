@@ -75,8 +75,8 @@ const ReferralTable = () => {
 
     return (
         <div>
-            <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">
+            <div className="flex flex-col lg:flex-row lg:justify-between items-center mb-4 text-center lg:text-left">
+                <h2 className="text-xl font-bold text-gray-600">
                     Referral-Klicks: {referrals.length}
                 </h2>
                 {/* <button
@@ -110,19 +110,38 @@ const ReferralTable = () => {
                                 className="border-b border-gray-200 dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900 transition text-sm"
                             >
                                 <td className="py-3 px-4">
-                                    {ref.user?.name} {ref.user?.surname}
+                                    <span className="hidden sm:inline font-semibold">
+                                        {ref.user?.name} {ref.user?.surname}
+                                    </span>
+                                    <span className="block sm:hidden font-semibold">
+                                        {ref.user?.name}<br />{ref.user?.surname}
+                                    </span>
                                 </td>
-                                <td className="py-3 px-4">
+
+                                <td className="py-3 px-4 max-w-[100px] sm:max-w-none">
                                     <a
                                         href={`mailto:${ref.user?.email}`}
-                                        className="text-indigo-600 hover:underline"
+                                        className=" text-indigo-600 hover:underline block truncate sm:whitespace-normal"
+                                        title={ref.user?.email}
                                     >
                                         {ref.user?.email}
                                     </a>
                                 </td>
+
                                 <td className="py-3 px-4">
-                                    {new Date(ref.timestamp).toLocaleString("de-DE")}
+                                    <span className="hidden sm:inline">
+                                        {new Date(ref.timestamp).toLocaleString("de-DE")}
+                                    </span>
+                                    <span className="block sm:hidden ">
+                                        {new Date(ref.timestamp).toLocaleDateString("de-DE")}
+                                        <br />
+                                        {new Date(ref.timestamp).toLocaleTimeString("de-DE", {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                        })}
+                                    </span>
                                 </td>
+
                             </tr>
                         ))}
                         <tr ref={observerRef}></tr>

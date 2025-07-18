@@ -101,7 +101,7 @@ const ReferralLeaderboard = () => {
     };
 
     return (
-        <div className="bg-indigo-50 dark:bg-gray-900 rounded-lg shadow p-4 mt-11 max-h-[80vh] overflow-y-auto">
+        <div className="bg-indigo-50 mb-8 md:mb-0 dark:bg-gray-900 rounded-lg shadow p-4 mt-11 max-h-[80vh] overflow-y-auto">
             <h3 className="text-sm font-bold pb-4 mt-[-4px]">Affiliate-Rangliste</h3>
             {displayedRanking.length === 0 ? (
                 <p className="text-gray-500 text-sm">Keine Daten vorhanden.</p>
