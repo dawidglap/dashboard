@@ -48,7 +48,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className=" px-4 md:px-0 relative flex min-h-screen items-start md:items-center justify-center pt-12 md:pt-0 overflow-hidden">
+    <div className=" px-4 md:px-0 relative flex min-h-screen items-start md:items-center justify-center pt-4 md:pt-0 overflow-hidden">
 
     
       <div
@@ -82,7 +82,7 @@ const SignIn = () => {
             className="w-auto h-12 sm:h-24 mx-auto"
             priority
           />
-          <p className="text-sm text-gray-300 mt-2">
+          <p className="text-xs sm:text-sm text-gray-300 mt-2">
             Willkommen zurück! Melden Sie sich an, um fortzufahren.
           </p>
         </div>
@@ -92,7 +92,7 @@ const SignIn = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-4 text-center rounded-full bg-red-600 text-white py-3 text-sm"
+            className="mb-4 text-center rounded-full bg-red-600 text-white py-3 text-xs sm:text-sm"
           >
             {error}
           </motion.div>
@@ -159,7 +159,7 @@ const SignIn = () => {
 
         {/* Contact Admin */}
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-300">
+          <p className="text-xs sm:text-sm text-gray-300">
             Probleme bei der Anmeldung?{" "}
             <a
               href="mailto:kontakt@webomo.ch"
