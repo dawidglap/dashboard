@@ -181,8 +181,10 @@ const UserFormModal = ({ isOpen, onClose, onSave, user }) => {
             {error && <p className="text-red-500 text-center">{error}</p>}
 
             {/* Form Layout */}
-            <div className="grid grid-cols-4 gap-3 mt-6">
-              <div className="col-span-2">
+            <div className="grid grid-cols-4 md:grid-cols-2 xl:grid-cols-6 gap-4 mt-6">
+
+              <div className="col-span-4 md:col-span-2 xl:col-span-3">
+
                 <UserBasicInfo
                   newUser={newUser}
                   handleChange={handleChange}
@@ -190,12 +192,12 @@ const UserFormModal = ({ isOpen, onClose, onSave, user }) => {
                 />
 
               </div>
-              <div className="col-span-2">
+              <div className="col-span-4 md:col-span-2 xl:col-span-3">
                 <UserAddressInfo
                   newUser={newUser}
                   handleChange={handleChange}
                 />
-                <div className="col-span-2">
+                <div className="col-span-4 md:col-span-2">
                   <UserSubscriptionInfo
                     newUser={newUser}
                     handleChange={handleChange}

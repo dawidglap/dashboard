@@ -21,9 +21,9 @@ const UserBasicInfo = ({ newUser, handleChange }) => {
   }, [newUser.role]);
 
   return (
-    <div className="grid grid-cols-4 gap-3">
+    <div className="grid grid-cols-4 md:grid-cols-2 xl:grid-cols-6 gap-4">
       {/* Email */}
-      <div className="col-span-4">
+      <div className="col-span-4 md:col-span-2 xl:col-span-6">
         <label className="text-sm font-medium">E-Mail</label>
         <input
           type="email"
@@ -36,7 +36,7 @@ const UserBasicInfo = ({ newUser, handleChange }) => {
       </div>
 
       {/* Password */}
-      <div className="col-span-4">
+      <div className="col-span-4 md:col-span-2 xl:col-span-6">
         <label className="text-sm font-medium">Passwort</label>
         <input
           type="password"
@@ -52,7 +52,7 @@ const UserBasicInfo = ({ newUser, handleChange }) => {
       </div>
 
       {/* Name & Surname */}
-      <div className="col-span-2">
+      <div className="col-span-2 md:col-span-1 xl:col-span-3">
         <label className="text-sm font-medium">Vorname</label>
         <input
           type="text"
@@ -62,7 +62,7 @@ const UserBasicInfo = ({ newUser, handleChange }) => {
           className="input input-sm input-bordered w-full rounded-full"
         />
       </div>
-      <div className="col-span-2">
+      <div className="col-span-2 md:col-span-1 xl:col-span-3">
         <label className="text-sm font-medium">Nachname</label>
         <input
           type="text"
@@ -74,7 +74,7 @@ const UserBasicInfo = ({ newUser, handleChange }) => {
       </div>
 
       {/* Birthday */}
-      <div className="col-span-2">
+      <div className="col-span-2 md:col-span-1 xl:col-span-3">
         <label className="text-sm font-medium">Geburtstag</label>
         <input
           type="date"
@@ -86,7 +86,7 @@ const UserBasicInfo = ({ newUser, handleChange }) => {
       </div>
 
       {/* Role Selection */}
-      <div className="col-span-2">
+      <div className="col-span-2 md:col-span-1 xl:col-span-3">
         <label className="text-sm font-medium">Rolle</label>
         <select
           name="role"
@@ -100,30 +100,28 @@ const UserBasicInfo = ({ newUser, handleChange }) => {
           <option value="kunde">Kunde</option>
         </select>
       </div>
+
       {/* Manager-Auswahl, nur wenn Rolle = markenbotschafter */}
-{newUser.role === "markenbotschafter" && (
-  <div className="col-span-4 mt-2">
-    <label className="text-sm font-medium">Manager zuweisen</label>
-    <select
-      name="manager_id"
-      value={newUser.manager_id || ""}
-      onChange={handleChange}
-      className="select select-sm select-bordered w-full rounded-full"
-    >
-      <option value="">-- Bitte wählen --</option>
-      {managers.map((manager) => (
-        <option key={manager._id} value={manager._id}>
-          {manager.name} {manager.surname} ({manager.email})
-        </option>
-      ))}
-    </select>
-  </div>
-)}
-
-
-
-
+      {newUser.role === "markenbotschafter" && (
+        <div className="col-span-4 md:col-span-2 xl:col-span-6 mt-2">
+          <label className="text-sm font-medium">Manager zuweisen</label>
+          <select
+            name="manager_id"
+            value={newUser.manager_id || ""}
+            onChange={handleChange}
+            className="select select-sm select-bordered w-full rounded-full"
+          >
+            <option value="">-- Bitte wählen --</option>
+            {managers.map((manager) => (
+              <option key={manager._id} value={manager._id}>
+                {manager.name} {manager.surname} ({manager.email})
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
     </div>
+
   );
 };
 
