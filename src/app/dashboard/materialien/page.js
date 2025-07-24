@@ -124,7 +124,7 @@ useEffect(() => {
                 alt={item.title}
                 width={270}
                 height={480}
-                className="w-full h-[180px] sm:h-auto object-cover transition-opacity duration-300"
+                className="w-full h-[180px] sm:h-[260px] md:h-auto object-cover transition-opacity duration-300"
 
                 loading="lazy"
                 onLoadingComplete={() =>
