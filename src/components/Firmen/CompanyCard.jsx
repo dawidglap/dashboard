@@ -14,6 +14,7 @@ const formatNumber = (value) => {
 const CompanyCard = ({
     company,
     manager,
+    index,
     markenbotschafter,
     onEdit,
     onDelete,
@@ -41,8 +42,10 @@ const CompanyCard = ({
             <div className="flex justify-between items-start">
                 <div>
                     <h2 className="font-bold text-sm sm:text-base leading-snug">
+                        {/* <span className="text-gray-400 sm:hidden mr-1">({index})</span> */}
                         {company.company_name || "N/A"}
                     </h2>
+
                     {/* Breaking rule visibile solo su mobile */}
                     <div className="border-b border-indigo-400 mt-2 mb-1 block sm:hidden" />
                 </div>

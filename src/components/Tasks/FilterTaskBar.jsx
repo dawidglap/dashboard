@@ -73,7 +73,7 @@ const FilterTaskBar = ({ onFilterChange, user }) => {
         onChange={(e) => setPriorityFilter(e.target.value)}
         className=" select select-sm select-bordered border-indigo-200 w-full md:w-[6vw] rounded-full"
       >
-        <option value="">!</option>
+        <option value="">Priorität</option>
         <option value="high">Hoch</option>
         <option value="medium">Mittel</option>
         <option value="low">Niedrig</option>
@@ -133,7 +133,7 @@ const FilterTaskBar = ({ onFilterChange, user }) => {
 
       {/* 📅 Due Date Filter */}
       <div className="relative w-full md:w-[16vw]">
-        {/* <FaCalendarAlt className="absolute left-3 top-3 text-gray-400" /> */}
+        <label className="text-sm text-gray-600 ps-4 mb-1 block md:hidden">fällig am:</label>
         <input
           type="date"
           value={dueDateFilter}
@@ -141,6 +141,7 @@ const FilterTaskBar = ({ onFilterChange, user }) => {
           className="input input-sm input-bordered border-indigo-200 w-full rounded-full pl-4"
         />
       </div>
+
 
       {/* 🔐 Locked Filter */}
       {/* <select

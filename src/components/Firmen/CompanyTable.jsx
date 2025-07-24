@@ -284,6 +284,7 @@ const CompanyTable = ({ onEdit, onDelete }) => {
               <CompanyCard
                 key={company._id}
                 company={company}
+                index={index + 1}
                 manager={manager}
                 markenbotschafter={markenbotschafter}
                 onEdit={handleEdit}

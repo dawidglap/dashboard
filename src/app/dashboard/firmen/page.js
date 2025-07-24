@@ -208,6 +208,7 @@ if (loading || companies === null)
       <FirmenHeader userRole={userRole} onAdd={() => setShowModal(true)} />
 
 
+
       <CompanyTable
         companies={companies}
         onEdit={setCompanyToEdit}
