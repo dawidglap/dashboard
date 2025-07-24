@@ -90,7 +90,7 @@ useEffect(() => {
 
       {/* Grid Container */}
       <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6"
+        className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6"
         initial="hidden"
         animate="visible"
         variants={{
@@ -124,7 +124,7 @@ useEffect(() => {
                 alt={item.title}
                 width={270}
                 height={480}
-                className="w-full h-[240px] sm:h-auto object-cover transition-opacity duration-300"
+                className="w-full h-[180px] sm:h-auto object-cover transition-opacity duration-300"
 
                 loading="lazy"
                 onLoadingComplete={() =>
@@ -133,10 +133,14 @@ useEffect(() => {
               />
 
               {/* Black overlay on hover */}
-              <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
-
+              {/* <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div> */}
+  <div className="absolute inset-0 bg-black bg-opacity-30 lg:bg-opacity-0 group-hover:bg-opacity-50 transition-opacity duration-300" />
               {/* Download Button (Centered) */}
-              <motion.div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <motion.div
+    className="absolute inset-0 flex items-center justify-center 
+               opacity-100 lg:opacity-0 lg:group-hover:opacity-100 
+               transition-opacity duration-300"
+  >
                 <button
                   onClick={() => handleDownload(item.downloadUrl, index)}
                   className="w-14 h-14 flex items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg relative"
@@ -171,10 +175,10 @@ useEffect(() => {
 
             {/* Info Section */}
             <div className="p-4 bg-slate-50">
-              <h2 className="text-lg lg:text-sm font-semibold border-b border-indigo-300">
+              <h2 className="text-xs md:text-sm pb-1 lg:text-sm font-semibold border-b border-indigo-300">
                 {item.title}
               </h2>
-              <p className="text-gray-500 lg:text-xs text-sm">{item.week}</p>
+              <p className="text-gray-500 lg:text-xs text-xs">{item.week}</p>
             </div>
           </motion.div>
         ))}
