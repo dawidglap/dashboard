@@ -270,6 +270,8 @@ const CompanyTable = ({ onEdit, onDelete }) => {
 
       {/* ✅ Mobile / Tablet Card View */}
       <div className="xl:hidden space-y-4">
+        <p className="text-left text-gray-600 ms-4 font-semibold mt-4 text-xs">Anzahl der Kunden: ({filteredCompanies.length})</p>
+        <span className="text-gray-400"></span>
         {loading ? (
           Array.from({ length: 5 }).map((_, index) => (
             <div key={index} className="skeleton h-32 w-full rounded-xl"></div>
