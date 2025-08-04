@@ -23,49 +23,44 @@ const ProvisionenChart = ({ chartData, timeframe }) => {
   useEffect(() => {
     const fetchMB = async () => {
       try {
-        const res = await fetch("/api/users");
+        const res = await fetch(`/api/users/${session?.user?._id}/markenbotschafter`);
         const data = await res.json();
 
         if (data.success && Array.isArray(data.users)) {
-          const monthNames = [
-            "Jan", "Feb", "Mär", "Apr", "Mai", "Jun",
-            "Jul", "Aug", "Sep", "Okt", "Nov", "Dez",
-          ];
+          const mbs = data.users;
 
-          const mbs = data.users.filter((u) => u.role === "markenbotschafter");
           const earningsMap = {};
-          const now = new Date();
-          const nowYear = now.getFullYear();
-          const nowMonth = now.getMonth();
+          chartData.forEach((entry) => {
+            earningsMap[entry.period] = 0;
+          });
 
           for (const mb of mbs) {
             const createdAt = new Date(mb.createdAt);
-            const year = createdAt.getFullYear();
-            const month = createdAt.getMonth(); // 0-based
 
-            console.log("🧑‍💼", mb.name, mb.surname, "→ CreatedAt:", createdAt.toISOString());
+            chartData.forEach((entry) => {
+              const [monthStr, yearStr] = entry.period.split(" ");
+              const periodDate = new Date(`${monthStr} 1, ${yearStr}`);
 
-            if (timeframe === "Monatlich") {
-              const key = monthNames[month]; // Esempio: "Apr"
-              if (!earningsMap[key]) earningsMap[key] = 0;
-              earningsMap[key] += 300;
-            } else if (timeframe === "Jährlich") {
-              const key = `${year}`;
-              if (!earningsMap[key]) earningsMap[key] = 0;
-              earningsMap[key] += 300;
-            }
+              if (
+                periodDate.getMonth() === createdAt.getMonth() &&
+                periodDate.getFullYear() === createdAt.getFullYear()
+              ) {
+                earningsMap[entry.period] += 300;
+              }
+            });
+
           }
 
-
-          console.log("📊 MB earnings map (da mostrare nel grafico):", earningsMap);
+          console.log("✅ MB earnings map (via API):", earningsMap);
           setMbEarningsMap(earningsMap);
+        } else {
+          console.warn("⚠️ Nessun markenbotschafter trovato");
         }
       } catch (err) {
-        console.error("❌ Fehler beim Laden der MB:", err);
+        console.error("❌ Fehler beim Laden der MB (API):", err);
       }
     };
 
-    // ✅ Esegui fetch solo se sessione è pronta E ruolo ≠ manager o markenbotschafter
     if (
       session?.user?.role &&
       session.user.role !== "manager" &&
@@ -73,7 +68,10 @@ const ProvisionenChart = ({ chartData, timeframe }) => {
     ) {
       fetchMB();
     }
-  }, [session?.user?.role, timeframe]);
+  }, [session?.user?._id, session?.user?.role, timeframe, chartData]);
+
+
+
 
 
   // ✅ calcolo solo quando la mappa è pronta

@@ -36,46 +36,27 @@ const MarkenbotschafterProvisionenChart = ({ timeframe }) => {
                 ];
 
                 const earningsMap = {};
-                const now = new Date();
-                const nowYear = now.getFullYear();
-                const nowMonth = now.getMonth();
 
                 for (const mb of markenbotschafter) {
                     const createdAt = new Date(mb.createdAt);
                     const year = createdAt.getFullYear();
                     const month = createdAt.getMonth();
-
-                    if (timeframe === "monthly") {
-                        for (let y = year; y <= nowYear; y++) {
-                            const startMonth = y === year ? month : 0;
-                            const endMonth = y === nowYear ? nowMonth : 11;
-
-                            for (let m = startMonth; m <= endMonth; m++) {
-                                const key = `${monthNames[m]} ${y}`; // ✅ mese + anno
-
-                                if (!earningsMap[key]) earningsMap[key] = 0;
-                                earningsMap[key] += 300;
-                            }
-                        }
-                    } else if (timeframe === "yearly") {
-                        for (let y = year; y <= nowYear; y++) {
-                            const key = `${y}`;
-                            if (!earningsMap[key]) earningsMap[key] = 0;
-                            earningsMap[key] += 300;
-                        }
-                    }
+                    const key = `${monthNames[month]} ${year}`;
+                    earningsMap[key] = (earningsMap[key] || 0) + 300;
                 }
 
-                const finalChartData = Object.entries(earningsMap)
-                    .map(([period, value]) => {
-                        const [monthStr, yearStr] = period.split(" ");
-                        const monthIndex = monthNames.indexOf(monthStr);
-                        const date = new Date(Number(yearStr), monthIndex); // Usato solo per ordinamento
-                        return { period, mbEarnings: value, date };
-                    })
-                    .sort((a, b) => a.date - b.date) // ✅ Ordinamento cronologico
-                    .map(({ period, mbEarnings }) => ({ period, mbEarnings })); // 🔁 Rimuovi il campo `date` ora che è ordinato
+                const sortedEntries = Object.entries(earningsMap).sort((a, b) => {
+                    const [monthA, yearA] = a[0].split(" ");
+                    const [monthB, yearB] = b[0].split(" ");
+                    const dateA = new Date(`${monthA} 1, ${yearA}`);
+                    const dateB = new Date(`${monthB} 1, ${yearB}`);
+                    return dateA - dateB;
+                });
 
+                const finalChartData = sortedEntries.map(([period, mbEarnings]) => ({
+                    period,
+                    mbEarnings,
+                }));
 
                 setChartData(finalChartData);
             } catch (err) {
@@ -87,6 +68,10 @@ const MarkenbotschafterProvisionenChart = ({ timeframe }) => {
 
         fetchMB();
     }, [timeframe]);
+
+
+
+
 
     if (loading) {
         return (

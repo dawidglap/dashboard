@@ -62,7 +62,7 @@ const Provisionen = () => {
     </div>
 
     {/* Chart Toggle */}
-    <div className="flex w-full justify-center md:justify-start">
+    {/* <div className="flex w-full justify-center md:justify-start">
       <div className="flex w-full sm:w-auto justify-center sm:justify-start gap-2 bg-gray-100 rounded-full p-1">
         {[
           { key: "gesamt", label: "Gesamt Provisionen" },
@@ -81,21 +81,25 @@ const Provisionen = () => {
           </button>
         ))}
       </div>
-    </div>
+    </div> */}
   </div>
 </div>
 
 
       {/* ✅ Conditional Chart */}
       <div className="md:col-span-12 w-full">
-        {selectedChart === "gesamt" ? (
+        {/* {selectedChart === "gesamt" ? (
           <ProvisionenChart
             chartData={chartData}
             timeframe={timeframe === "monthly" ? "Monatlich" : "Jährlich"}
           />
         ) : (
           <MarkenbotschafterProvisionenChart timeframe={timeframe} />
-        )}
+        )} */}
+        <ProvisionenChart
+            chartData={chartData}
+            timeframe={timeframe === "monthly" ? "Monatlich" : "Jährlich"}
+          />
       </div>
     </div>
   );
