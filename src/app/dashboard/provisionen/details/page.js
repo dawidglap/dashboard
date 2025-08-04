@@ -124,8 +124,11 @@ const ProvisionenDetails = () => {
 
 ) : (
 <MarkenbotschafterProvisionenTable
+  userId={user?._id}
   onResetToCompanies={handleResetToCompanies}
 />
+
+
 )}
 
 

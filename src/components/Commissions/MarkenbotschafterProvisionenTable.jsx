@@ -8,7 +8,7 @@ import PaidMBCommissionModal from "./PaidMBCommissionModal";
 import { FiRefreshCw } from "react-icons/fi";
 import MarkenbotschafterCard from "./MarkenbotschafterCard";
 
-const MarkenbotschafterProvisionenTable = ({ onResetToCompanies }) => {
+const MarkenbotschafterProvisionenTable = ({ userId, onResetToCompanies }) => {
 
 
   const { data: session } = useSession();
@@ -26,6 +26,9 @@ const MarkenbotschafterProvisionenTable = ({ onResetToCompanies }) => {
 
   useEffect(() => {
     const fetchMB = async () => {
+      if (!userId) return;
+
+
       try {
         const res = await fetch("/api/users");
         const data = await res.json();
@@ -36,18 +39,22 @@ const MarkenbotschafterProvisionenTable = ({ onResetToCompanies }) => {
           const filtered = isAdmin
             ? allMB
             : isManager
-              ? allMB.filter((mb) => mb.manager_id === session?.user?._id)
+              ? allMB.filter((mb) => String(mb.manager_id) === String(userId))
+
               : [];
 
           setMarkenbotschafter(filtered);
         }
       } catch (err) {
-        console.error("❌ Fehler beim Laden:", err);
+        console.error("❌ Fehler beim Laden der MBs:", err);
       }
     };
 
     fetchMB();
-  }, [isAdmin, isManager, session?.user?._id]);
+  }, [session?.user?._id, isManager, isAdmin]);
+
+
+
 
   const handleToggleStatus = async () => {
     const mb = markenbotschafter.find((m) => m._id === selectedMB);
